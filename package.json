@@ -1,0 +1,41 @@
+{
+  "name": "angular-narrative-api",
+  "version": "0.0.1",
+  "description": "Narrative API services made easy for Angular.",
+  "main": "dist/angular-narrative-api.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "http-server -a localhost -p 9000 -c-1",
+    "pretest": "npm install",
+    "test": "karma start karma.conf.js"
+  },
+  "keywords": [
+    "AngularJS",
+    "Angular",
+    "NarrativeAPI",
+    "API",
+    "Narrative",
+    "Memoto"
+  ],
+  "author": "Anton Amlinger",
+  "license": "(MIT)",
+  "devDependencies": {
+    "bower": "^1.3.1",
+    "grunt": "~0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-ngdocs": "^0.2.8",
+    "http-server": "^0.6.1",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.12.37",
+    "karma-jasmine": "^0.3.5",
+    "karma-phantomjs-launcher": "^0.2.0"
+  }
+}

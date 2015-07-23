@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <title>A little bit photo filtering</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.js"></script>
+    <script src="../../dist/angular-narrative-api.js"></script>
+    <script src="infinite-scroll.min.js"></script>
+
+    <script>
+      angular
+        .module('photo-filter', ['api.narrative', 'infinite-scroll'])
+        .config(function ($locationProvider) {
+          $locationProvider.html5Mode({
+            enabled: true,
+            requireBase: false
+          });
+        })
+        .config(function (NarrativeAuthProvider , NarrativeRequestProvider) {
+            NarrativeAuthProvider.defaults.oauthApplication = {
+              clientID: "1EEmLl2wQNhCsgIb86PnMrur3vRAOoljJcpafYDQ",
+              redirectURI: "http://localhost:9000/examples/photo-filters/",
+              clientSecret: "t8lv9Xe8lFu0lyLmJWWYNLlrjlMM48sgb8euSLDfG1h6weifO2pZapt8Ds6dR4d5wOWbaFFnE2829Qb4cPSoxssVArbmOhBykhZk0vaE8fHMEp4TMUVE4BzaWW6tpj26"
+            };
+            NarrativeAuthProvider.defaults.oauthRoutes.token =
+              "http://localhost:8080/https://narrativeapp.com/oauth2/token/";
+            NarrativeRequestProvider.defaults.api.proxy = 'http://localhost:8080/';
+          })
+        .controller('MainController', function (NarrativeAuth ,  NarrativeApi) {
+            var main = this;
+            main.auth = NarrativeAuth();
+
+            main.auth.waitForAuth().then(function () {
+              var api = NarrativeApi();
+              main.user = api.me().get();
+              main.photos = api.photos({tags__in: ['hasface']}).get();
+            });
+          });
+    </script>
+    <style>
+      .photo img { width: 100%; }
+      .divider { height: 15px; }
+    </style>
+  </head>
+  <body ng-app="photo-filter">
+    <div class="container"
+         ng-controller="MainController as main">
+      <div class="row">
+        <header class="col-xs-8">
+          <h1>Hello {{main.user.full_name}}</h1>
+        </header>
+        <nav class="col-xs-4">
+          <br />
+          <button class="btn btn-success pull-right"
+                  ng-show="!main.auth.isLoggedIn()"
+                  ng-click="main.auth.oauthAuthorizationCode()">
+            Login
+          </button>
+          <button class="btn btn-danger pull-right"
+                  ng-show="main.auth.isLoggedIn()"
+                  ng-click="main.auth.unauth()">
+            Logout
+          </button>
+        </nav>
+      </div>
+      <div class="row"
+           ng-show="main.auth.isLoggedIn()"
+           infinite-scroll="main.photos.nextPage()">
+
+        <div class="photo col-xs-2"
+             ng-repeat-start="photo in main.photos.results">
+          <img ng-src="{{photo.renders['g1.thumb_square'].url}}" />
+        </div>
+        <div class="divider col-xs-12"
+             ng-repeat-end
+             ng-hide="($index + 1) % 6"></div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,184 @@
+(function (window, angular, undefined) {
+  'use strict';
+
+  // Storing some shorthand functions that are used in this page.
+  var forEach = angular.forEach,
+    extend = angular.extend,
+    toJson = angular.toJson,
+    isUndefined = angular.isUndefined,
+    isArray = angular.isArray,
+    isString = angular.isString;
+
+  /**
+   * @ngdoc service
+   * @name NarrativeRequestProvider
+   *
+   * @description
+   * `NarrativeRequestProvider` provides a request method that can be used
+   * for fetching resources from Narratives API on Narratives Open Platform.
+   */
+  function NarrativeRequestProvider() {
+
+    /**
+     * [apiPath description]
+     * @type {Object}
+     */
+    this.defaults = {
+      api: {
+        proxy: "",
+        baseUrl: "https://narrativeapp.com/",
+        apiSuffix: "api/v2/"
+      }
+    };
+    var defaults = this.defaults;
+
+    /**
+     * A builder that combines the URLs provided in the API path along with
+     * the passed URL to create a c
+     * @param  {string} url The relative URL to append to the base path.
+     * @return {string}     The combined URL.
+     */
+    function fullPath(api, url) {
+      return api.proxy + api.baseUrl + api.apiSuffix + url;
+    }
+
+    /**
+     * Strips the base of the url in the passed parameter, the base being
+     * the path to Narratives API.
+     *
+     * @param  {string} url The absolute URL to strip.
+     * @return {string}     The relative, stripped URL.
+     */
+    function stripApiBase(api, url) {
+      return url.replace(api.baseUrl + api.apiSuffix, "");
+    }
+
+    /**
+     * @ngdoc service
+     * @name NarrativeRequest
+     * @module api.narrative
+     * @kind function
+     * @requires $http
+     *
+     * @description
+     * A method for making authorized requests with parameters to Narratives
+     * API on Narratives Open Platform.
+     *
+     * @param  {string} method      [description]
+     * @param  {string} url         [description]
+     * @param  {Object} parameters  [description]
+     * @param  {NarrativeAuth} auth [description]
+     * @return {promise}            [description]
+     *
+     * @example
+       <example module="Param serializer">
+         <file name="index.html">
+          <h1>Coming Soon</h1>
+         </file>
+       </example>
+     */
+    this.$get = ['$http', function ($http) {
+      function request(method, url, parameters, auth) {
+
+        // If parameters are omitted, left shift the two last arguments.
+        if (isUndefined(auth)) {
+          auth = parameters;
+          parameters = undefined;
+        }
+
+        // The request will be constructed throughout this function, with the
+        // method and url attribute being the only necessary.
+        var requestConfig = {
+          method: method,
+          url: fullPath(defaults.api, url)
+        };
+
+        // Unauthorized requests may be allowed to some endpoints, so only add
+        // headers if a valid session exists.
+        if (auth.isLoggedIn()) {
+          requestConfig.headers = auth.authorizationHeaders();
+        }
+
+        if (!isUndefined(parameters)) {
+          requestConfig = extend(requestConfig, {
+            params: parameters,
+            paramSerializer: 'NarrativeParamSerializer'
+          });
+        }
+
+        return $http(requestConfig).then(function (result) {
+          var data = result.data;
+
+          // TODO: This should perhaps be relocated, it might not be the
+          // responsibility for the Request service.
+          if (data.next) {
+            data.next = stripApiBase(defaults.api, data.next);
+          }
+          return data;
+        });
+      }
+
+      return request;
+    }];
+  }
+
+  /**
+   * @ngdoc service
+   * @module api.narrative
+   * @name NarrativeParamSerializerProvider
+   *
+   * @description
+   * `NarrativeParamSerializerProvider` provides a serializer for URL
+   * parameters that should be passed to Narratives API on Narratives Open
+   * Platform.
+   */
+  function NarrativeParamSerializerProvider() {
+
+    /**
+     * @ngdoc service
+     * @name NarrativeParamSerializer
+     * @module api.narrative
+     * @kind function
+     *
+     * @description
+     * When called, it serializes the provided parameters provided according to
+     * Narrative API:s needs. Arrays are converted into JSON format.
+     *
+     * @param {Object=} params The parameters that the serializer will turn
+     *                         into a URL-friendly string.
+     *
+     * @example
+       <example module="Param serializer">
+         <file name="index.html">
+          <h1>Coming Soon</h1>
+         </file>
+       </example>
+     */
+    this.$get = function () {
+      return function NarrativeParamSerializer(params) {
+        if (!params) return '';
+        var parts = [];
+
+        forEach(params, function (value, key) {
+          // Ignore Parameters that are either null or undefined, but keeping
+          // in mind that other falsy values are valid.
+          if (value === null || isUndefined(value)) return;
+
+          var rhs = value;
+          if (isArray(value)) {
+            rhs = toJson(value);
+          }
+          parts.push(encodeURIComponent(key) + "=" + encodeURIComponent(rhs));
+        });
+
+        return parts.join("&");
+      };
+    };
+  }
+
+  // Registering the providers on the module.
+  angular.module('api.narrative')
+    .provider('NarrativeParamSerializer', NarrativeParamSerializerProvider)
+    .provider('NarrativeRequest', NarrativeRequestProvider);
+
+  }(window, window.angular));

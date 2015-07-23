@@ -1,0 +1,12 @@
+{
+  "predef": [
+    "module",
+    "inject",
+    "describe",
+    "beforeEach",
+    "it",
+    "expect",
+    "jasmine",
+    "MockFirebase"
+  ]
+}
