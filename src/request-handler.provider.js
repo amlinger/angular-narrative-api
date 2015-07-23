@@ -9,9 +9,14 @@
     isArray = angular.isArray,
     isString = angular.isString;
 
+  function authHeadersFromToken(token) {
+    return { Authorization: token.token_type + ' ' + token.access_token };
+  }
+
   /**
    * @ngdoc service
-   * @name NarrativeRequestProvider
+   * @module.api.narrative
+   * @name api.narrative.NarrativeRequestProvider
    *
    * @description
    * `NarrativeRequestProvider` provides a request method that can be used
@@ -95,8 +100,8 @@
 
         // Unauthorized requests may be allowed to some endpoints, so only add
         // headers if a valid session exists.
-        if (auth.isLoggedIn()) {
-          requestConfig.headers = auth.authorizationHeaders();
+        if (auth.token()) {
+          requestConfig.headers = authHeadersFromToken(auth.token());
         }
 
         if (!isUndefined(parameters)) {

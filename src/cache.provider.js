@@ -12,7 +12,7 @@
   /**
    * @ngdoc service
    * @module api.narrative
-   * @name NarrativeCacheProvider
+   * @name api.narrative.NarrativeCacheProvider
    *
    * @description
    * You can use `NarrativeCacheProvider` as a factory for creating named
@@ -28,7 +28,7 @@
     /**
       * @ngdoc service
       * @module api.narrative
-      * @name NarrativeCache.Cache
+      * @name api.narrative.NarrativeCache.Cache
       *
       * @description
       * A cache object used to store and retrieve data.
@@ -42,7 +42,7 @@
       /**
        * @ngdoc method
        * @name NarrativeCache.Cache#put
-       * @methodOf NarrativeCache.Cache
+       * @methodOf api.narrative.NarrativeCache.Cache
        * @kind function
        *
        * @description
@@ -61,7 +61,7 @@
       /**
        * @ngdoc method
        * @name NarrativeCache.Cache#get
-       * @methodOf NarrativeCache.Cache
+       * @methodOf api.narrative.NarrativeCache.Cache
        * @kind function
        *
        * @description
@@ -84,7 +84,7 @@
       /**
        * @ngdoc method
        * @name NarrativeCache.Cache#remove
-       * @methodOf NarrativeCache.Cache
+       * @methodOf api.narrative.NarrativeCache.Cache
        * @kind function
        *
        * @description
@@ -103,11 +103,11 @@
       /**
        * @ngdoc method
        * @name NarrativeCache.Cache#removeAll
-       * @methodOf NarrativeCache.Cache
+       * @methodOf api.narrative.NarrativeCache.Cache
        * @kind function
        *
        * @description
-       * Removes all entruies from the cache.
+       * Removes all entries from the cache.
        */
       removeAll: function () {
         var start = keySerializer(this.name, "");
@@ -123,7 +123,9 @@
     /**
      * @ngdoc service
      * @module api.narrative
-     * @name NarrativeCache
+     * @kind function
+     * @name api.narrative.NarrativeCache
+     * @requires $cacheFactory
      *
      * @description
      * Use the `NarrativeCache` as a factoy for creating a cache with similar

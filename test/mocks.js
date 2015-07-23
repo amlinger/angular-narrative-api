@@ -10,10 +10,12 @@
     alwaysTrue  = function () { return true; },
     alwaysFalse = function () { return false; },
     Auth = {
-      isLoggedIn: alwaysTrue,
       unauth: alwaysTrue,
-      authorizationHeaders: function () {
-        return { Authorization: 'Bearer :access_token' };
+      token: function () {
+        return {
+          token_type: 'Bearer',
+          access_token: ':bear_arms'
+        };
       }
     };
 

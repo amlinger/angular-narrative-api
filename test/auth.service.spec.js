@@ -131,13 +131,23 @@
 
     it('is not logged in by default.', function () {
       var auth = narrativeAuth();
-      expect(auth.isLoggedIn()).toBe(false);
+      expect(auth.token()).toBe(null);
     });
 
     it('it logs in when provided with a token.', function () {
       var auth = narrativeAuth();
-      auth.fromTokenObject({atoken: 'token'});
-      expect(auth.isLoggedIn()).toBe(true);
+      auth.token({
+        access_token: 'token',
+        token_type: 'Bearer'
+      });
+      expect(auth.token()).not.toBe(null);
+    });
+
+    it('trows on malformatted token.', function () {
+      var auth = narrativeAuth();
+      expect(function () {
+        auth.token("Malicious Mallard Token!");
+      }).toThrow();
     });
 
     describe('NarrativeAuth.waitForAuth', function () {
@@ -152,27 +162,33 @@
         expect(reject).not.toHaveBeenCalled();
       });
 
-      it('is resolved when logged in.', function () {
+      it('is resolved with itself when logged in.', function () {
         var auth = narrativeAuth(),
           resolve = jasmine.createSpy('resolveSpy'),
           reject = jasmine.createSpy('rejectSpy');
 
-        auth.fromTokenObject({token: 'token'});
+        auth.token({
+          access_token: 'token',
+          token_type: 'Bearer'
+        });
         auth.waitForAuth().then(resolve, reject);
         $rootScope.$digest();
-        expect(resolve).toHaveBeenCalled();
+        expect(resolve).toHaveBeenCalledWith(auth);
         expect(reject).not.toHaveBeenCalled();
       });
 
-      it('is resolved when log in is performed after.', function () {
+      it('is resolved with itself if login is performed after.', function () {
         var auth = narrativeAuth(),
           resolve = jasmine.createSpy('resolveSpy'),
           reject = jasmine.createSpy('rejectSpy');
 
         auth.waitForAuth().then(resolve, reject);
-        auth.fromTokenObject({token: 'token'});
+        auth.token({
+          access_token: 'token',
+          token_type: 'Bearer'
+        });
         $rootScope.$digest();
-        expect(resolve).toHaveBeenCalled();
+        expect(resolve).toHaveBeenCalledWith(auth);
         expect(reject).not.toHaveBeenCalled();
       });
     });
@@ -189,15 +205,18 @@
         expect(reject).toHaveBeenCalled();
       });
 
-      it('is resolved when logged in.', function () {
+      it('is resolved with itself when logged in.', function () {
         var auth = narrativeAuth(),
           resolve = jasmine.createSpy('resolveSpy'),
           reject = jasmine.createSpy('rejectSpy');
 
-        auth.fromTokenObject({token: 'token'});
+        auth.token({
+          access_token: 'token',
+          token_type: 'Bearer'
+        });
         auth.requireAuth().then(resolve, reject);
         $rootScope.$digest();
-        expect(resolve).toHaveBeenCalled();
+        expect(resolve).toHaveBeenCalledWith(auth);
         expect(reject).not.toHaveBeenCalled();
       });
 
@@ -207,13 +226,16 @@
           reject = jasmine.createSpy('rejectSpy');
 
         auth.requireAuth().then(resolve, reject);
-        auth.fromTokenObject({token: 'token'});
         $rootScope.$digest();
-        expect(resolve).toHaveBeenCalled();
-        expect(reject).not.toHaveBeenCalled();
+        auth.token({
+          access_token: 'token',
+          token_type: 'Bearer'
+        });
+        expect(resolve).not.toHaveBeenCalled();
+        expect(reject).toHaveBeenCalled();
       });
 
-      it('resolves eventually when login is in process.', function () {
+      it('resolves with itself  when login is in process.', function () {
         var resolve = jasmine.createSpy('resolveSpy'),
           reject = jasmine.createSpy('rejectSpy'),
           token = 'http://token/',
@@ -234,14 +256,17 @@
         $httpBackend
           .whenPOST('http://token/?client_id=anID&code=code&' +
             'grant_type=authorization_code&redirect_uri=http:%2F%2Fhere%2F')
-          .respond(200, {token: 'token'});
+          .respond(200, {
+            access_token: 'token',
+            token_type: 'Bearer'
+          });
         auth.getOauthToken('code');
         auth.requireAuth().then(resolve, reject);
         $rootScope.$digest();
         expect(resolve).not.toHaveBeenCalled();
         expect(reject).not.toHaveBeenCalled();
         $httpBackend.flush();
-        expect(resolve).toHaveBeenCalled();
+        expect(resolve).toHaveBeenCalledWith(auth);
         expect(reject).not.toHaveBeenCalled();
       });
     });

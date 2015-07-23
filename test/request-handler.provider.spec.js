@@ -59,26 +59,21 @@
     it('does not add headers to unauthorized requests.', function () {
       var headerSpy = jasmine.createSpy('headerSpy'),
         auth = newAuth({
-          isLoggedIn: function () { return false; },
-          authorizationHeaders: headerSpy
+          token: function () { return null; }
         });
 
       $httpBackend.expectGET(path + 'monkeys/')
-        .respond(200, {data: 'Curious George'});
-
+        .respond(function (method, url, data, headers) {
+          expect(headers.Authorization).not.toBeDefined();
+          return { data: 'Curious George' };
+        });
       narrativeRequest('GET', 'monkeys/', auth);
-      expect(headerSpy).not.toHaveBeenCalled();
       $httpBackend.flush();
     });
 
     it('does adds headers to authorized requests.', function () {
-      var key = 'Bearer :bear',
-        auth = newAuth({
-          authorizationHeaders: function () {
-            return { Authorization: key };
-          }
-        }),
-        headerSpy = spyOn(auth, 'authorizationHeaders').and.callThrough();
+      var key = 'Bearer :bear_arms',
+        auth = newAuth();
 
       $httpBackend.expectGET(path + 'sheep/')
         .respond(function (method, url, data, headers) {
@@ -87,7 +82,6 @@
       });
 
       narrativeRequest('GET', 'sheep/', auth);
-      expect(headerSpy).toHaveBeenCalled();
       $httpBackend.flush();
     });
 
