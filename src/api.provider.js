@@ -51,7 +51,7 @@ function NarrativeApiProvider() {
     };
   };
 
-  getApi.$inject = ['api.narrative.Resource', 'NarrativeAuth'];
+  getApi.$inject = ['NarrativeResource', 'NarrativeAuth'];
   this.$get = getApi;
 }
 

@@ -3,7 +3,7 @@
   'use strict';
 
   angular.module('api.narrative')
-    .factory('api.narrative.Resource', ['NarrativeRequest', '$q',
+    .factory('NarrativeResource', ['NarrativeRequest', '$q',
       function (requestHandler, $q) {
         var BaseResource = {
           setPath: function (path) {
