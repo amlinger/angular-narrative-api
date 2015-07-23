@@ -1,5 +1,5 @@
 
-(function () {
+(function (window, angular, undefined) {
   'use strict';
 
   angular.module('api.narrative')
@@ -102,16 +102,16 @@
               }
 
               function fetch() {
-                while (index < this.results.length) {
-                  callback(this.results[index], index++, doAbort);
+                while (index < resource.results.length) {
+                  callback(resource.results[index], index++, doAbort);
                   if (abort) {
                     defer.reject("Foreach aborted.");
                     return;
                   }
                 }
 
-                if (this.next !== null) {
-                  this.nextPage().then(fetch);
+                if (resource.next !== null) {
+                  resource.nextPage().then(fetch);
                 } else {
                   defer.resolve(resource);
                 }
@@ -157,4 +157,4 @@
           }
         };
       }]);
-}());
+}(window, window.angular));
