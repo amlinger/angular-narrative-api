@@ -2,159 +2,215 @@
 (function (window, angular, undefined) {
   'use strict';
 
+  var identity = angular.identity,
+    extend = angular.extend,
+    isUndefined = angular.isUndefined;
+
+  function chain(callFirst, callSecond) {
+    return function (argument) {
+      return callSecond(callFirst(argument));
+    };
+  }
+
+  function NrtvResource(path, auth, config, request, $q) {
+    this._path = path;
+    this._auth = auth;
+    this._config = config || {};
+    this._request = request;
+    this.$q = $q;
+
+    this._transform = identity;
+  }
+  NrtvResource.prototype = {
+    construct: function (options) {
+      this._options = options || {};
+
+      this._obj = {
+        q: this.q.bind(this),
+        get: this.get.bind(this),
+        path: this.path.bind(this),
+        transform: this.transform.bind(this)
+      };
+
+      return this._obj;
+    },
+    _constructFromObject: function(options, object) {
+      this._obj = extend(this.construct(options), object);
+      return this._obj;
+    },
+    _object: function() {
+      if(!this._obj)
+        throw "Need to invoke construct() before calling this method";
+      return this._obj;
+    },
+    q: function () {
+      throw "Abstract method q() must be overriden.";
+    },
+    path: function () {
+      return this._path;
+    },
+    get: function () {
+      this.q();
+      return this._obj;
+    },
+    transform: function(transform) {
+      if (isUndefined(transform))
+        return this._transform(this._object());
+      this._transform = chain(this._transform, transform);
+      return this;
+    }
+  };
+
+  function NrtvItemResource(path, auth, config, request, $q) {
+    NrtvResource.call(this, path, auth, config, request, $q);
+  }
+  NrtvItemResource.prototype = extend({}, NrtvResource.prototype, {
+    _super: NrtvResource.prototype,
+    construct: function(uuid, options) {
+       this.uuid = uuid;
+       return this._super.construct.call(this, options);
+    },
+    _constructFromObject: function(uuid, object, options) {
+      this._obj = extend(this.construct(options), object);
+      return this._obj;
+    },
+    q: function () {
+      if (!this._qPromise) {
+        var item = this;
+        this._qPromise = this
+          ._request('GET', this.path(), this._options, this._auth)
+          .then(function (data) {
+            try {
+              return extend(item._object(), data);
+            } catch (error) {
+              return item.$q.reject(error);
+            }
+          });
+      }
+      return this._qPromise;
+    },
+    path: function() {
+      return this._super.path.call(this).replace(':uuid', this.uuid || "");
+    }
+  });
+  NrtvItemResource.prototype.constructor = NrtvItemResource;
+
+
+  function NrtvArrayResource(path, auth, config, request, $q) {
+    NrtvResource.call(this, path, auth, config, request, $q);
+
+    this._itemTransform = identity;
+  }
+  NrtvArrayResource.prototype = extend({}, NrtvResource.prototype, {
+    _super: NrtvResource.prototype,
+    construct: function(options) {
+      // TODO: Might need to rethink about previous, if a page number is in
+      // the options list.
+      this._next = this.path();
+      this._previous = null;
+      this._count = 0;
+      this.results = [];
+
+      return extend(this._super.construct.call(this, options), {
+        nextPage: this.nextPage.bind(this),
+        forEach: this.forEach.bind(this),
+        itemTransform: this.itemTransform.bind(this),
+        results: this.results
+      });
+    },
+    itemTransform: function(itemTransform) {
+
+      if (isUndefined(itemTransform))
+        return this._itemTransform;
+
+      this._itemTransform = chain(this._itemTransform, itemTransform);
+      return this;
+    },
+    nextPage: function () {
+      // If next us set to null, then we can return.
+      if (this._object() && this._next === null) {
+        throw "No more entries to get";
+      }
+
+      var resource = this;
+      return this._request('GET', resource._next,
+        resource.results.length ? null : resource._options,
+        resource._auth
+      ).then(function (page) {
+        resource._next = page.next;
+        resource._count = page.count;
+
+        page.results = page.results.map(function (item) {
+          var obj = new NrtvItemResource(resource.path() + ':uuid',
+                                         resource._auth, {}, resource._request,
+                                         resource._$q);
+
+          return obj
+            .transform(resource.itemTransform())
+            ._constructFromObject(item.uuid, item);
+        });
+        resource.results.push.apply(resource.results, page.results);
+
+        try {
+          return resource._object();
+        } catch (error) {
+          return resource.$q.reject(error);
+        }
+      });
+    },
+    q: function () {
+      if (isUndefined(this._qPromise)) {
+        try {
+          this._qPromise = this.nextPage();
+        } catch (error) {
+          return this.$q.reject(error);
+        }
+      }
+      return this._qPromise;
+    },
+    forEach: function (callback) {
+      var index = 0, abort = false, defer = this.$q.defer(), resource = this;
+
+      function doAbort() {
+        abort = true;
+      }
+
+      function fetch() {
+        while (index < resource.results.length) {
+          callback(resource.results[index], index++, doAbort);
+          if (abort) {
+            defer.reject("FOREACH_ABORTED");
+            return;
+          }
+        }
+
+        if (resource._next !== null) {
+          resource.nextPage().then(fetch);
+        } else {
+          defer.resolve(resource);
+        }
+      }
+      fetch();
+      return defer.promise;
+    }
+  });
+  NrtvArrayResource.prototype.constructor = NrtvArrayResource;
+
+  function NarrativeItemFactory(NarrativeRequest, $q) {
+    return function(path, auth, config) {
+      return new NrtvItemResource(path, auth, config, NarrativeRequest, $q);
+    };
+  }
+
+  function NarrativeArrayFactory(NarrativeRequest, $q) {
+    return function(path, auth, config) {
+      return new NrtvArrayResource(path, auth, config, NarrativeRequest, $q);
+    };
+  }
+
   angular.module('api.narrative')
-    .factory('NarrativeResource', ['NarrativeRequest', '$q',
-      function (requestHandler, $q) {
-        var BaseResource = {
-          setPath: function (path) {
-            this.__path = path;
-          },
-          setAuth: function (auth) {
-            this.__auth = auth;
-          },
-          loaded: function (isLoaded) {
-            if (isLoaded !== undefined) {
-              this.__loaded = isLoaded;
-            }
-            return !!this.__loaded;
-          },
-          /*
-           * Angular-style getter, mainly for scope usage.
-           *
-           */
-          get: function () {
-            this.q();
-            return this;
-          },
-          transform: function (transformation) {
-            return transformation(this);
-          }
-        },
-          ItemResource = {
-            initialize: function (uuid, options) {
-              this.uuid = uuid || this.uuid;
-              this.__options = options || {};
-              return this;
-            },
-            fromObject: function (object, parent, overrides) {
-              var child = angular.extend(object, this);
-              child.__options = parent.__options;
-              child.__path = object.url || parent.__path;
-              child.__auth = parent.__auth;
-
-              return child;
-            },
-            getPath: function () {
-              return this.__path.replace(':uuid', this.uuid);
-            },
-            q: function() {
-              var resource = this;
-              return requestHandler(
-                'GET', this.getPath(), this.__options, this.__auth
-              ).then(function (newResource) {
-                return angular.extend(resource, newResource);
-              });
-            }
-          },
-          ArrayResource = {
-            initialize: function (options) {
-              this.__options = options || {};
-              this.next = this.__path;
-              this.previous = null;
-              this.results = [];
-              this.itemTransform = this.itemTransform || angular.identity;
-              return this;
-            },
-            setItemTransform: function (transform) {
-              this.itemTransform = transform;
-              return this;
-            },
-            getPath: function () {
-              return this.__path;
-            },
-            nextPage: function () {
-              // We only have to worry about null.
-              if (this.next === null) {
-                throw "No more entries to get";
-              }
-              var resource = this;
-              return requestHandler('GET', resource.next,
-                resource.results.length ? null : resource.__options,
-                resource.__auth
-              ).then(function (page) {
-                resource.next = page.next;
-
-                page.results = page.results.map( function (newObj) {
-                  return resource.itemTransform(
-                    ItemResource.fromObject(newObj, resource));
-                });
-                resource.results.push.apply(resource.results, page.results);
-                return resource;
-              });
-            },
-            q: function () {
-              return this.nextPage();
-            },
-            forEach: function (callback) {
-              var index = 0, abort = false, defer = $q.defer(), resource = this;
-              function doAbort() {
-                abort = true;
-              }
-
-              function fetch() {
-                while (index < resource.results.length) {
-                  callback(resource.results[index], index++, doAbort);
-                  if (abort) {
-                    defer.reject("Foreach aborted.");
-                    return;
-                  }
-                }
-
-                if (resource.next !== null) {
-                  resource.nextPage().then(fetch);
-                } else {
-                  defer.resolve(resource);
-                }
-              }
-              fetch();
-              return defer.promise;
-            }
-          };
-        var prev = null;
-        return {
-          ItemFactory: function (auth, path) {
-            var resource = angular.extend({}, ItemResource, BaseResource);
-            resource.setAuth(auth);
-            resource.setPath(path);
-
-            return {
-              create : function () {
-                return function(uuid, options) {
-                  return resource.initialize(uuid, options);
-                };
-              },
-              transform : function (transform) {
-                resource.transform(transform);
-                return this;
-              }
-            };
-          },
-          ArrayFactory: function (auth, path) {
-            var resource = angular.extend({}, ArrayResource, BaseResource);
-            resource.setAuth(auth);
-            resource.setPath(path);
-            return {
-              create : function () {
-                return function(options) {
-                  return resource.initialize(options);
-                };
-              },
-              itemTransform : function (transform) {
-                resource.setItemTransform(transform);
-                return this;
-              }
-            };
-          }
-        };
-      }]);
+    .factory('NarrativeItemFactory',
+      ['NarrativeRequest', '$q', NarrativeItemFactory])
+    .factory('NarrativeArrayFactory',
+      ['NarrativeRequest', '$q', NarrativeArrayFactory]);
 }(window, window.angular));

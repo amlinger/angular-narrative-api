@@ -6,16 +6,20 @@
 
   var extend = angular.extend,
     copy = angular.copy,
+    isUndefined = angular.isUndefined,
     mocks = angular.module('api.narrative.mocks'),
     alwaysTrue  = function () { return true; },
     alwaysFalse = function () { return false; },
     Auth = {
+      _token: {
+        token_type: 'Bearer',
+        access_token: ':bear_arms'
+      },
       unauth: alwaysTrue,
-      token: function () {
-        return {
-          token_type: 'Bearer',
-          access_token: ':bear_arms'
-        };
+      token: function (token) {
+        if(!isUndefined(token))
+          this.token = token;
+        return this._token;
       }
     };
 
