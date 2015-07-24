@@ -116,10 +116,50 @@
        return this._super.construct.call(this, options);
     },
 
+    /**
+     * @ngdoc method
+     * @name _constructFromObject
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @param  {string} uuid     The unique identifier for pointing out the
+     *                           resource in Narrative API.
+     * @param  {object} object   The object information that constructs this
+     *                           instance.
+     * @param  {object=} options Any options that should be passed on to
+     *                           requests about this object.
+     *
+     * @description
+     * Same as the `construct()` method but with an object parameter that
+     * contains the object information. This is mostly used internally.
+     *
+     * @return {object}         The constructed object, see `construct()`.
+     */
     _constructFromObject: function(uuid, object, options) {
       this._obj = extend(this.construct(options), object);
       return this._obj;
     },
+
+    /**
+     * @ngdoc method
+     * @name transform
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @param  {transform=} transform The optional transform to be applied to
+     *                                the transform chain.
+     *
+     * @description
+     * Could be used as a getter if the transform argument is omitted, for
+     * the transformed created() object.  If used as a setter by supplying the
+     * transform argument, it adds the transform last in the chain of
+     * transforms-
+     *
+     * @return {object|NrtvItemResource} Returns the transformed object if used
+     *                                   as a getter, or `this` if used as a
+     *                                   setter (for method chaining).
+     */
+    // transform
 
     /**
      * @ngdoc method
@@ -152,12 +192,24 @@
       }
       return this._qPromise;
     },
+
+    /**
+     * @ngdoc method
+     * @name path
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Builds the relative path to this object from the API root, by replacing
+     * the string `':uuid'` with the actual uuid.
+     *
+     * @return {string} The path relative from the API root to this resource.
+     */
     path: function() {
       return this._super.path.call(this).replace(':uuid', this.uuid || "");
     }
   });
   NrtvItemResource.prototype.constructor = NrtvItemResource;
-
 
   /**
    * @ngdoc service
@@ -233,6 +285,49 @@
         results: this.results
       });
     },
+
+
+    /**
+     * @ngdoc method
+     * @name transform
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @param  {transform=} transform The optional transform to be applied to
+     *                                the transform chain.
+     *
+     * @description
+     * Could be used as a getter if the transform argument is omitted, for
+     * the transformed created() object.  If used as a setter by supplying the
+     * transform argument, it adds the transform last in the chain of
+     * transforms-
+     *
+     * @return {object|ArrayItemResource} Returns the transformed object if
+     *                                   used as a getter, or `this` if used as
+     *                                   a setter (for method chaining).
+     */
+    // transform
+
+    /**
+     * @ngdoc method
+     * @name itemTransform
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @param  {transform=} itemTransform The optional transform to be applied
+     *                                to the itemTransform chain.
+     *
+     * @description
+     * Could be used as a getter if the itemTransform argument is omitted, for
+     * the transformed created() object when using `nextPage()` or similar
+     * method for obtaining items.. If used as a setter by supplying the
+     * transform argument, it adds the transform last in the chain of
+     * itemTransform-
+     *
+     * @return {object|NrtvArrayResource} Returns the transformed object if used
+     *                                   as a getter, or `this` if used as a
+     *                                   setter (for method chaining).
+     */
     itemTransform: function(itemTransform) {
 
       if (isUndefined(itemTransform))
@@ -241,6 +336,18 @@
       this._itemTransform = chain(this._itemTransform, itemTransform);
       return this;
     },
+
+    q: function () {
+      if (isUndefined(this._qPromise)) {
+        try {
+          this._qPromise = this.nextPage();
+        } catch (error) {
+          return this.$q.reject(error);
+        }
+      }
+      return this._qPromise;
+    },
+
     nextPage: function () {
       // If next us set to null, then we can return.
       if (this._object() && this._next === null) {
@@ -273,16 +380,6 @@
         }
       });
     },
-    q: function () {
-      if (isUndefined(this._qPromise)) {
-        try {
-          this._qPromise = this.nextPage();
-        } catch (error) {
-          return this.$q.reject(error);
-        }
-      }
-      return this._qPromise;
-    },
     forEach: function (callback) {
       var index = 0, abort = false, defer = this.$q.defer(), resource = this;
 
@@ -311,18 +408,42 @@
   });
   NrtvArrayResource.prototype.constructor = NrtvArrayResource;
 
+
+  /**
+   * @name NarrativeItemFactory
+   *
+   * @description
+   * The actual factory for NrtvItemResource.
+   *
+   * Resolves the dependencies for NrtvItemResource and instanciates it.
+   *
+   * @param {NarrativeRequst} NarrativeRequest NarrativeRequst dependency.
+   * @param {$q} $q $q dependency.
+   */
   function NarrativeItemFactory(NarrativeRequest, $q) {
     return function(path, auth, config) {
       return new NrtvItemResource(path, auth, config, NarrativeRequest, $q);
     };
   }
 
+  /**
+   * @name NarrativeArrayFactory
+   *
+   * @description
+   * The actual factory for NrtvArrayResource.
+   *
+   * Resolves the dependencies for NrtvArrayResource and instanciates it.
+   *
+   * @param {NarrativeRequst} NarrativeRequest NarrativeRequst dependency.
+   * @param {$q} $q $q dependency.
+   */
   function NarrativeArrayFactory(NarrativeRequest, $q) {
     return function(path, auth, config) {
       return new NrtvArrayResource(path, auth, config, NarrativeRequest, $q);
     };
   }
 
+  // Registers the factories on the module.
   angular.module('api.narrative')
     .factory('NarrativeItemFactory',
       ['NarrativeRequest', '$q', NarrativeItemFactory])
