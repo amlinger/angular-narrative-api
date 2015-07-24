@@ -22,6 +22,7 @@
     this._transform = identity;
   }
   NrtvResource.prototype = {
+
     construct: function (options) {
       this._options = options || {};
 
@@ -61,19 +62,81 @@
     }
   };
 
+  /**
+   * @ngdoc service
+   * @name api.narrative.NarrativeItemFactory
+   * @module api.narrative
+   * @requires NarrativeRequest
+   * @requires $q
+   *
+   * @param {string} path    The path to the resource on top of the API URL.
+   *                         This is expected to contain a segment :uuid which
+   *                         can be swapped at `path()` requests for the actual
+   *                         uuid.
+   * @param {Auth}   auth    The authorization instance to use for fetching
+   *                         data from the API.
+   * @param {object=} config Used for configuring the defaults of this
+   *                         resource.
+   *
+   * @description
+   * Use `NarrativeItemFactory` for getting a resource specific for an API
+   * hook.
+   */
   function NrtvItemResource(path, auth, config, request, $q) {
     NrtvResource.call(this, path, auth, config, request, $q);
   }
   NrtvItemResource.prototype = extend({}, NrtvResource.prototype, {
     _super: NrtvResource.prototype,
+
+    /**
+     * @ngdoc method
+     * @name construct
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * This constructs the object that can be used for API interaction, which
+     * cleans up the object for being able to attach attributes to it. The
+     * resulting object contains the following methods:
+     * * `q` a promise for getting the data from Narrative.
+     * * `get` Angular-style getter for inserting the ready object in the scope.
+     * * `path` returns the path from the API URL to this object.
+     * * `transform` adds a transform to the resorce.
+     *
+     * These are the same methods that are specified for this object.
+     *
+     * @param  {string} uuid    The uuid for this item.
+     * @param  {object=} options Options which will be passed onto Narratives
+     *                           API when retrieving this data.
+     * @return {object}          An object containing a subset of methods that
+     *                             are made public for the API user.
+     */
     construct: function(uuid, options) {
        this.uuid = uuid;
        return this._super.construct.call(this, options);
     },
+
     _constructFromObject: function(uuid, object, options) {
       this._obj = extend(this.construct(options), object);
       return this._obj;
     },
+
+    /**
+     * @ngdoc method
+     * @name q
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Returns a promise which is resolved when data is back from the server.
+     * This promise is cached, and calling `q()` again will return the same
+     * promise.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
     q: function () {
       if (!this._qPromise) {
         var item = this;
@@ -96,6 +159,26 @@
   NrtvItemResource.prototype.constructor = NrtvItemResource;
 
 
+  /**
+   * @ngdoc service
+   * @name api.narrative.NarrativeArrayFactory
+   * @module api.narrative
+   * @requires NarrativeRequest
+   * @requires $q
+   *
+   * @param {string} path    The path to the resource on top of the API URL.
+   *                         This is expected to contain a segment :uuid which
+   *                         can be swapped at `path()` requests for the actual
+   *                         uuid.
+   * @param {Auth}   auth    The authorization instance to use for fetching
+   *                         data from the API.
+   * @param {object=} config Used for configuring the defaults of this
+   *                         resource.
+   *
+   * @description
+   * Use `NarrativeItemFactory` for getting a resource specific for an API
+   * hook.
+   */
   function NrtvArrayResource(path, auth, config, request, $q) {
     NrtvResource.call(this, path, auth, config, request, $q);
 
@@ -103,6 +186,38 @@
   }
   NrtvArrayResource.prototype = extend({}, NrtvResource.prototype, {
     _super: NrtvResource.prototype,
+
+    /**
+     * @ngdoc method
+     * @name construct
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * This constructs the object that can be used for API interaction, which
+     * cleans up the object for being able to attach attributes to it. The
+     * resulting object contains the following methods:
+     * * `q` a promise for getting the data from Narrative.
+     * * `get` Angular-style getter for inserting the ready object in the scope.
+     * * `path` returns the path from the API URL to this object.
+     * * `transform` adds a transform to the resorce.
+     * * `nextPage` fetches the next page in a paginated array. Initially
+     *   equivalent of `q()`.
+     * * `forEach` with a callback that is called for each iteration, and
+     *   and can be aborted. This will run over all pages until aborted
+     *   or no more items exist.
+     * * `itemTransform` adds a transform to all elements that are to be
+     *   fetched.
+     * * `results` the array of results from the server.
+     *
+     * These are the same methods that are specified for this object.
+     *
+     * @param  {string} uuid    The uuid for this item.
+     * @param  {object=} options Options which will be passed onto Narratives
+     *                           API when retrieving this data.
+     * @return {object}          An object containing a subset of methods that
+     *                             are made public for the API user.
+     */
     construct: function(options) {
       // TODO: Might need to rethink about previous, if a page number is in
       // the options list.
