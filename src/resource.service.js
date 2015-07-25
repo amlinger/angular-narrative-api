@@ -337,6 +337,25 @@
       return this;
     },
 
+    /**
+     * @ngdoc method
+     * @name q
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * Returns a promise which is resolved when data is back from the server.
+     * This promise is cached, and calling `q()` again will return the same
+     * promise.
+     *
+     * This is essentially the same as calling nextPage(), but it will only do
+     * the server request for the first page of the response.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
     q: function () {
       if (isUndefined(this._qPromise)) {
         try {
@@ -348,6 +367,26 @@
       return this._qPromise;
     },
 
+
+    /**
+     * @ngdoc method
+     * @name nextPage
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * Fetches the next page in a paginated response from Narratives server
+     * endpoint. This is returned as a promise which is resolved when data is
+     * back from the server.
+     *
+     * The response will contain *ALL* the results from the server, not only
+     * from the next page.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
     nextPage: function () {
       // If next us set to null, then we can return.
       if (this._object() && this._next === null) {
@@ -380,6 +419,34 @@
         }
       });
     },
+
+
+    /**
+     * @ngdoc method
+     * @name forEach
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * A lazy way of iterating through all pages in a paginated request. When
+     * looping through the collection, new requests to the server will be made
+     * as long as the iteration is not aborted.
+     *
+     * This returns a promise that is resolved when all pages have been
+     * fetched.
+     *
+     * @param {function} callback The callback method for each iteration. This
+     *                            should have the signature
+     *                            `function(resource, index, abort)` where
+     *                            `abort` is a method that can be called for
+     *                            stopping the iterations and preventing
+     *                            additional server requests.
+     *
+     * @return {promise} A promise object that is resolved when the all data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if the looping is
+     *                     prevented.
+     */
     forEach: function (callback) {
       var index = 0, abort = false, defer = this.$q.defer(), resource = this;
 
