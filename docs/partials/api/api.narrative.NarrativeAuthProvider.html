@@ -1,0 +1,75 @@
+<h1><code ng:non-bindable="">NarrativeAuthProvider</code>
+<div><span class="hint">service in module <code ng:non-bindable="">api.narrative</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="api-narrative-narrativeauthprovider-page"><p>Use <code>NarrativeAuthProvider</code> for changing the default behaviour of
+<code>NarrativeAuth</code>.</p>
+</div></div>
+<div class="member property"><h2 id="properties">Properties</h2>
+<ul class="properties"><li><h3 id="properties_defaults">defaults</h3>
+<div class="defaults"><div class="narrativeauthprovider-defaults-page"><p>The default attributes for the Authorization instances. Each instance
+can be configured individually by passing a configuration object to
+the instantiation of a <code>NarrativeAuth</code>.</p>
+</div></div>
+</li>
+<li><h3 id="properties_defaults[name]">defaults['name']</h3>
+<div class="defaults[name]"><div class="narrativeauthprovider-defaults-name--page"><p>The default name of the global Authorization instance.</p>
+<h5 id="properties_defaults[name]_the-default-value-is">The default value is:</h5>
+<pre><code>&#39;global&#39;
+</code></pre></div></div>
+</li>
+<li><h3 id="properties_defaults[cachefactoy]">defaults['cacheFactoy']</h3>
+<div class="defaults[cachefactoy]"><div class="narrativeauthprovider-defaults-cachefactoy--page"><p>The default cache factory for storing information Authorization
+instances. Accepts either a string (which will be resolved using
+<code>$injector</code>) or some CacheFactory-like object such as
+<code>$cacheFactory</code>.</p>
+<h5 id="properties_defaults[cachefactoy]_the-default-value-is">The default value is:</h5>
+<pre><code>&#39;NarrativeCache&#39;
+</code></pre></div></div>
+</li>
+<li><h3 id="properties_defaults[oauthapplication]">defaults['oauthApplication']</h3>
+<div class="defaults[oauthapplication]"><div class="narrativeauthprovider-defaults-oauthapplication--page"><p>Defines the settings of the default Oauth application that is used to
+verify the user. The required fields are:</p>
+<ul>
+<li><code>redirectURI</code> - Where this app resides, which should reflect the
+  applications base path.</li>
+<li><code>clientID</code> - The clients ID, which can be found in Narratives Open
+  Platform.</li>
+<li><code>clientSecret</code> - The clients secret, which can be found in
+  Narratives Open Platform.</li>
+</ul>
+<h5 id="properties_defaults[oauthapplication]_the-default-values-are">The default values are:</h5>
+<pre><code class="lang-js">{
+  clientID: null,
+  redirectURI: null,
+  clientSecret: null
+}
+</code></pre>
+<h5 id="properties_defaults[oauthapplication]_note">NOTE</h5>
+<p>This is bad practice, a browser library should not know the Client
+Secret, but Narrative does not support any other Grant flow at the
+moment of writing. Use with care.</p>
+</div></div>
+</li>
+<li><h3 id="properties_defaults[oauthroutes]">defaults['oauthRoutes']</h3>
+<div class="defaults[oauthroutes]"><div class="narrativeauthprovider-defaults-oauthroutes--page"><p>The redirect routes used for Oauth requests. The routes being used
+are:</p>
+<ul>
+<li><code>authorize</code> - The redirect for where the client is sent on
+  authorization.</li>
+<li><code>token</code> - The URL where the request is sent for in the Authorization
+  Code Grant.</li>
+</ul>
+<h5 id="properties_defaults[oauthroutes]_the-default-values-are">The default values are:</h5>
+<pre><code class="lang-js">{
+  authorize: &quot;https://narrativeapp.com/oauth2/authorize/&quot;,
+  token: &quot;https://narrativeapp.com/oauth2/token/&quot;
+}
+</code></pre>
+</div></div>
+</li>
+</ul>
+</div>
+</div>

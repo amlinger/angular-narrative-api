@@ -1,0 +1,123 @@
+<h1><code ng:non-bindable="">NarrativeArrayFactory</code>
+<div><span class="hint">service in module <code ng:non-bindable="">api.narrative</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="api-narrative-narrativearrayfactory-page"><p>Use <code>NarrativeItemFactory</code> for getting a resource specific for an API
+hook.</p>
+</div></div>
+<h2 id="dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="#/api/NarrativeRequest">NarrativeRequest</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="#/api/ng.$q">$q</a></code>
+</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">NarrativeArrayFactory(path, auth[, config]);</pre>
+<h4 id="usage_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>path</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="api-narrative-narrativearrayfactory-page"><p>The path to the resource on top of the API URL.
+This is expected to contain a segment :uuid which
+can be swapped at <code>path()</code> requests for the actual
+uuid.</p>
+</div></td></tr><tr><td>auth</td><td><a href="" class="label type-hint type-hint-auth">Auth</a></td><td><div class="api-narrative-narrativearrayfactory-page"><p>The authorization instance to use for fetching
+data from the API.</p>
+</div></td></tr><tr><td>config <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="api-narrative-narrativearrayfactory-page"><p>Used for configuring the defaults of this
+resource.</p>
+</div></td></tr></tbody></table></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_construct">construct(uuid, options)</h3>
+<div class="construct"><div class="construct-page"><p>This constructs the object that can be used for API interaction, which
+cleans up the object for being able to attach attributes to it. The
+resulting object contains the following methods:</p>
+<ul>
+<li><code>q</code> a promise for getting the data from Narrative.</li>
+<li><code>get</code> Angular-style getter for inserting the ready object in the scope.</li>
+<li><code>path</code> returns the path from the API URL to this object.</li>
+<li><code>transform</code> adds a transform to the resorce.</li>
+<li><code>nextPage</code> fetches the next page in a paginated array. Initially
+equivalent of <code>q()</code>.</li>
+<li><code>forEach</code> with a callback that is called for each iteration, and
+and can be aborted. This will run over all pages until aborted
+or no more items exist.</li>
+<li><code>itemTransform</code> adds a transform to all elements that are to be
+fetched.</li>
+<li><code>results</code> the array of results from the server.</li>
+</ul>
+<p>These are the same methods that are specified for this object.</p>
+</div><h5 id="methods_construct_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>uuid</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="construct-page"><p>The uuid for this item.</p>
+</div></td></tr><tr><td>options <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="construct-page"><p>Options which will be passed onto Narratives
+API when retrieving this data.</p>
+</div></td></tr></tbody></table><h5 id="methods_construct_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="construct-page"><p>An object containing a subset of methods that
+are made public for the API user.</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_foreach">forEach(callback)</h3>
+<div class="foreach"><div class="foreach-page"><p>A lazy way of iterating through all pages in a paginated request. When
+looping through the collection, new requests to the server will be made
+as long as the iteration is not aborted.</p>
+<p>This returns a promise that is resolved when all pages have been
+fetched.</p>
+</div><h5 id="methods_foreach_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>callback</td><td><a href="" class="label type-hint type-hint-function">function</a></td><td><div class="foreach-page"><p>The callback method for each iteration. This
+should have the signature
+<code>function(resource, index, abort)</code> where
+<code>abort</code> is a method that can be called for
+stopping the iterations and preventing
+additional server requests.</p>
+</div></td></tr></tbody></table><h5 id="methods_foreach_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">promise</a></td><td><div class="foreach-page"><p>A promise object that is resolved when the all data is
+fetched from Narratives API. It is rejected if
+something goes wrong, or if the looping is
+prevented.</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_itemtransform">itemTransform(itemTransform)</h3>
+<div class="itemtransform"><div class="itemtransform-page"><p>Could be used as a getter if the itemTransform argument is omitted, for
+the transformed created() object when using <code>nextPage()</code> or similar
+method for obtaining items.. If used as a setter by supplying the
+transform argument, it adds the transform last in the chain of
+itemTransform-</p>
+</div><h5 id="methods_itemtransform_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>itemTransform <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-transform">transform</a></td><td><div class="itemtransform-page"><p>The optional transform to be applied
+to the itemTransform chain.</p>
+</div></td></tr></tbody></table><h5 id="methods_itemtransform_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object|NrtvArrayResource</a></td><td><div class="itemtransform-page"><p>Returns the transformed object if used
+as a getter, or <code>this</code> if used as a
+setter (for method chaining).</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_nextpage">nextPage()</h3>
+<div class="nextpage"><div class="nextpage-page"><p>Fetches the next page in a paginated response from Narratives server
+endpoint. This is returned as a promise which is resolved when data is
+back from the server.</p>
+<p>The response will contain <em>ALL</em> the results from the server, not only
+from the next page.</p>
+</div><h5 id="methods_nextpage_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">promise</a></td><td><div class="nextpage-page"><p>A promise object that is resolved when the data is
+fetched from Narratives API. It is rejected if
+something goes wrong, or if <code>construct()</code> has not
+been called yet.`</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_q">q()</h3>
+<div class="q"><div class="q-page"><p>Returns a promise which is resolved when data is back from the server.
+This promise is cached, and calling <code>q()</code> again will return the same
+promise.</p>
+<p>This is essentially the same as calling nextPage(), but it will only do
+the server request for the first page of the response.</p>
+</div><h5 id="methods_q_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">promise</a></td><td><div class="q-page"><p>A promise object that is resolved when the data is
+fetched from Narratives API. It is rejected if
+something goes wrong, or if <code>construct()</code> has not
+been called yet.`</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_transform">transform(transform)</h3>
+<div class="transform"><div class="transform-page"><p>Could be used as a getter if the transform argument is omitted, for
+the transformed created() object.  If used as a setter by supplying the
+transform argument, it adds the transform last in the chain of
+transforms-</p>
+</div><h5 id="methods_transform_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>transform <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-transform">transform</a></td><td><div class="transform-page"><p>The optional transform to be applied to
+the transform chain.</p>
+</div></td></tr></tbody></table><h5 id="methods_transform_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object|ArrayItemResource</a></td><td><div class="transform-page"><p>Returns the transformed object if
+used as a getter, or <code>this</code> if used as
+a setter (for method chaining).</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
+</div>
