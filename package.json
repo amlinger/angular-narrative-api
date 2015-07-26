@@ -4,8 +4,8 @@
   "description": "Narrative API services made easy for Angular.",
   "main": "dist/angular-narrative-api.js",
   "repository": {
-    "type" : "git",
-    "url" : "git@github.com:amlinger/angular-narrative-api.git"
+    "type": "git",
+    "url": "git@github.com:amlinger/angular-narrative-api.git"
   },
   "directories": {
     "example": "examples",
@@ -32,6 +32,7 @@
     "bower": "^1.3.1",
     "grunt": "~0.4.5",
     "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-contrib-nodeunit": "~0.4.1",
     "grunt-contrib-uglify": "~0.5.0",
