@@ -1,11 +1,8 @@
 module.exports = function(grunt) {
 
-  // Load the plugin that provides the "uglify" task.
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-
-  // Load documentation task.
   grunt.loadNpmTasks('grunt-ngdocs');
-
   grunt.loadNpmTasks('grunt-contrib-clean');
 
 
@@ -14,11 +11,8 @@ module.exports = function(grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
-    uglify: {
-      options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-      },
-      concat: {
+    concat: {
+      dist: {
         src: [
           'src/lib/*.js',
           'src/narrative.module.js',
@@ -29,6 +23,12 @@ module.exports = function(grunt) {
           'src/api.provider.js',
         ],
         dest: 'dist/<%= pkg.name %>.js'
+      }
+    },
+
+    uglify: {
+      options: {
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       build: {
         src: 'dist/<%= pkg.name %>.js',
@@ -48,12 +48,17 @@ module.exports = function(grunt) {
       }
     },
 
-    clean: ['docs']
+    clean: {
+      docs: ['docs'],
+      dist: ['dist']
+    }
   });
 
 
-  grunt.registerTask('docs', ['clean', 'ngdocs:reference']);
+  grunt.registerTask('docs', ['clean:docs', 'ngdocs:reference']);
   // Default task(s).
-  grunt.registerTask('default', ['uglify']);
+  grunt.registerTask('build', ['clean:dist', 'concat:dist', 'uglify']);
+  // Default task
+  grunt.registerTask('default', ['build', 'docs']);
 
 };
