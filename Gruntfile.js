@@ -37,14 +37,22 @@ module.exports = function(grunt) {
     },
 
     ngdocs: {
-      all: ['src/*.js']
+      options: {
+        startPage: '/reference',
+        sourceLink: 'https://github.com/amlinger/angular-narrative-api/blob/master/{{file}}#L{{codeline}}'
+      },
+      reference: {
+        title: 'API reference',
+        api: true,
+        src: ['src/*.js']
+      }
     },
 
     clean: ['docs']
   });
 
 
-  grunt.registerTask('docs', ['clean', 'ngdocs']);
+  grunt.registerTask('docs', ['clean', 'ngdocs:reference']);
   // Default task(s).
   grunt.registerTask('default', ['uglify']);
 
