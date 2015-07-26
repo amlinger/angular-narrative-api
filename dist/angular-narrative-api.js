@@ -1,2 +1,1842 @@
-/*! angular-narrative-api 2015-07-23 */
-function NarrativeApiProvider(){"use strict";this.defaults={auth:null};var a,b=this.defaults;a=function(a,c){return function(d){function e(b){return angular.extend(b,{positions:a.ArrayFactory(d.auth,b.getPath()+"positions/").create(),photos:a.ArrayFactory(d.auth,b.getPath()+"photos/").create()})}var f={};return d=angular.extend(b,d),d.auth||(d.auth=c()),f.moments=a.ArrayFactory(d.auth,"moments/").itemTransform(e).create(),f.moment=a.ItemFactory(d.auth,"moments/:uuid").transform(e).create(),f.photos=a.ArrayFactory(d.auth,"photos/").create(),f.user=a.ItemFactory(d.auth,"users/:uuid/").create(),f.me=function(a){return f.user("me",a)},f}},a.$inject=["api.narrative.Resource","NarrativeAuth"],this.$get=a}!function(){"use strict";Function.prototype.bind||(Function.prototype.bind=function(a){if("function"!=typeof this)throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");var b=Array.prototype.slice.call(arguments,1),c=this,d=function(){},e=function(){return c.apply(this instanceof d&&a?this:a,b.concat(Array.prototype.slice.call(arguments)))};return d.prototype=this.prototype,e.prototype=new d,e})}(),function(){"use strict";angular.module("api.narrative",[])}(),function(a,b,c){"use strict";function d(){this.keySerializer=function(a,b){return"narrative."+a+"."+b};var a,b=this.keySerializer;a={initialize:function(a,b){this.name=a,this.$cache=b},put:function(a,c){return j.setItem(b(this.name,a),f(c)),this.$cache.put(a,c)},get:function(a){var d=this.$cache.get(a);return d||(d=g(j.getItem(b(this.name,a))),d&&this.$cache.put(a,d)),null===d?c:d},remove:function(a){var c=this.get(a);return j.removeItem(b(this.name,a)),this.$cache.remove(a),c},removeAll:function(){var a=b(this.name,"");return h(j,function(b,c){0===c.indexOf(a)&&j.removeItem(c)}),this.$cache.removeAll()}},this.$get=["$cacheFactory",function(b){var c={};return i(j)?b:function(d){var f=c[d];return f||(f=e(a),f.initialize(d,b(d)),c[d]=f),f}}]}var e=b.copy,f=b.toJson,g=b.fromJson,h=b.forEach,i=b.isUndefined,j=a.localStorage;b.module("api.narrative").provider("NarrativeCache",d)}(window,window.angular),function(a,b,c){"use strict";function d(){function a(a,b){return a.proxy+a.baseUrl+a.apiSuffix+b}function b(a,b){return b.replace(a.baseUrl+a.apiSuffix,"")}this.defaults={api:{proxy:"",baseUrl:"https://narrativeapp.com/",apiSuffix:"api/v2/"}};var d=this.defaults;this.$get=["$http",function(e){function f(f,h,j,k){i(k)&&(k=j,j=c);var l={method:f,url:a(d.api,h)};return k.isLoggedIn()&&(l.headers=k.authorizationHeaders()),i(j)||(l=g(l,{params:j,paramSerializer:"NarrativeParamSerializer"})),e(l).then(function(a){var c=a.data;return c.next&&(c.next=b(d.api,c.next)),c})}return f}]}function e(){this.$get=function(){return function(a){if(!a)return"";var b=[];return f(a,function(a,c){if(null!==a&&!i(a)){var d=a;j(a)&&(d=h(a)),b.push(encodeURIComponent(c)+"="+encodeURIComponent(d))}}),b.join("&")}}}var f=b.forEach,g=b.extend,h=b.toJson,i=b.isUndefined,j=b.isArray;b.isString;b.module("api.narrative").provider("NarrativeParamSerializer",e).provider("NarrativeRequest",d)}(window,window.angular),function(){"use strict";angular.module("api.narrative").factory("api.narrative.Resource",["NarrativeRequest","$q",function(a,b){var c={setPath:function(a){this.__path=a},setAuth:function(a){this.__auth=a},loaded:function(a){return void 0!==a&&(this.__loaded=a),!!this.__loaded},get:function(){return this.q(),this},transform:function(a){return a(this)}},d={initialize:function(a,b){return this.uuid=a||this.uuid,this.__options=b||{},this},fromObject:function(a,b,c){var d=angular.extend(a,this);return d.__options=b.__options,d.__path=a.url||b.__path,d.__auth=b.__auth,d},getPath:function(){return this.__path.replace(":uuid",this.uuid)},q:function(){var b=this;return a("GET",this.getPath(),this.__options,this.__auth).then(function(a){return angular.extend(b,a)})}},e={initialize:function(a){return this.__options=a||{},this.next=this.__path,this.previous=null,this.results=[],this.itemTransform=this.itemTransform||angular.identity,this},setItemTransform:function(a){return this.itemTransform=a,this},getPath:function(){return this.__path},nextPage:function(){if(null===this.next)throw"No more entries to get";var b=this;return a("GET",b.next,b.results.length?null:b.__options,b.__auth).then(function(a){return b.next=a.next,a.results=a.results.map(function(a){return b.itemTransform(d.fromObject(a,b))}),b.results.push.apply(b.results,a.results),b})},q:function(){return this.nextPage()},forEach:function(a){function c(){f=!0}function d(){for(;e<this.results.length;)if(a(this.results[e],e++,c),f)return void g.reject("Foreach aborted.");null!==this.next?this.nextPage().then(d):g.resolve(h)}var e=0,f=!1,g=b.defer(),h=this;return d(),g.promise}};return{ItemFactory:function(a,b){var e=angular.extend({},d,c);return e.setAuth(a),e.setPath(b),{create:function(){return function(a,b){return e.initialize(a,b)}},transform:function(a){return e.transform(a),this}}},ArrayFactory:function(a,b){var d=angular.extend({},e,c);return d.setAuth(a),d.setPath(b),{create:function(){return function(a){return d.initialize(a)}},itemTransform:function(a){return d.setItemTransform(a),this}}}}}])}(),function(a,b,c){"use strict";function d(a,b){return b+"."+a}function e(){function b(a,b,d,e,h,i){var j,k,l;this.$http=b,this.$q=d,this.$window=e,this.$rootScope=h,a=f(a)?{name:a}:a||{},this._config=g(c,a),j=this.$q.defer(),j.resolve(this),this._initialRequest=j.promise,k=this._config.cacheFactoy,f(k)&&(k=i.get(k)),this._cache=k(this._config.name),this._token=null,l=this._cache.get("token"),l&&this.fromTokenObject(l)}this.defaults={name:"global",cacheFactoy:"NarrativeCache",oauthApplication:{clientID:null,redirectURI:null,clientSecret:null},oauthRoutes:{authorize:"https://narrativeapp.com/oauth2/authorize/",token:"http://localhost:8080/https://narrativeapp.com/oauth2/token/"}};var c=this.defaults;b.prototype={construct:function(){return this._object={getOauthToken:this.getOauthToken.bind(this),oauthAuthorizationCode:this.oauthAuthorizationCode.bind(this),oauthImplicit:this.oauthImplicit.bind(this),oauthClientCredentials:this.oauthClientCredentials.bind(this),oauthRefreshToken:this.oauthRefreshToken.bind(this),isLoggedIn:this.isLoggedIn.bind(this),waitForAuth:this.waitForAuth.bind(this),requireAuth:this.requireAuth.bind(this),token:this.token.bind(this),fromTokenObject:this.fromTokenObject.bind(this),authorizationHeaders:this.authorizationHeaders.bind(this),unauth:this.unauth.bind(this),config:this.config.bind(this)},this._object},config:function(){return this._config},_oauthInitRedirect:function(a,b){var c={config:this._config},d=this._config.oauthApplication;b&&(c.parameters=b),this.$window.location.replace(this._config.oauthRoutes.authorize+"?redirect_uri="+d.redirectURI+"&response_type="+a+"&client_id="+d.clientID+"&state="+encodeURIComponent(h(c)))},getOauthToken:function(b,c){var d=this,e=this.$q.defer();return this._initialRequest=e.promise,this.$http({url:this._config.oauthRoutes.token,method:"POST",params:{grant_type:"authorization_code",code:b,redirect_uri:this._config.oauthApplication.redirectURI,client_id:this._config.oauthApplication.clientID},headers:{Authorization:"Basic "+a.btoa(this._config.oauthApplication.clientID+":"+this._config.oauthApplication.clientSecret)}}).then(function(a){return e.resolve(d.fromTokenObject(a.data)),d})},oauthAuthorizationCode:function(a){this._oauthInitRedirect("code",a)},oauthImplicit:function(a){throw"Implicit Grant flow is not supported yet."},oauthClientCredentials:function(a){throw"Client Credentials Grant flow is not supported yet."},oauthRefreshToken:function(a){throw"Refresh Token Grant flow is not supported yet."},isLoggedIn:function(){return null!==this._token},waitForAuth:function(){var a=this;return this._initialRequest.then(function(){if(a.isLoggedIn())return a;var b=a.$q.defer();return a.$rootScope.$on(d(a._config.name,"onlogin"),function(a,c){b.resolve(c)}),b.promise})},requireAuth:function(){var a=this;return this._initialRequest.then(function(){return a.isLoggedIn()?a:a.$q.reject("AUTH_REQUIRED")})},_validateToken:function(a){return!0},token:function(){return this._token},fromTokenObject:function(a){return this._validateToken(a)?(this._cache&&this._cache.put("token",a),this._token=a,this.$rootScope.$broadcast(d(this._config.name,"onlogin"),this),this):this},authorizationHeaders:function(){return{Authorization:this._token.token_type+" "+this._token.access_token}},unauth:function(){this._cache&&this._cache.removeAll(),this._token=null}},this.$get=["$http","$q","$window","$rootScope","$injector",function(a,d,e,g,h){var i={};return function(j){var k,l=j||{},m=f(l)?l:l.name||c.name;return i.hasOwnProperty(m)||(k=new b(j,a,d,e,g,h),i[m]=k.construct()),i[m]}}]}var f=b.isString,g=b.extend,h=b.toJson,i=b.forEach,j=b.toJson;b.module("api.narrative").provider("NarrativeAuth",e).factory("NarrativeUrlObserverFactory",["NarrativeAuth","$location","$window",function(a,b,c){function d(a){var d=b.absUrl(),e=d.substring(0,d.indexOf("?")),f=d.substring(0,d.lastIndexOf("#")+1),g=[];i(a,function(a,b){g.push(b+"="+a)}),c.location.href=e,g&&(c.location.search=g.join("&")),c.location.hash=f,c.location.replace()}function e(a){delete a.state,b.$$html5?b.search(a).replace():d(a)}this.locationSearch=function(){var a,c=b.absUrl(),d=c.indexOf("?"),e={};return-1!==d&&(a=c.substring(d+1).split("#")[0],i(a?a.split("&"):[],function(a){var b=a.split("=");e[b[0]]=b[1].replace(/\/+$/,"")})),e};this.locationSearch;return function(){var c=b.$$html5?b.search():locationSearch(b.absUrl()),d=null;c.hasOwnProperty("state")&&(d=j(decodeURIComponent(c.state)),c.hasOwnProperty("error")?(a(d.config).unauth(),delete c.error,e(c)):c.hasOwnProperty("code")&&(a(d.config).getOauthToken(c.code,d.parameters),delete c.code,e(c)))}}]).run(["NarrativeUrlObserverFactory",function(a){a()}])}(window,window.angular),angular.module("api.narrative").provider("NarrativeApi",NarrativeApiProvider);
+(function () {
+  'use strict';
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (oThis) {
+    if (typeof this !== "function") {
+      // closest thing possible to the ECMAScript 5
+      // internal IsCallable function
+      throw new TypeError(
+        "Function.prototype.bind - what is trying to be bound is not callable");
+    }
+
+    var aArgs = Array.prototype.slice.call(arguments, 1),
+      fToBind = this,
+      fNOP = function () {},
+      fBound = function () {
+        return fToBind.apply(this instanceof fNOP && oThis
+            ? this
+            : oThis,
+          aArgs.concat(Array.prototype.slice.call(arguments)));
+      };
+
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+
+    return fBound;
+  };
+}
+}());
+
+
+(function (window, angular, undefined) {
+  'use strict';
+
+  /**
+   * @ngdoc overview
+   * @name api.narrative
+   * @module api.narrative
+   * @description
+   * # Narrative API
+   * This is the module container for `angular-narrative-api`, which can be
+   * used for interacting with Narratives Open Platform.
+   *
+   * @example
+   * ```javascript
+   * angular.module('app', ['api.narrative'])
+   *   .config(function (NarrativeAuthProvider , NarrativeRequestProvider) {
+   *     NarrativeAuthProvider.defaults.oauthApplication = {
+   *       clientID: "my-client-id",
+   *       redirectURI: "my-root-uri",
+   *       clientSecret: "my-client-secret"
+   *     };
+   *     // For now, Narrative does not support CORS on all URLS, so therefore
+   *     // a proxy is usually necessary.
+   *     NarrativeRequestProvider.defaults.api.proxy = 'http://cors.proxy/';
+   *   })
+   *   .controller('Controller', function (NarrativeAuth,  NarrativeApi) {
+   *     // Go right ahead and use the Auth and the API!
+   *   });
+   * ```
+   */
+  angular.module('api.narrative', []);
+
+}(window, window.angular));
+
+
+(function (window, angular, undefined) {
+  'use strict';
+
+  var copy = angular.copy,
+    toJson = angular.toJson,
+    fromJson = angular.fromJson,
+    forEach = angular.forEach,
+    isUndefined = angular.isUndefined,
+    localStorage = window.localStorage;
+
+  /**
+   * @ngdoc service
+   * @module api.narrative
+   * @name api.narrative.NarrativeCacheProvider
+   *
+   * @description
+   * You can use `NarrativeCacheProvider` as a factory for creating named
+   * caches with fallback to angulars `$cacheFactory`.
+   */
+  function NarrativeCacheProvider() {
+
+    this.keySerializer = function (namespace, key) {
+      return 'narrative.' + namespace + '.' + key;
+    };
+    var keySerializer = this.keySerializer, cache;
+
+    /**
+      * @ngdoc service
+      * @module api.narrative
+      * @name api.narrative.NarrativeCache.Cache
+      *
+      * @description
+      * A cache object used to store and retrieve data.
+      */
+    cache = {
+      initialize: function(name, $cache) {
+        this.name = name;
+        this.$cache = $cache;
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeCache.Cache#put
+       * @methodOf api.narrative.NarrativeCache.Cache
+       * @kind function
+       *
+       * @description
+       * Adds entries in the cache.
+       *
+       * @param {string} key the key under which the cached data is stored.
+       * @param {*} value the value to store alongside the key. If it is null
+       *                  or undefined, the key will not be stored.
+       * @returns {*} the value stored.
+       */
+      put: function(key, value) {
+        localStorage.setItem(keySerializer(this.name, key), toJson(value));
+        return this.$cache.put(key, value);
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeCache.Cache#get
+       * @methodOf api.narrative.NarrativeCache.Cache
+       * @kind function
+       *
+       * @description
+       * Gets and entry from the cache.
+       *
+       * @param {string} key the key under which the cached data is stored.
+       * @returns {*} the value stored, or `null`if the value does not exist.
+       */
+      get: function(key) {
+        var hit = this.$cache.get(key);
+        if (!hit) {
+          hit = fromJson(localStorage.getItem(keySerializer(this.name, key)));
+          if (hit) {
+            this.$cache.put(key, hit);
+          }
+        }
+        return hit === null ? undefined : hit;
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeCache.Cache#remove
+       * @methodOf api.narrative.NarrativeCache.Cache
+       * @kind function
+       *
+       * @description
+       * Removes an entry from the cache.
+       *
+       * @param {string} key the key under which the cached data is stored.
+       * @returns {*} the value stored.
+       */
+      remove: function (key) {
+        var item = this.get(key);
+        localStorage.removeItem(keySerializer(this.name, key));
+        this.$cache.remove(key);
+        return item;
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeCache.Cache#removeAll
+       * @methodOf api.narrative.NarrativeCache.Cache
+       * @kind function
+       *
+       * @description
+       * Removes all entries from the cache.
+       */
+      removeAll: function () {
+        var start = keySerializer(this.name, "");
+        forEach(localStorage, function (value, key) {
+          if (key.indexOf(start) === 0) {
+            localStorage.removeItem(key);
+          }
+        });
+        return this.$cache.removeAll();
+      }
+    };
+
+    /**
+     * @ngdoc service
+     * @module api.narrative
+     * @kind function
+     * @name api.narrative.NarrativeCache
+     * @requires $cacheFactory
+     *
+     * @description
+     * Use the `NarrativeCache` as a factoy for creating a cache with similar
+     * properties as a drop in replacement for `$cacheFactory` but that persists
+     * to localStorage as well. If localStorage is not present, it will
+     * fall back to `$cacheFactory`.
+     *
+     * @param {string} namespace Name or ID of the newly created cache.
+     *
+     * @returns {object} Newly created cache object with the following set
+     *                         of methods:
+     *
+     * - `{object}` `info()` — Returns id, size, and options of cache.
+     * - `{{*}}` `put({string} key, {*} value)` — Puts a new key-value pair
+     *                        into the cache and returns it.
+     * - `{{*}}` `get({string} key)` — Returns cached value for `key` or
+     *                        undefined for cache miss.
+     * - `{void}` `remove({string} key)` — Removes a key-value pair from the
+     *                        cache.
+     * - `{void}` `removeAll()` — Removes all cached values.
+     * - `{void}` `destroy()` — Removes references to this cache from
+     *                        $cacheFactory.
+     */
+    this.$get = ['$cacheFactory', function getCache($cacheFactory) {
+      var cacheHash = {};
+
+      // For now, local storage is required for this factory. If it is not
+      // present, it will fall back on angulars $cacheFactory.
+      if (isUndefined(localStorage)) {
+        return $cacheFactory;
+      }
+
+      return function getCache(namespace) {
+          var instance = cacheHash[namespace];
+          if (!instance) {
+            instance = copy(cache);
+            instance.initialize(namespace, $cacheFactory(namespace));
+            cacheHash[namespace] = instance;
+          }
+          return instance;
+      };
+    }];
+  }
+
+  // Registering the provider on the module.
+  angular.module('api.narrative')
+    .provider('NarrativeCache', NarrativeCacheProvider);
+
+}(window, window.angular));
+
+(function (window, angular, undefined) {
+  'use strict';
+
+  // Storing some shorthand functions that are used in this page.
+  var forEach = angular.forEach,
+    extend = angular.extend,
+    toJson = angular.toJson,
+    isUndefined = angular.isUndefined,
+    isArray = angular.isArray,
+    isString = angular.isString;
+
+  function authHeadersFromToken(token) {
+    return { Authorization: token.token_type + ' ' + token.access_token };
+  }
+
+  /**
+   * @ngdoc service
+   * @module.api.narrative
+   * @name api.narrative.NarrativeRequestProvider
+   *
+   * @description
+   * `NarrativeRequestProvider` provides a request method that can be used
+   * for fetching resources from Narratives API on Narratives Open Platform.
+   */
+  function NarrativeRequestProvider() {
+
+    /**
+     * [apiPath description]
+     * @type {Object}
+     */
+    this.defaults = {
+      api: {
+        proxy: "",
+        baseUrl: "https://narrativeapp.com/",
+        apiSuffix: "api/v2/"
+      }
+    };
+    var defaults = this.defaults;
+
+    /**
+     * A builder that combines the URLs provided in the API path along with
+     * the passed URL to create a c
+     * @param  {string} url The relative URL to append to the base path.
+     * @return {string}     The combined URL.
+     */
+    function fullPath(api, url) {
+      return api.proxy + api.baseUrl + api.apiSuffix + url;
+    }
+
+    /**
+     * Strips the base of the url in the passed parameter, the base being
+     * the path to Narratives API.
+     *
+     * @param  {string} url The absolute URL to strip.
+     * @return {string}     The relative, stripped URL.
+     */
+    function stripApiBase(api, url) {
+      return url.replace(api.baseUrl + api.apiSuffix, "");
+    }
+
+    /**
+     * @ngdoc service
+     * @name NarrativeRequest
+     * @module api.narrative
+     * @kind function
+     * @requires $http
+     *
+     * @description
+     * A method for making authorized requests with parameters to Narratives
+     * API on Narratives Open Platform.
+     *
+     * @param  {string} method      [description]
+     * @param  {string} url         [description]
+     * @param  {Object} parameters  [description]
+     * @param  {NarrativeAuth} auth [description]
+     * @return {promise}            [description]
+     *
+     * @example
+       <example module="Param serializer">
+         <file name="index.html">
+          <h1>Coming Soon</h1>
+         </file>
+       </example>
+     */
+    this.$get = ['$http', function ($http) {
+      function request(method, url, parameters, auth) {
+
+        // If parameters are omitted, left shift the two last arguments.
+        if (isUndefined(auth)) {
+          auth = parameters;
+          parameters = undefined;
+        }
+
+        // The request will be constructed throughout this function, with the
+        // method and url attribute being the only necessary.
+        var requestConfig = {
+          method: method,
+          url: fullPath(defaults.api, url)
+        };
+
+        // Unauthorized requests may be allowed to some endpoints, so only add
+        // headers if a valid session exists.
+        if (auth.token()) {
+          requestConfig.headers = authHeadersFromToken(auth.token());
+        }
+
+        if (!isUndefined(parameters)) {
+          requestConfig = extend(requestConfig, {
+            params: parameters,
+            paramSerializer: 'NarrativeParamSerializer'
+          });
+        }
+
+        return $http(requestConfig).then(function (result) {
+          var data = result.data;
+
+          // TODO: This should perhaps be relocated, it might not be the
+          // responsibility for the Request service.
+          if (data.next) {
+            data.next = stripApiBase(defaults.api, data.next);
+          }
+          return data;
+        });
+      }
+
+      return request;
+    }];
+  }
+
+  /**
+   * @ngdoc service
+   * @module api.narrative
+   * @name NarrativeParamSerializerProvider
+   *
+   * @description
+   * `NarrativeParamSerializerProvider` provides a serializer for URL
+   * parameters that should be passed to Narratives API on Narratives Open
+   * Platform.
+   */
+  function NarrativeParamSerializerProvider() {
+
+    /**
+     * @ngdoc service
+     * @name NarrativeParamSerializer
+     * @module api.narrative
+     * @kind function
+     *
+     * @description
+     * When called, it serializes the provided parameters provided according to
+     * Narrative API:s needs. Arrays are converted into JSON format.
+     *
+     * @param {Object=} params The parameters that the serializer will turn
+     *                         into a URL-friendly string.
+     *
+     * @example
+       <example module="Param serializer">
+         <file name="index.html">
+          <h1>Coming Soon</h1>
+         </file>
+       </example>
+     */
+    this.$get = function () {
+      return function NarrativeParamSerializer(params) {
+        if (!params) return '';
+        var parts = [];
+
+        forEach(params, function (value, key) {
+          // Ignore Parameters that are either null or undefined, but keeping
+          // in mind that other falsy values are valid.
+          if (value === null || isUndefined(value)) return;
+
+          var rhs = value;
+          if (isArray(value)) {
+            rhs = toJson(value);
+          }
+          parts.push(encodeURIComponent(key) + "=" + encodeURIComponent(rhs));
+        });
+
+        return parts.join("&");
+      };
+    };
+  }
+
+  // Registering the providers on the module.
+  angular.module('api.narrative')
+    .provider('NarrativeParamSerializer', NarrativeParamSerializerProvider)
+    .provider('NarrativeRequest', NarrativeRequestProvider);
+
+  }(window, window.angular));
+
+
+(function (window, angular, undefined) {
+  'use strict';
+
+  var identity = angular.identity,
+    extend = angular.extend,
+    isUndefined = angular.isUndefined;
+
+  function chain(callFirst, callSecond) {
+    return function (argument) {
+      return callSecond(callFirst(argument));
+    };
+  }
+
+  function NrtvResource(path, auth, config, request, $q) {
+    this._path = path;
+    this._auth = auth;
+    this._config = config || {};
+    this._request = request;
+    this.$q = $q;
+
+    this._transform = identity;
+  }
+  NrtvResource.prototype = {
+
+    construct: function (options) {
+      this._options = options || {};
+
+      this._obj = {
+        q: this.q.bind(this),
+        get: this.get.bind(this),
+        path: this.path.bind(this),
+        transform: this.transform.bind(this)
+      };
+
+      return this._obj;
+    },
+    _constructFromObject: function(options, object) {
+      this._obj = extend(this.construct(options), object);
+      return this._obj;
+    },
+    _object: function() {
+      if(!this._obj)
+        throw "Need to invoke construct() before calling this method";
+      return this._obj;
+    },
+    q: function () {
+      throw "Abstract method q() must be overriden.";
+    },
+    path: function () {
+      return this._path;
+    },
+    get: function () {
+      this.q();
+      return this._obj;
+    },
+    transform: function(transform) {
+      if (isUndefined(transform))
+        return this._transform(this._object());
+      this._transform = chain(this._transform, transform);
+      return this;
+    }
+  };
+
+  /**
+   * @ngdoc service
+   * @name api.narrative.NarrativeItemFactory
+   * @module api.narrative
+   * @requires NarrativeRequest
+   * @requires $q
+   *
+   * @param {string} path    The path to the resource on top of the API URL.
+   *                         This is expected to contain a segment :uuid which
+   *                         can be swapped at `path()` requests for the actual
+   *                         uuid.
+   * @param {Auth}   auth    The authorization instance to use for fetching
+   *                         data from the API.
+   * @param {object=} config Used for configuring the defaults of this
+   *                         resource.
+   *
+   * @description
+   * Use `NarrativeItemFactory` for getting a resource specific for an API
+   * hook.
+   */
+  function NrtvItemResource(path, auth, config, request, $q) {
+    NrtvResource.call(this, path, auth, config, request, $q);
+  }
+  NrtvItemResource.prototype = extend({}, NrtvResource.prototype, {
+    _super: NrtvResource.prototype,
+
+    /**
+     * @ngdoc method
+     * @name construct
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * This constructs the object that can be used for API interaction, which
+     * cleans up the object for being able to attach attributes to it. The
+     * resulting object contains the following methods:
+     * * `q` a promise for getting the data from Narrative.
+     * * `get` Angular-style getter for inserting the ready object in the scope.
+     * * `path` returns the path from the API URL to this object.
+     * * `transform` adds a transform to the resorce.
+     *
+     * These are the same methods that are specified for this object.
+     *
+     * @param  {string} uuid    The uuid for this item.
+     * @param  {object=} options Options which will be passed onto Narratives
+     *                           API when retrieving this data.
+     * @return {object}          An object containing a subset of methods that
+     *                             are made public for the API user.
+     */
+    construct: function(uuid, options) {
+       this.uuid = uuid;
+       return this._super.construct.call(this, options);
+    },
+
+    /**
+     * @ngdoc method
+     * @name _constructFromObject
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @param  {string} uuid     The unique identifier for pointing out the
+     *                           resource in Narrative API.
+     * @param  {object} object   The object information that constructs this
+     *                           instance.
+     * @param  {object=} options Any options that should be passed on to
+     *                           requests about this object.
+     *
+     * @description
+     * Same as the `construct()` method but with an object parameter that
+     * contains the object information. This is mostly used internally.
+     *
+     * @return {object}         The constructed object, see `construct()`.
+     */
+    _constructFromObject: function(uuid, object, options) {
+      this._obj = extend(this.construct(options), object);
+      return this._obj;
+    },
+
+    /**
+     * @ngdoc method
+     * @name transform
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @param  {transform=} transform The optional transform to be applied to
+     *                                the transform chain.
+     *
+     * @description
+     * Could be used as a getter if the transform argument is omitted, for
+     * the transformed created() object.  If used as a setter by supplying the
+     * transform argument, it adds the transform last in the chain of
+     * transforms-
+     *
+     * @return {object|NrtvItemResource} Returns the transformed object if used
+     *                                   as a getter, or `this` if used as a
+     *                                   setter (for method chaining).
+     */
+    // transform
+
+    /**
+     * @ngdoc method
+     * @name q
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Returns a promise which is resolved when data is back from the server.
+     * This promise is cached, and calling `q()` again will return the same
+     * promise.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
+    q: function () {
+      if (!this._qPromise) {
+        var item = this;
+        this._qPromise = this
+          ._request('GET', this.path(), this._options, this._auth)
+          .then(function (data) {
+            try {
+              return extend(item._object(), data);
+            } catch (error) {
+              return item.$q.reject(error);
+            }
+          });
+      }
+      return this._qPromise;
+    },
+
+    /**
+     * @ngdoc method
+     * @name path
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Builds the relative path to this object from the API root, by replacing
+     * the string `':uuid'` with the actual uuid.
+     *
+     * @return {string} The path relative from the API root to this resource.
+     */
+    path: function() {
+      return this._super.path.call(this).replace(':uuid', this.uuid || "");
+    }
+  });
+  NrtvItemResource.prototype.constructor = NrtvItemResource;
+
+  /**
+   * @ngdoc service
+   * @name api.narrative.NarrativeArrayFactory
+   * @module api.narrative
+   * @requires NarrativeRequest
+   * @requires $q
+   *
+   * @param {string} path    The path to the resource on top of the API URL.
+   *                         This is expected to contain a segment :uuid which
+   *                         can be swapped at `path()` requests for the actual
+   *                         uuid.
+   * @param {Auth}   auth    The authorization instance to use for fetching
+   *                         data from the API.
+   * @param {object=} config Used for configuring the defaults of this
+   *                         resource.
+   *
+   * @description
+   * Use `NarrativeItemFactory` for getting a resource specific for an API
+   * hook.
+   */
+  function NrtvArrayResource(path, auth, config, request, $q) {
+    NrtvResource.call(this, path, auth, config, request, $q);
+
+    this._itemTransform = identity;
+  }
+  NrtvArrayResource.prototype = extend({}, NrtvResource.prototype, {
+    _super: NrtvResource.prototype,
+
+    /**
+     * @ngdoc method
+     * @name construct
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * This constructs the object that can be used for API interaction, which
+     * cleans up the object for being able to attach attributes to it. The
+     * resulting object contains the following methods:
+     * * `q` a promise for getting the data from Narrative.
+     * * `get` Angular-style getter for inserting the ready object in the scope.
+     * * `path` returns the path from the API URL to this object.
+     * * `transform` adds a transform to the resorce.
+     * * `nextPage` fetches the next page in a paginated array. Initially
+     *   equivalent of `q()`.
+     * * `forEach` with a callback that is called for each iteration, and
+     *   and can be aborted. This will run over all pages until aborted
+     *   or no more items exist.
+     * * `itemTransform` adds a transform to all elements that are to be
+     *   fetched.
+     * * `results` the array of results from the server.
+     *
+     * These are the same methods that are specified for this object.
+     *
+     * @param  {string} uuid    The uuid for this item.
+     * @param  {object=} options Options which will be passed onto Narratives
+     *                           API when retrieving this data.
+     * @return {object}          An object containing a subset of methods that
+     *                             are made public for the API user.
+     */
+    construct: function(options) {
+      // TODO: Might need to rethink about previous, if a page number is in
+      // the options list.
+      this._next = this.path();
+      this._previous = null;
+      this._count = 0;
+      this.results = [];
+
+      return extend(this._super.construct.call(this, options), {
+        nextPage: this.nextPage.bind(this),
+        forEach: this.forEach.bind(this),
+        itemTransform: this.itemTransform.bind(this),
+        results: this.results
+      });
+    },
+
+
+    /**
+     * @ngdoc method
+     * @name transform
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @param  {transform=} transform The optional transform to be applied to
+     *                                the transform chain.
+     *
+     * @description
+     * Could be used as a getter if the transform argument is omitted, for
+     * the transformed created() object.  If used as a setter by supplying the
+     * transform argument, it adds the transform last in the chain of
+     * transforms-
+     *
+     * @return {object|ArrayItemResource} Returns the transformed object if
+     *                                   used as a getter, or `this` if used as
+     *                                   a setter (for method chaining).
+     */
+    // transform
+
+    /**
+     * @ngdoc method
+     * @name itemTransform
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @param  {transform=} itemTransform The optional transform to be applied
+     *                                to the itemTransform chain.
+     *
+     * @description
+     * Could be used as a getter if the itemTransform argument is omitted, for
+     * the transformed created() object when using `nextPage()` or similar
+     * method for obtaining items.. If used as a setter by supplying the
+     * transform argument, it adds the transform last in the chain of
+     * itemTransform-
+     *
+     * @return {object|NrtvArrayResource} Returns the transformed object if used
+     *                                   as a getter, or `this` if used as a
+     *                                   setter (for method chaining).
+     */
+    itemTransform: function(itemTransform) {
+
+      if (isUndefined(itemTransform))
+        return this._itemTransform;
+
+      this._itemTransform = chain(this._itemTransform, itemTransform);
+      return this;
+    },
+
+    /**
+     * @ngdoc method
+     * @name q
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * Returns a promise which is resolved when data is back from the server.
+     * This promise is cached, and calling `q()` again will return the same
+     * promise.
+     *
+     * This is essentially the same as calling nextPage(), but it will only do
+     * the server request for the first page of the response.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
+    q: function () {
+      if (isUndefined(this._qPromise)) {
+        try {
+          this._qPromise = this.nextPage();
+        } catch (error) {
+          return this.$q.reject(error);
+        }
+      }
+      return this._qPromise;
+    },
+
+
+    /**
+     * @ngdoc method
+     * @name nextPage
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * Fetches the next page in a paginated response from Narratives server
+     * endpoint. This is returned as a promise which is resolved when data is
+     * back from the server.
+     *
+     * The response will contain *ALL* the results from the server, not only
+     * from the next page.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
+    nextPage: function () {
+      // If next us set to null, then we can return.
+      if (this._object() && this._next === null) {
+        throw "No more entries to get";
+      }
+
+      var resource = this;
+      return this._request('GET', resource._next,
+        resource.results.length ? null : resource._options,
+        resource._auth
+      ).then(function (page) {
+        resource._next = page.next;
+        resource._count = page.count;
+
+        page.results = page.results.map(function (item) {
+          var obj = new NrtvItemResource(resource.path() + ':uuid',
+                                         resource._auth, {}, resource._request,
+                                         resource._$q);
+
+          return obj
+            .transform(resource.itemTransform())
+            ._constructFromObject(item.uuid, item);
+        });
+        resource.results.push.apply(resource.results, page.results);
+
+        try {
+          return resource._object();
+        } catch (error) {
+          return resource.$q.reject(error);
+        }
+      });
+    },
+
+
+    /**
+     * @ngdoc method
+     * @name forEach
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeArrayFactory
+     *
+     * @description
+     * A lazy way of iterating through all pages in a paginated request. When
+     * looping through the collection, new requests to the server will be made
+     * as long as the iteration is not aborted.
+     *
+     * This returns a promise that is resolved when all pages have been
+     * fetched.
+     *
+     * @param {function} callback The callback method for each iteration. This
+     *                            should have the signature
+     *                            `function(resource, index, abort)` where
+     *                            `abort` is a method that can be called for
+     *                            stopping the iterations and preventing
+     *                            additional server requests.
+     *
+     * @return {promise} A promise object that is resolved when the all data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if the looping is
+     *                     prevented.
+     */
+    forEach: function (callback) {
+      var index = 0, abort = false, defer = this.$q.defer(), resource = this;
+
+      function doAbort() {
+        abort = true;
+      }
+
+      function fetch() {
+        while (index < resource.results.length) {
+          callback(resource.results[index], index++, doAbort);
+          if (abort) {
+            defer.reject("FOREACH_ABORTED");
+            return;
+          }
+        }
+
+        if (resource._next !== null) {
+          resource.nextPage().then(fetch);
+        } else {
+          defer.resolve(resource);
+        }
+      }
+      fetch();
+      return defer.promise;
+    }
+  });
+  NrtvArrayResource.prototype.constructor = NrtvArrayResource;
+
+
+  /**
+   * @name NarrativeItemFactory
+   *
+   * @description
+   * The actual factory for NrtvItemResource.
+   *
+   * Resolves the dependencies for NrtvItemResource and instanciates it.
+   *
+   * @param {NarrativeRequst} NarrativeRequest NarrativeRequst dependency.
+   * @param {$q} $q $q dependency.
+   */
+  function NarrativeItemFactory(NarrativeRequest, $q) {
+    return function(path, auth, config) {
+      return new NrtvItemResource(path, auth, config, NarrativeRequest, $q);
+    };
+  }
+
+  /**
+   * @name NarrativeArrayFactory
+   *
+   * @description
+   * The actual factory for NrtvArrayResource.
+   *
+   * Resolves the dependencies for NrtvArrayResource and instanciates it.
+   *
+   * @param {NarrativeRequst} NarrativeRequest NarrativeRequst dependency.
+   * @param {$q} $q $q dependency.
+   */
+  function NarrativeArrayFactory(NarrativeRequest, $q) {
+    return function(path, auth, config) {
+      return new NrtvArrayResource(path, auth, config, NarrativeRequest, $q);
+    };
+  }
+
+  // Registers the factories on the module.
+  angular.module('api.narrative')
+    .factory('NarrativeItemFactory',
+      ['NarrativeRequest', '$q', NarrativeItemFactory])
+    .factory('NarrativeArrayFactory',
+      ['NarrativeRequest', '$q', NarrativeArrayFactory]);
+}(window, window.angular));
+
+(function (window, angular, undefined) {
+  'use strict';
+
+  // Import shorthands for functions.
+  var isString = angular.isString,
+    isUndefined = angular.isUndefined,
+    extend = angular.extend,
+    toJson = angular.toJson,
+    forEach = angular.forEach,
+    fromJson = angular.toJson;
+
+  /**
+   * @name eventName
+   * @description
+   * Based on an event string and a the name of a Auth Service, it resolves
+   * a name for an event specific for that named Auth Service.
+   *
+   * @param  {string} event The name of the event.
+   * @param  {string} name  The name of the Auth.
+   * @return {string}       The name of the event.
+   */
+  function eventName(event, name) {
+    return name + '.' + event;
+  }
+
+
+  /**
+   * @ngdoc service
+   * @name api.narrative.NarrativeAuthProvider
+   * @module api.narrative
+   *
+   * @description
+   * Use `NarrativeAuthProvider` for changing the default behaviour of
+   * `NarrativeAuth`.
+   */
+  function NarrativeAuthProvider() {
+
+
+    /**
+     * @ngdoc property
+     * @name NarrativeAuthProvider#defaults
+     * @module api.narrative
+     * @propertyOf api.narrative.NarrativeAuthProvider
+     *
+     * @description
+     * The default attributes for the Authorization instances. Each instance
+     * can be configured individually by passing a configuration object to
+     * the instantiation of a `NarrativeAuth`.
+     */
+    this.defaults = {
+
+      /**
+       * @ngdoc property
+       * @name NarrativeAuthProvider#defaults['name']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeAuthProvider
+       * @type {string}
+       *
+       * @description
+       * The default name of the global Authorization instance.
+       *
+       * The default value is:
+       * ---
+       * ```
+       * 'global'
+       * ```
+       */
+      name: 'global',
+
+      /**
+       * @ngdoc property
+       * @name NarrativeAuthProvider.defaults['cacheFactoy']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeAuthProvider
+       * @type {CacheFactory-like|string}
+       *
+       * @description
+       * The default cache factory for storing information Authorization
+       * instances. Accepts either a string (which will be resolved using
+       * `$injector`) or some CacheFactory-like object such as
+       * `$cacheFactory`.
+       *
+       * The default value is:
+       * ---
+       * ```
+       * 'NarrativeCache'
+       * ```
+       */
+      cacheFactoy: 'NarrativeCache',
+
+      /**
+       * @ngdoc property
+       * @name NarrativeAuthProvider.defaults['oauthApplication']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeAuthProvider
+       * @type {Object}
+       *
+       * @description
+       * Defines the settings of the default Oauth application that is used to
+       * verify the user. The required fields are:
+       * * `redirectURI` - Where this app resides, which should reflect the
+       *     applications base path.
+       * * `clientID` - The clients ID, which can be found in Narratives Open
+       *     Platform.
+       * * `clientSecret` - The clients secret, which can be found in
+       *     Narratives Open Platform.
+       *
+       * The default values are:
+       * ---
+       * ```js
+       * {
+       *   clientID: null,
+       *   redirectURI: null,
+       *   clientSecret: null
+       * }
+       * ```
+       *
+       * NOTE
+       * ---
+       * This is bad practice, a browser library should not know the Client
+       * Secret, but Narrative does not support any other Grant flow at the
+       * moment of writing. Use with care.
+       */
+      oauthApplication: {
+        clientID: null,
+        redirectURI: null,
+        clientSecret: null
+      },
+
+      /**
+       * @ngdoc property
+       * @name NarrativeAuthProvider.defaults['oauthRoutes']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeAuthProvider
+       * @type {Object}
+       *
+       * @description
+       * The redirect routes used for Oauth requests. The routes being used
+       * are:
+       * * `authorize` - The redirect for where the client is sent on
+       *     authorization.
+       * * `token` - The URL where the request is sent for in the Authorization
+       *     Code Grant.
+       *
+       * The default values are:
+       * ---
+       * ```js
+       * {
+       *   authorize: "https://narrativeapp.com/oauth2/authorize/",
+       *   token: "https://narrativeapp.com/oauth2/token/"
+       * }
+       * ```
+       */
+      oauthRoutes: {
+        authorize: "https://narrativeapp.com/oauth2/authorize/",
+        token: "https://narrativeapp.com/oauth2/token/"
+      }
+    };
+    var defaults = this.defaults;
+
+
+    /**
+     * @ngdoc service
+     * @name api.narrative.NarrativeAuth
+     * @module api.narrative
+     * @requires $http
+     * @requires $q
+     * @requires $window
+     * @requires $rootScope
+     * @requires $injector
+     *
+     * @param {object|string=} config The name or configuration of the instance
+     *                                to fetch or create.
+     *
+     * @description
+     * Use `NarrativeAuthProvider` for changing the default behaviour of
+     * `NarrativeAuth`.
+     *
+     * NOTE
+     * ---
+     * A NarrativeAuth with a specific name can only be created *ONCE*. It
+     * does not matter if it is firstly instantiated with just a name, and
+     * then referenced with a config, but this config will have not effect:
+     * ```javascript
+     * // Creates the instance
+     * var unconfigured = NarrativeAuth('AuthorityChicken');
+     *
+     * // Just a reference to the created instance
+     * var configured = NarrativeAuth({
+     *   // A bunch of cool configurations
+     *   name : 'AuthorityChicken'
+     * });
+     *
+     * // None of the cool configurations has any effect, only defauts active!
+     * unconfigured === configured; // True
+     * ```
+     *
+     * @return {Object} The Auth object representing the created instance.
+     */
+    function NarrativeAuth(config, $http, $q, $window, $rootScope, $injector) {
+      var defer, cacheFactoy, tempToken;
+
+      this.$http = $http;
+      this.$q = $q;
+      this.$window = $window;
+      this.$rootScope = $rootScope;
+
+      // Config can be passed as only a string, in which case it should be
+      // set as the name of the `NarrativeAuth`.
+      config = isString(config) ? {name: config} : (config || {});
+      this._config = extend(defaults, config);
+
+      // This is the initial promise that is
+      defer = this.$q.defer();
+      defer.resolve(this);
+      this._initialRequest = defer.promise;
+
+      // Fetching the cache factory.
+      cacheFactoy = this._config.cacheFactoy;
+      if (isString(cacheFactoy)) {
+        cacheFactoy = $injector.get(cacheFactoy);
+      }
+      this._cache = cacheFactoy(this._config.name);
+
+      // Initially, the token is set to null, which indicates that we are not
+      // logged in.
+      this._token = null;
+
+      tempToken = this._cache.get('token');
+      if (tempToken) {
+        this.token(tempToken);
+      }
+    }
+    NarrativeAuth.prototype = {
+
+      /**
+       * @name construct
+       *
+       * @description
+       * Returns an Auth object that represents the Authorization, which does
+       * not expose more methods than necessary.
+       *
+       * @return {object} The Auth object representing this instance.
+       */
+      construct: function () {
+        this._object = {
+          getOauthToken: this.getOauthToken.bind(this),
+          oauthAuthorizationCode: this.oauthAuthorizationCode.bind(this),
+          oauthImplicit: this.oauthImplicit.bind(this),
+          oauthClientCredentials: this.oauthClientCredentials.bind(this),
+          oauthRefreshToken: this.oauthRefreshToken.bind(this),
+          waitForAuth: this.waitForAuth.bind(this),
+          requireAuth: this.requireAuth.bind(this),
+          token: this.token.bind(this),
+          unauth: this.unauth.bind(this),
+          config: this.config.bind(this)
+        };
+
+        return this._object;
+      },
+
+        /**
+       * @name _oauthInitRedirect
+       *
+       * @description
+       * Redirects the window location to the set Oauth server landing page.
+       *
+       * @param {string} grantType Which type of Grant that is desired.
+       * @param {object} params Additional params which will be JSON
+       *                        encoded and sent with the State URL
+       *                        parameter to the outh server.
+       */
+      _oauthInitRedirect: function (grantType, params) {
+
+        var state = {config: this._config},
+          oauthApplication = this._config.oauthApplication;
+        if (params) state.parameters = params;
+
+        this.$window.location.replace(
+          this._config.oauthRoutes.authorize + '?' +
+            'redirect_uri=' + oauthApplication.redirectURI + '&' +
+            'response_type=' + grantType + '&' +
+            'client_id=' + oauthApplication.clientID + '&' +
+            'state=' + encodeURIComponent(toJson(state))
+        );
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.config
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @description
+       * A getter for the config object used to create this instance.
+       *
+       * @return {object} The config object used to create this
+       *                  Authorization instance.
+       */
+      config: function () {
+        return this._config;
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.getOauthToken
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {string} code The code fetched from the URL in a redirect
+       *                      call from the Oauth server.
+       * @param {object=} parameters Additional parameters for the callback
+       *                             after authorization to recieve.
+       *
+       * @description
+       * Makes a POST request to the Oauth server requesting a token. This
+       * is implemented supporting the Authorization Code Grant Flow, requiring
+       * both a client ID and a Client secret to be set.
+       *
+       * This also prevents `requireAuth()` from instantly rejecting the
+       * promise when not logged in, but instead makes it wait until the
+       * outcome of this method is decided.
+       *
+       * @return {Promise} A promise that resolves when a response is recieved,
+       *                     in which case it will contain the authorized
+       *                     instance. If the code is not correct or the $http
+       *                     fails in some way, the promise will be rejected
+       *                     with an appropriate reason.
+       */
+      getOauthToken: function (code, parameters) {
+        var _auth = this,
+          defer = this.$q.defer();
+
+        this._initialRequest = defer.promise;
+
+        return this.$http({
+          url: this._config.oauthRoutes.token,
+          method: 'POST',
+          params: {
+            grant_type: "authorization_code",
+            code: code,
+            redirect_uri: this._config.oauthApplication.redirectURI,
+            client_id: this._config.oauthApplication.clientID
+          },
+          headers : {
+            Authorization : "Basic " + window.btoa(
+              this._config.oauthApplication.clientID + ":" +
+                this._config.oauthApplication.clientSecret)
+            }
+        }).then(function (tokenData) {
+          defer.resolve(_auth.token(tokenData.data));
+          return _auth;
+        }, defer.reject);
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.oauthAuthorizationCode
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {object=} parameters Additional parameters for the callback
+       *                             after authorization to recieve.
+       *
+       * @description
+       * Redirects the window location to the set Oauth server landing page,
+       * and initializes a Authorization Code Grant flow.
+       */
+      oauthAuthorizationCode: function (params) {
+        this._oauthInitRedirect('code', params);
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.oauthImplicit
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {object=} parameters Additional parameters for the callback
+       *                             after authorization to recieve.
+       *
+       * @description
+       * *NOT IMPLEMENTED YET.*
+       */
+      oauthImplicit: function (params) {
+        throw "Implicit Grant flow is not supported yet.";
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.oauthClientCredentials
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {object=} parameters Additional parameters for the callback
+       *                             after authorization to recieve.
+       *
+       * @description
+       * *NOT IMPLEMENTED YET.*
+       */
+      oauthClientCredentials: function(params) {
+        throw "Client Credentials Grant flow is not supported yet.";
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.oauthRefreshToken
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {object=} parameters Additional parameters for the callback
+       *                             after authorization to recieve.
+       *
+       * @description
+       * *NOT IMPLEMENTED YET.*
+       */
+      oauthRefreshToken: function (params) {
+        throw "Refresh Token Grant flow is not supported yet.";
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.waitForAuth
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @description
+       * This creates a promise which is returned and never rejected, only
+       * resolved after a successful login.
+       *
+       * If a reject is desired from the promise when it is not authenticated,
+       * please see `requireAuth()`.
+       *
+       * @return {Promise} A promise that resolves when a successful login has
+       *                     been made. This promise will be resolved with the
+       *                     successful auth object.
+       */
+      waitForAuth: function () {
+        var _auth = this;
+        return this._initialRequest.then(function () {
+          if (_auth.token()) {
+            return _auth._object;
+          } else {
+            var defer = _auth.$q.defer();
+            _auth.$rootScope.$on(eventName(_auth._config.name, 'auth'),
+              function (evt, auth) {
+                defer.resolve(_auth._object);
+              }
+            );
+            return defer.promise;
+          }
+        });
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.requireAuth
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @description
+       * This creates a promise which is returned and resolved if the Auth
+       * instance has a token, and rejected if not. If a token fetch is in
+       * progress, this will wait for that fetch to resolve before moving on
+       * to determine the outcome of the returned promise.
+       *
+       * If no reject is desired when waiting for the authentication to
+       * complete, please see `waitForAuth()`.
+       *
+       * @return {Promise} A promise that resolves with the auth object if
+       *                     a successful login has been made, and rejects with
+       *                     the reason `"AUTH_REQUIRED"` if not.
+       */
+      requireAuth: function () {
+        var _auth = this;
+        return this._initialRequest.then(function () {
+          if (!_auth.token()) {
+            return _auth.$q.reject("AUTH_REQUIRED");
+          }
+          return _auth._object;
+        });
+      },
+
+      /**
+       * @name _validateToken
+       *
+       * @description
+       * Tests the tokenObject to see if it is valid or not. For now, this is
+       * done by a naïve check for `'token_type'` and `'access_token'` among
+       * the attributes.
+       *
+       * @param  {object} tokenObject The tokenObject to test.
+       * @return {boolean}            Whether the tokenObject has the correct
+       *                              attrbutes.
+       */
+      _validateToken: function (tokenObject) {
+        return tokenObject.hasOwnProperty('token_type') &&
+          tokenObject.hasOwnProperty('access_token');
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.token
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {object=} tokenObject A token object contining at least the the
+       *                              attributes `token_type` and
+       *                              `access_token`. If omitted, the method
+       *                              will return any existing token.
+       *
+       * @description
+       * `token()` provides a getter when no arguments are supplied or as a
+       * setter if a token is provided. It will still return the token if used
+       * as a setter.
+       *
+       * On a successful set of the token, an event will be emitted on the
+       * $rootScope, which will be called `'[auth_name].auth'`. This will
+       * contain the Auth instance as an argument.
+       *
+       * @throws Will throw an exception if used as a setter without a valid
+       *         token.
+       *
+       * @return {object|null} The token object assoiciated with this Auth
+       *                           instance, or `null` if not authenticeted yet.
+       */
+      token: function (tokenObject) {
+        if (!isUndefined(tokenObject)) {
+          if (!this._validateToken(tokenObject))
+            throw "The given token is not valid!";
+
+          this._cache.put('token', tokenObject);
+
+          this._token = tokenObject;
+          this.$rootScope.$emit(
+            eventName(this._config.name, 'auth'), this._object);
+        }
+
+        return this._token;
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.unauth
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @description
+       * Will remove the token from this instance, and from the cache as well,
+       * along with all data stored in the same namespace in the cache.
+       *
+       * On a removel of the token, an event will be emitted on the
+       * $rootScope, which will be called `'[auth_name].unauth'`. This will
+       * contain the Auth instance as an argument.
+       */
+      unauth: function () {
+        if(this._cache) {
+          this._cache.removeAll();
+        }
+        this._token = null;
+
+        this.$rootScope.$emit(
+          eventName(this._config.name, 'unauth'), this._object);
+      }
+    };
+
+    /**
+     * @name $get
+     * @type {Array}
+     *
+     * @description
+     * This is the actual definition/method of which the NarrativeAuth is
+     * instantiated. This keeps track of different Auths, and acts as a
+     * factory only creating a single new instance of each name being passed.
+     */
+    this.$get = ['$http', '$q', '$window', '$rootScope', '$injector',
+      function (  $http ,  $q ,  $window ,  $rootScope ,  $injector) {
+
+        // This is the map used for all the instantiated authorizations.
+        var authorizations = {};
+
+        return function(config) {
+          var auth, _conf = (config || {}),
+            name = isString(_conf) ? _conf : (_conf.name || defaults.name);
+
+          if (!authorizations.hasOwnProperty(name)) {
+            auth = new NarrativeAuth(config, $http, $q, $window, $rootScope,
+              $injector);
+            authorizations[name] = auth.construct();
+          }
+
+          return authorizations[name];
+        };
+      }];
+  }
+
+  angular.module('api.narrative')
+    .provider('NarrativeAuth', NarrativeAuthProvider)
+    .factory('NarrativeUrlObserverFactory', [
+               'NarrativeAuth', '$location', '$window',
+      function (narrativeAuth ,  $location ,  $window) {
+
+        function redirectToHash(params) {
+          var absUrl = $location.absUrl(),
+            base = absUrl.substring(0, absUrl.indexOf('?')),
+            hash = absUrl.substring(0, absUrl.lastIndexOf('#') + 1),
+            parts = [];
+
+          forEach(params, function(value, key) {
+            parts.push(key + '=' + value);
+          });
+
+          $window.location.href = base;
+          if (parts) {
+            $window.location.search = parts.join('&');
+          }
+          $window.location.hash = hash;
+          $window.location.replace();
+        }
+
+        function cleanUpAndRedirect(params) {
+          delete params.state;
+          if ($location.$$html5) {
+              $location.search(params).replace();
+          } else {
+            redirectToHash(params);
+          }
+        }
+
+        /**
+         * @name locationSearch
+         * @description
+         *
+         *
+         * @return {Object} [description]
+         */
+        this.locationSearch = function() {
+          var vars, url = $location.absUrl(), idx = url.indexOf('?'), hash = {};
+
+          if (idx !== -1) {
+            vars = url.substring(idx + 1).split('#')[0];
+
+            forEach((vars ? vars.split("&") : []), function (urlVar) {
+              var pair = urlVar.split("=");
+              // Remove trailing slashes
+              hash[pair[0]] = pair[1].replace(/\/+$/, "");
+            });
+          }
+          return hash;
+        };
+        var locationSearch = this.locationSearch;
+
+        return function () {
+          var hash = $location.$$html5 ? $location.search()
+                                       : locationSearch($location.absUrl()),
+            state = null;
+
+          if(!hash.hasOwnProperty('state'))
+            return;
+
+          state = fromJson(decodeURIComponent(hash['state']));
+
+          if (hash.hasOwnProperty('error')) {
+            narrativeAuth(state.config).unauth();
+            delete hash.error;
+            cleanUpAndRedirect(hash);
+          } else if (hash.hasOwnProperty('code')) {
+            narrativeAuth(state.config)
+              .getOauthToken(hash.code, state.parameters);
+            delete hash.code;
+            cleanUpAndRedirect(hash);
+          }
+        };
+      }])
+    .run(['NarrativeUrlObserverFactory',
+      function (narrativeUrlObserverFactory) {
+        narrativeUrlObserverFactory();
+      }]);
+}(window, window.angular));
+
+(function (window, angular, undefined) {
+  'use strict';
+
+  /**
+   * @name constructItem
+   *
+   * @description
+   * Returns a handler for constructing an item object.
+   *
+   * @param  {NrtvItemResource} hook The hook to construct for.
+   * @return {function} A function with the signature(uuid, options).
+   */
+  function constructItem(hook) {
+    return function (uuid, options) {
+      return hook.construct(uuid, options);
+    };
+  }
+
+  /**
+   * @name constructArray
+   *
+   * @description
+   * Returns a handler for constructing an array object.
+   *
+   * @param  {NrtvArrayResource} hook The hook to construct for.
+   * @return {function} A function with the signature(uuid, options).
+   */
+  function constructArray(hook) {
+    return function (options) {
+      return hook.construct(options);
+    };
+  }
+
+  /**
+   * @ngdoc service
+   * @name api.narrative.NarrativeApiProvider
+   * @module api.narrative
+   *
+   * @description
+   * Use `NarrativeApiProvider` to configure the defaults for `NarrativeApi`.
+   */
+  function NarrativeApiProvider() {
+
+    /**
+     * @ngdoc property
+     * @name NarrativeApiProvider.defaults['auth']
+     * @module api.narrative
+     * @propertyOf api.narrative.NarrativeApiProvider
+     * @type {NarrativeAuth}
+     *
+     * @description
+     * The default Auth to use for the instances.
+     */
+    this.defaults = {
+      auth : null
+    };
+    var defaults = this.defaults;
+
+    /**
+     * @ngdoc service
+     * @name api.narrative.NarrativeApi
+     * @module api.narrative
+     * @requires api.narrative.NarrativeItemFactory
+     * @requires api.narrative.NarrativeArrayFactory
+     * @requires api.narrative.NarrativeAuth
+     *
+     * @param {object=} config The name or configuration of the instance to
+     *                         fetch or create.
+     * @description
+     * Returns the Api instance.
+     *
+     * @return {Object} The Auth object representing the created instance.
+     */
+    function getAPI (itemFactory, arrayFactory, auth) {
+
+      return function (config) {
+        var api = {};
+
+        config = angular.extend(defaults, config);
+        if (!config.auth) {
+          config.auth = auth();
+        }
+
+        function momentTransform(moment) {
+          return angular.extend(moment, {
+            positions:
+              arrayFactory(config.auth, moment.path() + 'positions/').construct,
+            photos:
+              arrayFactory(config.auth, moment.path() + 'photos/').construct,
+          });
+        }
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.moments
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvArrayResource} The corresponding array object for
+         *                             the moments.
+         */
+        api.moments = constructArray(
+          arrayFactory('moments/', config.auth)
+            .itemTransform(momentTransform));
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.moment
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {string=} uuid The corresponding uuid for the resource.
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvItemResource} The corresponding item object for
+         *                             the moment.
+         */
+        api.moment = constructItem(
+          itemFactory('moments/:uuid', config.auth)
+            .transform(momentTransform));
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.photos
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvArrayResource} The corresponding array object for
+         *                             the photos.
+         */
+        api.photos = constructArray(
+          arrayFactory('photos/', config.auth));
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.users
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvArrayResource} The corresponding array object for
+         *                             the users.
+         */
+        api.users = constructArray(
+          arrayFactory('users/', config.auth));
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.user
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {string=} uuid The corresponding uuid for the resource.
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvItemResource} The corresponding item object for
+         *                             the user.
+         */
+        api.user = constructItem(
+          itemFactory('users/:uuid/', config.auth));
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.me
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvItemResource} The corresponding item object for
+         *                             the user.
+         */
+        api.me = function (options) {
+          return api.user('me', options);
+        };
+
+        return api;
+      };
+    }
+    this.$get = ['NarrativeItemFactory', 'NarrativeArrayFactory',
+      'NarrativeAuth', getAPI];
+  }
+
+  angular.module('api.narrative')
+    .provider('NarrativeApi', NarrativeApiProvider);
+}(window, window.angular));

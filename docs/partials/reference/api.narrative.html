@@ -1,0 +1,25 @@
+<a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/narrative.module.js#L32" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable=""></code>
+<div><span class="hint"></span>
+</div>
+</h1>
+<div><div class="api-narrative-page"><h2 id="narrative-api">Narrative API</h2>
+<p>This is the module container for <code>angular-narrative-api</code>, which can be
+used for interacting with Narratives Open Platform.</p>
+</div><h2 id="example">Example</h2>
+<div class="example"><div class="api-narrative-page"><pre><code class="lang-javascript">angular.module(&#39;app&#39;, [&#39;api.narrative&#39;])
+  .config(function (NarrativeAuthProvider , NarrativeRequestProvider) {
+    NarrativeAuthProvider.defaults.oauthApplication = {
+      clientID: &quot;my-client-id&quot;,
+      redirectURI: &quot;my-root-uri&quot;,
+      clientSecret: &quot;my-client-secret&quot;
+    };
+    // For now, Narrative does not support CORS on all URLS, so therefore
+    // a proxy is usually necessary.
+    NarrativeRequestProvider.defaults.api.proxy = &#39;http://cors.proxy/&#39;;
+  })
+  .controller(&#39;Controller&#39;, function (NarrativeAuth,  NarrativeApi) {
+    // Go right ahead and use the Auth and the API!
+  });
+</code></pre>
+</div></div>
+</div>
