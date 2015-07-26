@@ -1,5 +1,9 @@
 {
   "name": "angular-narrative-api",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/amlinger/angular-narrative-api.git"
+  },
   "authors": [
     {
       "name": "Anton Amlinger",
