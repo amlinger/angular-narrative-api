@@ -37,6 +37,7 @@
               var api = NarrativeApi();
               main.user = api.me().get();
               main.photos = api.photos({tags__in: ['hasface']}).get();
+              console.log(main.photos);
             });
           });
     </script>
@@ -55,19 +56,19 @@
         <nav class="col-xs-4">
           <br />
           <button class="btn btn-success pull-right"
-                  ng-show="!main.auth.isLoggedIn()"
+                  ng-show="!main.auth.token()"
                   ng-click="main.auth.oauthAuthorizationCode()">
             Login
           </button>
           <button class="btn btn-danger pull-right"
-                  ng-show="main.auth.isLoggedIn()"
+                  ng-show="main.auth.token()"
                   ng-click="main.auth.unauth()">
             Logout
           </button>
         </nav>
       </div>
       <div class="row"
-           ng-show="main.auth.isLoggedIn()"
+           ng-show="main.auth.token()"
            infinite-scroll="main.photos.nextPage()">
 
         <div class="photo col-xs-2"
