@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "Narrative API services made easy for Angular.",
   "main": "dist/angular-narrative-api.js",
+  "repository": {
+    "type" : "git",
+    "url" : "git@github.com:amlinger/angular-narrative-api.git"
+  },
   "directories": {
     "example": "examples",
     "test": "test"
