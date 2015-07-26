@@ -1,7 +1,11 @@
 {
   "name": "angular-narrative-api",
   "authors": [
-    "Anton Amlinger <anton.amlinger@gmail.com>"
+    {
+      "name": "Anton Amlinger",
+      "email": "anton.amlinger@gmail.com",
+      "homepage": "http://antonamlinger.se"
+    }
   ],
   "description": "Narrative API services made easy for Angular.",
   "main": "dist/angular-narrative-api.min.js",
