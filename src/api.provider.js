@@ -12,7 +12,7 @@
    */
   function constructItem(hook) {
     return function (uuid, options) {
-      return hook.construct(uuid, options);
+      return hook.construct(uuid, options).transform();
     };
   }
 
@@ -27,7 +27,7 @@
    */
   function constructArray(hook) {
     return function (options) {
-      return hook.construct(options);
+      return hook.construct(options).transform();
     };
   }
 
@@ -76,17 +76,17 @@
       return function (config) {
         var api = {};
 
-        config = angular.extend(defaults, config);
+        config = angular.extend(defaults, config || {});
         if (!config.auth) {
           config.auth = auth();
         }
 
         function momentTransform(moment) {
           return angular.extend(moment, {
-            positions:
-              arrayFactory(config.auth, moment.path() + 'positions/').construct,
-            photos:
-              arrayFactory(config.auth, moment.path() + 'photos/').construct,
+            positions: constructArray(
+              arrayFactory(moment.path() + '/positions/', config.auth)),
+            photos: constructArray(
+              arrayFactory(moment.path() + '/photos/', config.auth)),
           });
         }
 

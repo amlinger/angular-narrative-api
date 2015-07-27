@@ -2,157 +2,117 @@
 
 (function () {
   'use strict';
-/*
-  describe('NarrativeAPIService', function () {
-    var Auth, API, $httpBackend, $rootScope, successSpy, failureSpy, isAuth,
-      $window, $timeout,
-      backend = {
-        proxy: "http://thisisasecret/",
-        baseURL: "https://narrativebase.com/",
-        APIsuffix: "api/v1337/",
-        oauth: {
-          authorize: 'https://narrativebase.com/oauth2/authorize/',
-          token: 'https://narrativebase.com/oauth2/token/'
-        }
-      }, API_URL = backend.proxy + backend.baseURL + backend.APIsuffix;
 
-    function starts(str) {
-      var escaped = str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-      return new RegExp('^' + escaped + '?.*');
-    }
+  var identity = angular.identity,
+    noop = angular.noop,
+    extend = angular.extend,
+    emptyResponse = {
+      count: 0,
+      next: null,
+      previous: null,
+      results: []
+    },
+    singleMomentResponse = {
+      count: 1,
+      next: null,
+      previous: null,
+      results: [{
+        uuid: 'unique'
+      }]
+    };
 
-    // We need to override with a mock that is easier to control.
-    beforeEach(module('narrativeResearch'));
+  describe('NarrativeApi', function () {
+    var $httpBackend, itemFactory, arrayFactory, auth, $rootScope, apiFactory,
+      narrativeApiProvider, basePath = "https://narrativeapp.com/api/v2/";
 
-    beforeEach(module(function ($provide) {
-      $provide.service('Auth', function () {
-        return {
-          narrative: {
-            token: function () {
-              return { token_type: "token", access_token: "token" };
-            }
-          },
-          isLoggedIn: function () {
-            return isAuth;
-          }
-        };
-      });
-      $window = {location: {replace: jasmine.createSpy('location.replace') }};
-      $provide.value('$window', $window);
-      $provide.constant('NARRATIVE_BACKEND', backend);
+    beforeEach(module('api.narrative', function (_NarrativeApiProvider_) {
+      narrativeApiProvider = _NarrativeApiProvider_;
     }));
+    beforeEach(module('api.narrative.mocks'));
 
-    beforeEach(inject(function (_narrativeAPI_, _$rootScope_, _$httpBackend_,
-                                _$timeout_) {
-      API = _narrativeAPI_;
-      $rootScope = _$rootScope_;
+    beforeEach(inject(function (_$httpBackend_, _$rootScope_,
+                                _NarrativeItemFactory_,_NarrativeArrayFactory_,
+                                 _NarrativeAuthMock_) {
       $httpBackend = _$httpBackend_;
-      $timeout = _$timeout_;
-      successSpy = jasmine.createSpy("APIsuccessSpy");
-      failureSpy = jasmine.createSpy("APIfailureSpy");
-      isAuth = true;
+      $rootScope = _$rootScope_;
+
+      itemFactory = _NarrativeItemFactory_;
+      arrayFactory = _NarrativeArrayFactory_;
+      auth = _NarrativeAuthMock_;
+
+      apiFactory = narrativeApiProvider
+        .$get[3](itemFactory, arrayFactory, auth);
     }));
 
-    describe('_request', function () {
-
-      it('rejects unauthorized attempts.', function () {
-        isAuth = false;
-        API._request('GET', 'moments').then(successSpy, failureSpy);
-        $rootScope.$digest();
-        expect(successSpy).not.toHaveBeenCalled();
-        expect(failureSpy).toHaveBeenCalled();
-      });
-
-      it('accepts authorized attempts.', function () {
-        $httpBackend.when('GET', API_URL + 'moments').respond([]);
-        $httpBackend.expectGET(API_URL + 'moments');
-        API._request('GET', 'moments').then(successSpy, failureSpy);
-        $rootScope.$digest();
-        $httpBackend.flush();
-        expect(successSpy).toHaveBeenCalled();
-        expect(failureSpy).not.toHaveBeenCalled();
-      });
+    it('can be instantiated with an empty config.', function () {
+      expect(function () {
+        apiFactory();
+      }).not.toThrow();
     });
 
-    describe('oauthInit', function () {
+    it('can fetch an empty set of moments.', function () {
+      var api = apiFactory(), moments;
 
-      it('transfers to Narratives Oauth landing page.', function () {
-        API.oauthInit();
-        expect($window.location.replace.calls.mostRecent().args[0]).toMatch(
-          backend.oauth.authorize + "*" 
-        );
-      });
+      $httpBackend.expectGET(basePath + 'moments/')
+        .respond(200, emptyResponse);
+      moments = api.moments().get();
+
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      expect(moments.results.length).toBe(0);
     });
 
-    describe('getAuthToken', function () {
+    it('transforms single moment-hook to enable nested queries', function () {
+      var api = apiFactory(), photos, positions;
 
-      it('performs a token request to the oauth server.', function (done) {
-        var tokenSpy = jasmine.createSpy("tokenSpy"),
-          url = starts(backend.oauth.token);
-        $httpBackend.whenPOST(url).respond("some_token");
-        $httpBackend.expectPOST(url);
+      $httpBackend.expectGET(basePath + 'moments/unique/photos/')
+        .respond(200, emptyResponse);
+      $httpBackend.expectGET(basePath + 'moments/unique/positions/')
+        .respond(200, emptyResponse);
+      photos = api.moment('unique').photos().get();
+      positions = api.moment('unique').positions().get();
+      $httpBackend.flush();
+      $rootScope.$digest();
 
-        API.getAuthToken("some_code").then(tokenSpy)['finally'](function () {
-          expect(tokenSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-            data: "some_token"
-          }));
-          done();
-        });
-        $rootScope.$digest();
-        $httpBackend.flush();
-      });
-
-      it('performs a token request to the oauth server.', function (done) {
-        var url = starts(backend.oauth.token);
-        $httpBackend.whenPOST(url).respond(401, '');
-        $httpBackend.expectPOST(url);
-
-        API.getAuthToken("some_code").then(successSpy, failureSpy)['finally'](
-          function () {
-            expect(successSpy).not.toHaveBeenCalled();
-            expect(failureSpy).toHaveBeenCalled();
-            done();
-          }
-        );
-        $rootScope.$digest();
-        $httpBackend.flush();
-      });
+      expect(photos.results.length).toBe(0);
+      expect(positions.results.length).toBe(0);
     });
-    describe('me', function () {
-      it('responds to request', function (done) {
-        var userSpy = jasmine.createSpy("userSpy");
-        $httpBackend.whenGET(API_URL + 'users/me/').respond({});
-        $httpBackend.expectGET(API_URL + 'users/me/');
 
-        API.me().then(userSpy)['finally'](function () {
-          expect(userSpy).toHaveBeenCalled();
-          done();
-        });
-        $rootScope.$digest();
-        $httpBackend.flush();
-      });
-    });
-    describe('getUsersByName', function () {
+    it('transforms moments-hook to enable further queries', function () {
+      var api = apiFactory(), moments, photos, positions;
 
-    });
-    describe('moments', function () {
-      it('responds to request', function (done) {
-        var momentSpy = jasmine.createSpy("momentSpy");
-        $httpBackend.whenGET(API_URL + 'moments/').respond({
-          count: 0,
-          previous: null,
-          next: null,
-          results: []
-        });
-        $httpBackend.expectGET(API_URL + 'moments/');
+      $httpBackend.expectGET(basePath + 'moments/')
+        .respond(200, singleMomentResponse);
+      moments = api.moments().get();
+      $httpBackend.flush();
+      $rootScope.$digest();
+      expect(moments.results.length).toBe(1);
 
-        API.moments().then(momentSpy)['finally'](function () {
-          expect(momentSpy).toHaveBeenCalled();
-          done();
-        });
-        $rootScope.$digest();
-        $httpBackend.flush();
-      });
+      $httpBackend.expectGET(basePath + 'moments/unique/photos/')
+        .respond(200, emptyResponse);
+      $httpBackend.expectGET(basePath + 'moments/unique/positions/')
+        .respond(200, emptyResponse);
+      photos = moments.results[0].photos().get();
+      positions = moments.results[0].positions().get();
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      expect(photos.results.length).toBe(0);
+      expect(positions.results.length).toBe(0);
     });
-  });*/
+
+    it('can fetch an empty set of photos.', function () {
+      var api = apiFactory(), photos;
+
+      $httpBackend.expectGET(basePath + 'photos/')
+        .respond(200, emptyResponse);
+      photos = api.photos().get();
+
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      expect(photos.results.length).toBe(0);
+    });
+  });
 }());
