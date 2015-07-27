@@ -25,10 +25,37 @@
   function NarrativeRequestProvider() {
 
     /**
-     * [apiPath description]
-     * @type {Object}
+     * @ngdoc property
+     * @name NarrativeRequestProvider#defaults
+     * @module api.narrative
+     * @propertyOf api.narrative.NarrativeRequestProvider
+     * @type {object}
+     *
+     * @description
+     * The default settings for NarrativeRequest instances.
      */
     this.defaults = {
+
+      /**
+       * @ngdoc property
+       * @name NarrativeRequestProvider#defaults['api']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeRequestProvider
+       * @type {object}
+       *
+       * @description
+       * The API paths used for communicating with the backend API.
+       *
+       * The default value is:
+       * ---
+       * ```
+       * {
+       *   proxy: "",
+       *   baseUrl: "https://narrativeapp.com/",
+       *   apiSuffix: "api/v2/"
+       * }
+       * ```
+       */
       api: {
         proxy: "",
         baseUrl: "https://narrativeapp.com/",
@@ -60,9 +87,8 @@
 
     /**
      * @ngdoc service
-     * @name NarrativeRequest
+     * @name api.narrative.NarrativeRequest
      * @module api.narrative
-     * @kind function
      * @requires $http
      *
      * @description
@@ -74,13 +100,6 @@
      * @param  {Object} parameters  [description]
      * @param  {NarrativeAuth} auth [description]
      * @return {promise}            [description]
-     *
-     * @example
-       <example module="Param serializer">
-         <file name="index.html">
-          <h1>Coming Soon</h1>
-         </file>
-       </example>
      */
     this.$get = ['$http', function ($http) {
       function request(method, url, parameters, auth) {
@@ -129,8 +148,8 @@
 
   /**
    * @ngdoc service
+   * @name api.narrative.NarrativeParamSerializerProvider
    * @module api.narrative
-   * @name NarrativeParamSerializerProvider
    *
    * @description
    * `NarrativeParamSerializerProvider` provides a serializer for URL
@@ -141,9 +160,8 @@
 
     /**
      * @ngdoc service
-     * @name NarrativeParamSerializer
+     * @name api.narrative.NarrativeParamSerializer
      * @module api.narrative
-     * @kind function
      *
      * @description
      * When called, it serializes the provided parameters provided according to
@@ -151,13 +169,6 @@
      *
      * @param {Object=} params The parameters that the serializer will turn
      *                         into a URL-friendly string.
-     *
-     * @example
-       <example module="Param serializer">
-         <file name="index.html">
-          <h1>Coming Soon</h1>
-         </file>
-       </example>
      */
     this.$get = function () {
       return function NarrativeParamSerializer(params) {
