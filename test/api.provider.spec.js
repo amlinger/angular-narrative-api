@@ -102,6 +102,15 @@
       expect(positions.results.length).toBe(0);
     });
 
+    it('creates new item instances for different uuids', function () {
+      var api = apiFactory(), first, second;
+
+      first = api.moment('first');
+      second = api.moment('second');
+
+      expect(first.path()).not.toBe(second.path());
+    });
+
     it('can fetch an empty set of photos.', function () {
       var api = apiFactory(), photos;
 
