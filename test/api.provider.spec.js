@@ -5,7 +5,21 @@
 
   var identity = angular.identity,
     noop = angular.noop,
-    extend = angular.extend;
+    extend = angular.extend,
+    emptyResponse = {
+      count: 0,
+      next: null,
+      previous: null,
+      results: []
+    },
+    singleMomentResponse = {
+      count: 1,
+      next: null,
+      previous: null,
+      results: [{
+        uuid: 'someveryuniqueuuid'
+      }]
+    };
 
   describe('NarrativeApi', function () {
     var $httpBackend, itemFactory, arrayFactory, auth, $rootScope, apiFactory,
@@ -34,6 +48,32 @@
       expect(function () {
         apiFactory();
       }).not.toThrow();
+    });
+
+    it('can fetch an empty set of moments.', function () {
+      var api = apiFactory(), moments;
+
+      $httpBackend.expectGET(basePath + 'moments/')
+        .respond(200, emptyResponse);
+      moments = api.moments().get();
+
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      expect(moments.results.length).toBe(0);
+    });
+
+    it('can fetch an empty set of photos.', function () {
+      var api = apiFactory(), photos;
+
+      $httpBackend.expectGET(basePath + 'photos/')
+        .respond(200, emptyResponse);
+      photos = api.photos().get();
+
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      expect(photos.results.length).toBe(0);
     });
   });
 }());
