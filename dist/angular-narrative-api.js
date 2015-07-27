@@ -268,15 +268,62 @@ if (!Function.prototype.bind) {
   function NarrativeRequestProvider() {
 
     /**
-     * [apiPath description]
-     * @type {Object}
+     * @ngdoc property
+     * @name NarrativeRequestProvider#defaults
+     * @module api.narrative
+     * @propertyOf api.narrative.NarrativeRequestProvider
+     * @type {object}
+     *
+     * @description
+     * The default settings for NarrativeRequest instances.
      */
     this.defaults = {
+
+      /**
+       * @ngdoc property
+       * @name NarrativeRequestProvider#defaults['api']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeRequestProvider
+       * @type {object}
+       *
+       * @description
+       * The API paths used for communicating with the backend API.
+       *
+       * The default value is:
+       * ---
+       * ```
+       * {
+       *   proxy: "",
+       *   baseUrl: "https://narrativeapp.com/",
+       *   apiSuffix: "api/v2/"
+       * }
+       * ```
+       */
       api: {
         proxy: "",
         baseUrl: "https://narrativeapp.com/",
         apiSuffix: "api/v2/"
-      }
+      },
+
+      /**
+       * @ngdoc property
+       * @name NarrativeRequestProvider#defaults['cache']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeRequestProvider
+       * @type {Cache|boolean}
+       *
+       * @description
+       * The cache to be passed on to `$http`. This could either be a cache
+       * instance or a boolean value for whether a standard Cache should be
+       * used or not.
+       *
+       * The default value is:
+       * ---
+       * ```
+       * true
+       * ```
+       */
+      cache: true
     };
     var defaults = this.defaults;
 
@@ -303,9 +350,8 @@ if (!Function.prototype.bind) {
 
     /**
      * @ngdoc service
-     * @name NarrativeRequest
+     * @name api.narrative.NarrativeRequest
      * @module api.narrative
-     * @kind function
      * @requires $http
      *
      * @description
@@ -317,13 +363,6 @@ if (!Function.prototype.bind) {
      * @param  {Object} parameters  [description]
      * @param  {NarrativeAuth} auth [description]
      * @return {promise}            [description]
-     *
-     * @example
-       <example module="Param serializer">
-         <file name="index.html">
-          <h1>Coming Soon</h1>
-         </file>
-       </example>
      */
     this.$get = ['$http', function ($http) {
       function request(method, url, parameters, auth) {
@@ -338,6 +377,7 @@ if (!Function.prototype.bind) {
         // method and url attribute being the only necessary.
         var requestConfig = {
           method: method,
+          cache: defaults.cache,
           url: fullPath(defaults.api, url)
         };
 
@@ -372,8 +412,8 @@ if (!Function.prototype.bind) {
 
   /**
    * @ngdoc service
+   * @name api.narrative.NarrativeParamSerializerProvider
    * @module api.narrative
-   * @name NarrativeParamSerializerProvider
    *
    * @description
    * `NarrativeParamSerializerProvider` provides a serializer for URL
@@ -384,9 +424,8 @@ if (!Function.prototype.bind) {
 
     /**
      * @ngdoc service
-     * @name NarrativeParamSerializer
+     * @name api.narrative.NarrativeParamSerializer
      * @module api.narrative
-     * @kind function
      *
      * @description
      * When called, it serializes the provided parameters provided according to
@@ -394,13 +433,6 @@ if (!Function.prototype.bind) {
      *
      * @param {Object=} params The parameters that the serializer will turn
      *                         into a URL-friendly string.
-     *
-     * @example
-       <example module="Param serializer">
-         <file name="index.html">
-          <h1>Coming Soon</h1>
-         </file>
-       </example>
      */
     this.$get = function () {
       return function NarrativeParamSerializer(params) {
