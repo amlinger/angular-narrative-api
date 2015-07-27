@@ -1190,6 +1190,7 @@ if (!Function.prototype.bind) {
       this.$q = $q;
       this.$window = $window;
       this.$rootScope = $rootScope;
+      this._onAuthCallbacks = [];
 
       // Config can be passed as only a string, in which case it should be
       // set as the name of the `NarrativeAuth`.
@@ -1237,6 +1238,7 @@ if (!Function.prototype.bind) {
           oauthRefreshToken: this.oauthRefreshToken.bind(this),
           waitForAuth: this.waitForAuth.bind(this),
           requireAuth: this.requireAuth.bind(this),
+          onAuth: this.onAuth.bind(this),
           token: this.token.bind(this),
           unauth: this.unauth.bind(this),
           config: this.config.bind(this)
@@ -1334,8 +1336,18 @@ if (!Function.prototype.bind) {
                 this._config.oauthApplication.clientSecret)
             }
         }).then(function (tokenData) {
-          defer.resolve(_auth.token(tokenData.data));
-          return _auth;
+          _auth.token(tokenData.data);
+
+          if (_auth.token()) {
+              defer.resolve(_auth.token());
+
+              forEach(_auth._onAuthCallbacks, function (cb) {
+                cb.callback.call(cb.context, _auth._object, parameters);
+              });
+
+              return _auth;
+          }
+          return this.$q.reject('MALFORMED_TOKEN');
         }, defer.reject);
       },
 
@@ -1465,6 +1477,35 @@ if (!Function.prototype.bind) {
           }
           return _auth._object;
         });
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.token
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {function} callback A callback function with the signature
+       *                            `function(NarrativeAuth, object)` where
+       *                            NarrativeAuth is the newly authenticated
+       *                            object, and object is the optional state
+       *                            parameters passed from the oauth initiator.
+       * @param {*=} context An optional context for the callback.
+       *
+       * @description
+       * Sets a callback for when the user is authenticated by the server.
+       * **Note that this only applies for when the user is authenticated by
+       * the server, not for when the token is set by the `token()` method.
+       *
+       * @return {NarrativeAuth} `this`is returned for chaining purposes.
+       */
+      onAuth: function (callback, context) {
+        this._onAuthCallbacks.push({
+          callback: callback,
+          context: context || this
+        });
+
+        return this._object;
       },
 
       /**
