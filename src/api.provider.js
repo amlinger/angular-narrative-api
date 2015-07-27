@@ -76,7 +76,7 @@
       return function (config) {
         var api = {};
 
-        config = angular.extend(defaults, config);
+        config = angular.extend(defaults, config || {});
         if (!config.auth) {
           config.auth = auth();
         }

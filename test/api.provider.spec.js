@@ -23,10 +23,18 @@
       $rootScope = _$rootScope_;
 
       itemFactory = _NarrativeItemFactory_;
-      arrayFactory = _NarrativeItemFactory_;
+      arrayFactory = _NarrativeArrayFactory_;
       auth = _NarrativeAuthMock_;
 
-      apiFactory = narrativeApiProvider(itemFactory, arrayFactory, auth);
+      apiFactory = narrativeApiProvider
+        .$get[3](itemFactory, arrayFactory, auth);
+      console.log(apiFactory());
     }));
+
+    it('can be instantiated with an empty config.', function () {
+      expect(function () {
+        apiFactory();
+      }).not.toThrow();
+    });
   });
 }());
