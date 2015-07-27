@@ -96,6 +96,21 @@
          expect(secondSpy).toHaveBeenCalledWith(item);
          expect(thirdSpy).toHaveBeenCalledWith(item);
      });
+
+     it('Allows transform to change the item', function () {
+       var item = itemFactory('path/:uuid', auth).construct('bat');
+
+        expect(item.fangs).toBeUndefined();
+        item
+          .transform(function vampire(item) {
+            return extend(item, {
+              fangs: 'big and scary'
+            });
+          })
+          .transform();
+
+        expect(item.fangs).toBe('big and scary');
+     });
   });
 
   describe('NarrativeItemFactory', function () {
@@ -192,6 +207,23 @@
          expect(firstSpy).toHaveBeenCalledWith(array);
          expect(secondSpy).toHaveBeenCalledWith(array);
          expect(thirdSpy).toHaveBeenCalledWith(array);
+     });
+
+     it('adds itemTransform to fetched items', function () {
+       var array = arrayFactory('path/', auth).construct(),
+        resp = extend({}, defaultResp, {next : 'path/?page=2'});
+
+       $httpBackend.expectGET(basePath + 'path/').respond(200, resp);
+       array.itemTransform(function (animal) {
+         return extend(animal, {
+           legs: 'A couple'
+         });
+       });
+       array.nextPage();
+       $httpBackend.flush();
+       $rootScope.$digest();
+       expect(array.results[0].legs).toBe('A couple');
+       expect(array.results[1].legs).toBe('A couple');
      });
 
      it('throws exception if nextPage called before construct.', function () {
