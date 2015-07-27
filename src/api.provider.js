@@ -12,7 +12,7 @@
    */
   function constructItem(hook) {
     return function (uuid, options) {
-      return hook.construct(uuid, options);
+      return hook.construct(uuid, options).transform();
     };
   }
 
@@ -27,7 +27,7 @@
    */
   function constructArray(hook) {
     return function (options) {
-      return hook.construct(options);
+      return hook.construct(options).transform();
     };
   }
 
