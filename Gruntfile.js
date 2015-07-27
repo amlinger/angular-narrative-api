@@ -38,7 +38,7 @@ module.exports = function(grunt) {
 
     ngdocs: {
       options: {
-        startPage: '/reference',
+        startPage: '/reference/api.narrative',
         sourceLink: 'https://github.com/amlinger/angular-narrative-api/blob/master/{{file}}#L{{codeline}}'
       },
       reference: {
