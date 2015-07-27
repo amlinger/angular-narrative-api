@@ -28,7 +28,6 @@
 
       apiFactory = narrativeApiProvider
         .$get[3](itemFactory, arrayFactory, auth);
-      console.log(apiFactory());
     }));
 
     it('can be instantiated with an empty config.', function () {
