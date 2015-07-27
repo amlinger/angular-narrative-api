@@ -57,6 +57,24 @@
       expect(auth.config().name).toEqual(name);
     });
 
+    it('does not affect default when setting a name.', function () {
+      var auth,
+        defaultName = narrativeAuthProvider.defaults.name,
+        name = 'Authwl';
+
+      auth = narrativeAuth(name);
+      expect(auth.config().name).toEqual(name);
+
+      auth = narrativeAuth();
+      expect(auth.config().name).toEqual(defaultName);
+
+      auth = narrativeAuth({name: name});
+      expect(auth.config().name).toEqual(name);
+
+      auth = narrativeAuth();
+      expect(auth.config().name).toEqual(defaultName);
+    });
+
     describe('NarrativeAuth.oauth', function () {
       var authorize, redirectURI, clientID, clientSecret, auth;
 

@@ -209,7 +209,7 @@
       // Config can be passed as only a string, in which case it should be
       // set as the name of the `NarrativeAuth`.
       config = isString(config) ? {name: config} : (config || {});
-      this._config = extend(defaults, config);
+      this._config = extend({}, defaults, config);
 
       // This is the initial promise that is
       defer = this.$q.defer();
