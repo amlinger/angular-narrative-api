@@ -111,6 +111,15 @@
 
         expect(item.fangs).toBe('big and scary');
      });
+
+    it('constructs objects from information.', function () {
+      var item = itemFactory('path/:uuid', auth);
+
+      item._constructFromObject('unique', {});
+
+      expect(item.uuid).toBe('unique');
+      expect(item.path()).toBe('path/unique');
+    });
   });
 
   describe('NarrativeItemFactory', function () {

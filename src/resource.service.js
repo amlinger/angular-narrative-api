@@ -136,7 +136,7 @@
      * @return {object}         The constructed object, see `construct()`.
      */
     _constructFromObject: function(uuid, object, options) {
-      this._obj = extend(this.construct(options), object);
+      this._obj = extend(this.construct(uuid, options), object);
       return this._obj;
     },
 
