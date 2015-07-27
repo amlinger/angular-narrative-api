@@ -270,6 +270,106 @@
         expect(reject).not.toHaveBeenCalled();
       });
     });
+
+    describe('NarrativeAuth.onAuth', function () {
+      var token, redirectURI, clientID, clientSecret, auth;
+
+      beforeEach(function () {
+        token = 'http://token/';
+        redirectURI = 'http://here/';
+        clientID = 'anID';
+        clientSecret = 'aSecret';
+        auth = narrativeAuth({
+          oauthApplication: {
+            redirectURI: redirectURI,
+            clientID: clientID,
+            clientSecret: clientSecret
+          },
+          oauthRoutes: {
+            token: token
+          }
+        });
+
+        $httpBackend
+          .whenPOST('http://token/?client_id=anID&code=code&' +
+            'grant_type=authorization_code&redirect_uri=http:%2F%2Fhere%2F')
+          .respond(200, {
+            access_token: 'token',
+            token_type: 'Bearer'
+          });
+      });
+
+      it('is called on login.', function () {
+        var loginSpy = jasmine.createSpy('login');
+        auth.onAuth(loginSpy);
+        auth.getOauthToken('code');
+        $httpBackend.flush();
+
+        expect(loginSpy).toHaveBeenCalled();
+      });
+
+      it('is called on login.', function () {
+        var loginSpy = jasmine.createSpy('login'),
+          params = { some: 'parameters' };
+        auth.onAuth(loginSpy);
+        auth.getOauthToken('code', params);
+        $httpBackend.flush();
+
+        expect(loginSpy.calls.mostRecent().args[0]).toBe(auth);
+        expect(loginSpy.calls.mostRecent().args[1]).toBe(params);
+      });
+
+      it('is uses the passed context.', function () {
+        var context = null;
+        auth.onAuth(function () {
+          context = this;
+        }, this);
+
+        auth.getOauthToken('code');
+        $httpBackend.flush();
+
+        expect(context).toBe(this);
+      });
+
+      it('handles multiple callbacks.', function () {
+        var loginSpy1 = jasmine.createSpy('login1'),
+          loginSpy2 = jasmine.createSpy('login2'),
+          loginSpy3 = jasmine.createSpy('login3');
+
+        auth.onAuth(loginSpy3);
+        auth.onAuth(loginSpy2);
+        auth.onAuth(loginSpy1);
+
+        auth.getOauthToken('code');
+        $httpBackend.flush();
+
+        expect(loginSpy1).toHaveBeenCalled();
+        expect(loginSpy2).toHaveBeenCalled();
+        expect(loginSpy3).toHaveBeenCalled();
+      });
+
+
+      it('handles multiple contexts.', function () {
+        var context1 = null,
+          context2 = null,
+          expected1 = { firstcontext : "bear" },
+          expected2 = { secondcontext : "grizzly" };
+
+        auth.onAuth(function () {
+          context1 = this;
+        }, expected1);
+
+        auth.onAuth(function () {
+          context2 = this;
+        }, expected2);
+
+        auth.getOauthToken('code');
+        $httpBackend.flush();
+
+        expect(context1).toBe(expected1);
+        expect(context2).toBe(expected2);
+      });
+    });
   });
 
   describe('NarrativeUrlObserverFactory', function () {
