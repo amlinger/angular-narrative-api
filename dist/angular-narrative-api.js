@@ -1644,8 +1644,12 @@ if (!Function.prototype.bind) {
    * @param  {NrtvItemResource} hook The hook to construct for.
    * @return {function} A function with the signature(uuid, options).
    */
-  function constructItem(hook) {
+  function constructItem(factory, path, auth, transforms, options) {
     return function (uuid, options) {
+      var hook = factory(path, auth, options);
+      angular.forEach(transforms, function (transform) {
+        hook.transform(transform);
+      });
       return hook.construct(uuid, options).transform();
     };
   }
@@ -1758,8 +1762,7 @@ if (!Function.prototype.bind) {
          *                             the moment.
          */
         api.moment = constructItem(
-          itemFactory('moments/:uuid', config.auth)
-            .transform(momentTransform));
+          itemFactory, 'moments/:uuid', config.auth, [momentTransform]);
 
         /**
          * @ngdoc method
@@ -1811,7 +1814,7 @@ if (!Function.prototype.bind) {
          *                             the user.
          */
         api.user = constructItem(
-          itemFactory('users/:uuid/', config.auth));
+          itemFactory, 'users/:uuid', config.auth, []);
 
         /**
          * @ngdoc method
