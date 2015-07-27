@@ -60,7 +60,27 @@
         proxy: "",
         baseUrl: "https://narrativeapp.com/",
         apiSuffix: "api/v2/"
-      }
+      },
+
+      /**
+       * @ngdoc property
+       * @name NarrativeRequestProvider#defaults['cache']
+       * @module api.narrative
+       * @propertyOf api.narrative.NarrativeRequestProvider
+       * @type {Cache|boolean}
+       *
+       * @description
+       * The cache to be passed on to `$http`. This could either be a cache
+       * instance or a boolean value for whether a standard Cache should be
+       * used or not.
+       *
+       * The default value is:
+       * ---
+       * ```
+       * true
+       * ```
+       */
+      cache: true
     };
     var defaults = this.defaults;
 
@@ -114,6 +134,7 @@
         // method and url attribute being the only necessary.
         var requestConfig = {
           method: method,
+          cache: defaults.cache,
           url: fullPath(defaults.api, url)
         };
 
