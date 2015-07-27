@@ -495,7 +495,7 @@
 
       /**
        * @ngdoc method
-       * @name NarrativeAuth.token
+       * @name NarrativeAuth.onAuth
        * @module api.narrative
        * @methodOf api.narrative.NarrativeAuth
        *
