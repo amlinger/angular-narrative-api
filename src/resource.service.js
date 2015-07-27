@@ -408,7 +408,8 @@
 
           return obj
             .transform(resource.itemTransform())
-            ._constructFromObject(item.uuid, item);
+            ._constructFromObject(item.uuid, item)
+            .transform();
         });
         resource.results.push.apply(resource.results, page.results);
 
