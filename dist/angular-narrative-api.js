@@ -569,7 +569,7 @@ if (!Function.prototype.bind) {
      * @return {object}         The constructed object, see `construct()`.
      */
     _constructFromObject: function(uuid, object, options) {
-      this._obj = extend(this.construct(options), object);
+      this._obj = extend(this.construct(uuid, options), object);
       return this._obj;
     },
 
@@ -841,7 +841,8 @@ if (!Function.prototype.bind) {
 
           return obj
             .transform(resource.itemTransform())
-            ._constructFromObject(item.uuid, item);
+            ._constructFromObject(item.uuid, item)
+            .transform();
         });
         resource.results.push.apply(resource.results, page.results);
 
@@ -1645,7 +1646,7 @@ if (!Function.prototype.bind) {
    */
   function constructItem(hook) {
     return function (uuid, options) {
-      return hook.construct(uuid, options);
+      return hook.construct(uuid, options).transform();
     };
   }
 
@@ -1660,7 +1661,7 @@ if (!Function.prototype.bind) {
    */
   function constructArray(hook) {
     return function (options) {
-      return hook.construct(options);
+      return hook.construct(options).transform();
     };
   }
 
@@ -1709,17 +1710,17 @@ if (!Function.prototype.bind) {
       return function (config) {
         var api = {};
 
-        config = angular.extend(defaults, config);
+        config = angular.extend(defaults, config || {});
         if (!config.auth) {
           config.auth = auth();
         }
 
         function momentTransform(moment) {
           return angular.extend(moment, {
-            positions:
-              arrayFactory(config.auth, moment.path() + 'positions/').construct,
-            photos:
-              arrayFactory(config.auth, moment.path() + 'photos/').construct,
+            positions: constructArray(
+              arrayFactory(moment.path() + '/positions/', config.auth)),
+            photos: constructArray(
+              arrayFactory(moment.path() + '/photos/', config.auth)),
           });
         }
 
