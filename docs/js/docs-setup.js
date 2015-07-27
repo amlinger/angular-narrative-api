@@ -95,26 +95,17 @@ NG_DOCS={
     },
     {
       "section": "reference",
-      "id": "api.narrative.NarrativeRequestProvider",
-      "shortName": "api.narrative.NarrativeRequestProvider",
-      "type": "service",
-      "moduleName": "api.narrative",
-      "shortDescription": "NarrativeRequestProvider provides a request method that can be used",
-      "keywords": "api fetching method narrative narrativerequestprovider narratives open platform reference request resources service"
-    },
-    {
-      "section": "reference",
-      "id": "NarrativeParamSerializer",
-      "shortName": "NarrativeParamSerializer",
+      "id": "api.narrative.NarrativeParamSerializer",
+      "shortName": "api.narrative.NarrativeParamSerializer",
       "type": "service",
       "moduleName": "api.narrative",
       "shortDescription": "When called, it serializes the provided parameters provided according to",
-      "keywords": "api arrays called converted format function html json module narrative narrativeparamserializer param parameters params provided reference serializer serializes service string turn url-friendly"
+      "keywords": "api arrays called converted format json narrative narrativeparamserializer parameters params provided reference serializer serializes service string turn url-friendly"
     },
     {
       "section": "reference",
-      "id": "NarrativeParamSerializerProvider",
-      "shortName": "NarrativeParamSerializerProvider",
+      "id": "api.narrative.NarrativeParamSerializerProvider",
+      "shortName": "api.narrative.NarrativeParamSerializerProvider",
       "type": "service",
       "moduleName": "api.narrative",
       "shortDescription": "NarrativeParamSerializerProvider provides a serializer for URL",
@@ -122,12 +113,21 @@ NG_DOCS={
     },
     {
       "section": "reference",
-      "id": "NarrativeRequest",
-      "shortName": "NarrativeRequest",
+      "id": "api.narrative.NarrativeRequest",
+      "shortName": "api.narrative.NarrativeRequest",
       "type": "service",
       "moduleName": "api.narrative",
       "shortDescription": "A method for making authorized requests with parameters to Narratives",
-      "keywords": "$http api authorized function html making method module narrative narrativerequest narratives open param parameters platform reference requests serializer service url"
+      "keywords": "$http api authorized making method narrative narrativerequest narratives open parameters platform reference requests service url"
+    },
+    {
+      "section": "reference",
+      "id": "api.narrative.NarrativeRequestProvider",
+      "shortName": "api.narrative.NarrativeRequestProvider",
+      "type": "service",
+      "moduleName": "api.narrative",
+      "shortDescription": "NarrativeRequestProvider provides a request method that can be used",
+      "keywords": "$http api apisuffix backend baseurl boolean cache communicating default defaults fetching https instance instances method narrative narrativerequest narrativerequestprovider narratives open passed paths platform property proxy reference request resources service settings standard true"
     }
   ],
   "apis": {
@@ -135,7 +135,7 @@ NG_DOCS={
   },
   "html5Mode": false,
   "editExample": true,
-  "startPage": "/reference",
+  "startPage": "/reference/api.narrative",
   "scripts": [
     "angular.min.js"
   ]
