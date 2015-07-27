@@ -83,10 +83,10 @@
 
         function momentTransform(moment) {
           return angular.extend(moment, {
-            positions:
-              arrayFactory(config.auth, moment.path() + 'positions/').construct,
-            photos:
-              arrayFactory(config.auth, moment.path() + 'photos/').construct,
+            positions: constructArray(
+              arrayFactory(moment.path() + '/positions/', config.auth)),
+            photos: constructArray(
+              arrayFactory(moment.path() + '/photos/', config.auth)),
           });
         }
 

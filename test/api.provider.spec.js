@@ -17,7 +17,7 @@
       next: null,
       previous: null,
       results: [{
-        uuid: 'someveryuniqueuuid'
+        uuid: 'unique'
       }]
     };
 
@@ -61,6 +61,45 @@
       $rootScope.$digest();
 
       expect(moments.results.length).toBe(0);
+    });
+
+    it('transforms single moment-hook to enable nested queries', function () {
+      var api = apiFactory(), photos, positions;
+
+      $httpBackend.expectGET(basePath + 'moments/unique/photos/')
+        .respond(200, emptyResponse);
+      $httpBackend.expectGET(basePath + 'moments/unique/positions/')
+        .respond(200, emptyResponse);
+      photos = api.moment('unique').photos().get();
+      positions = api.moment('unique').positions().get();
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      expect(photos.results.length).toBe(0);
+      expect(positions.results.length).toBe(0);
+    });
+
+    it('transforms moments-hook to enable further queries', function () {
+      var api = apiFactory(), moments, photos, positions;
+
+      $httpBackend.expectGET(basePath + 'moments/')
+        .respond(200, singleMomentResponse);
+      moments = api.moments().get();
+      $httpBackend.flush();
+      $rootScope.$digest();
+      expect(moments.results.length).toBe(1);
+
+      $httpBackend.expectGET(basePath + 'moments/unique/photos/')
+        .respond(200, emptyResponse);
+      $httpBackend.expectGET(basePath + 'moments/unique/positions/')
+        .respond(200, emptyResponse);
+      photos = moments.results[0].photos().get();
+      positions = moments.results[0].positions().get();
+      $httpBackend.flush();
+      $rootScope.$digest();
+
+      expect(photos.results.length).toBe(0);
+      expect(positions.results.length).toBe(0);
     });
 
     it('can fetch an empty set of photos.', function () {
