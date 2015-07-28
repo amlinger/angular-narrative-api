@@ -16,6 +16,9 @@
         access_token: ':bear_arms'
       },
       unauth: alwaysTrue,
+      getOauthToken: function(code, parameters) {
+        return parameters;
+      },
       token: function (token) {
         if(!isUndefined(token))
           this.token = token;
