@@ -1740,8 +1740,16 @@ if (!Function.prototype.bind) {
    * @param  {NrtvArrayResource} hook The hook to construct for.
    * @return {function} A function with the signature(uuid, options).
    */
-  function constructArray(hook) {
+  function constructArray(factory, path, auth, transforms, itemTransforms,
+                          options) {
     return function (options) {
+      var hook = factory(path, auth, options);
+      angular.forEach(transforms, function (transform) {
+        hook.transform(transform);
+      });
+      angular.forEach(itemTransforms, function (itemTransform) {
+        hook.itemTransform(itemTransform);
+      });
       return hook.construct(options).transform();
     };
   }
@@ -1799,9 +1807,9 @@ if (!Function.prototype.bind) {
         function momentTransform(moment) {
           return angular.extend(moment, {
             positions: constructArray(
-              arrayFactory(moment.path() + '/positions/', config.auth)),
+              arrayFactory, moment.path() + '/positions/', config.auth, [], []),
             photos: constructArray(
-              arrayFactory(moment.path() + '/photos/', config.auth)),
+              arrayFactory, moment.path() + '/photos/', config.auth, [], [])
           });
         }
 
@@ -1820,8 +1828,7 @@ if (!Function.prototype.bind) {
          *                             the moments.
          */
         api.moments = constructArray(
-          arrayFactory('moments/', config.auth)
-            .itemTransform(momentTransform));
+          arrayFactory, 'moments/', config.auth, [], [momentTransform]);
 
         /**
          * @ngdoc method
@@ -1856,7 +1863,7 @@ if (!Function.prototype.bind) {
          *                             the photos.
          */
         api.photos = constructArray(
-          arrayFactory('photos/', config.auth));
+          arrayFactory, 'photos/', config.auth, [], []);
 
         /**
          * @ngdoc method
@@ -1873,7 +1880,7 @@ if (!Function.prototype.bind) {
          *                             the users.
          */
         api.users = constructArray(
-          arrayFactory('users/', config.auth));
+          arrayFactory, 'users/', config.auth, [], []);
 
         /**
          * @ngdoc method
