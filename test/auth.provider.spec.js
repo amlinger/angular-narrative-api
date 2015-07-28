@@ -456,7 +456,7 @@
     it('calls unauth on error param.', function () {
       var unauthSpy = spyOn(authMock(), 'unauth');
       $location.$$search = {
-        state: "I'm not valid JSON.",
+        state: encodeURIComponent(toJson({name : "name"})),
         error: "invalid_client"
       };
       narrativeUrlObserverFactory();
@@ -468,7 +468,7 @@
     it('keeps parameters that are not needed.', function () {
       var unauthSpy = spyOn(authMock(), 'unauth');
       $location.$$search = {
-        state: 'somestate',
+        state: encodeURIComponent(toJson({name : "name"})),
         error: 'invalid_client',
         grizzly: 'bear'
       };
@@ -476,6 +476,25 @@
       expect($location.$$search.grizzly).toEqual('bear');
       expect($location.$$search.state).not.toBeDefined();
       expect($location.$$search.error).not.toBeDefined();
+    });
+
+    it('calls getOauthToken on a successful URL.', function () {
+      var code = "A code is required.",
+        params = { para: "meters" },
+        getOauthTokenSpy = spyOn(authMock(), 'getOauthToken');
+
+      $location.$$search = {
+        code: code,
+        state: encodeURIComponent(toJson({
+          config: {},
+          parameters: params
+        }))
+      };
+      narrativeUrlObserverFactory();
+      expect(getOauthTokenSpy).toHaveBeenCalled();
+
+      expect(getOauthTokenSpy.calls.mostRecent().args[0]).toEqual(code);
+      expect(getOauthTokenSpy.calls.mostRecent().args[1]).toEqual(params);
     });
   });
 }());
