@@ -993,7 +993,7 @@ if (!Function.prototype.bind) {
     extend = angular.extend,
     toJson = angular.toJson,
     forEach = angular.forEach,
-    fromJson = angular.toJson;
+    fromJson = angular.fromJson;
 
   /**
    * @name eventName
@@ -1685,7 +1685,11 @@ if (!Function.prototype.bind) {
           if(!hash.hasOwnProperty('state'))
             return;
 
-          state = fromJson(decodeURIComponent(hash['state']));
+          try {
+            state = fromJson(decodeURIComponent(hash['state']));
+          } catch (e) {
+            return;
+          }
 
           if (hash.hasOwnProperty('error')) {
             narrativeAuth(state.config).unauth();
