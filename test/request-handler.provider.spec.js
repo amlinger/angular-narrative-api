@@ -53,7 +53,8 @@
         apiSuffix: "api/v75/"
       };
       path = "http://proxy/https://narrative.com/api/v75/";
-      narrativeRequest = narrativeRequestProvider.$get.pop()(_$http_);
+      narrativeRequest = narrativeRequestProvider.$get.pop()(
+        _$http_, _NarrativeAuthMock_);
     }));
 
     it('does not add headers to unauthorized requests.', function () {
@@ -67,7 +68,7 @@
           expect(headers.Authorization).not.toBeDefined();
           return { data: 'Curious George' };
         });
-      narrativeRequest('GET', 'monkeys/', auth);
+      narrativeRequest('GET', 'monkeys/', {}, auth);
       $httpBackend.flush();
     });
 
@@ -81,7 +82,7 @@
           return { data: "Dolly, Dolly, Dolly" };
       });
 
-      narrativeRequest('GET', 'sheep/', auth);
+      narrativeRequest('GET', 'sheep/', {}, auth);
       $httpBackend.flush();
     });
 

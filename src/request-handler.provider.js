@@ -13,6 +13,11 @@
     return { Authorization: token.token_type + ' ' + token.access_token };
   }
 
+  function isAuth(potentialAuth) {
+    return potentialAuth.hasOwnProperty('token') &&
+      potentialAuth.hasOwnProperty('getOauthToken');
+  }
+
   /**
    * @ngdoc service
    * @module.api.narrative
@@ -80,7 +85,9 @@
        * true
        * ```
        */
-      cache: true
+      cache: true,
+
+      paramSerializer: 'NarrativeParamSerializer'
     };
     var defaults = this.defaults;
 
@@ -121,33 +128,37 @@
      * @param  {NarrativeAuth} auth [description]
      * @return {promise}            [description]
      */
-    this.$get = ['$http', function ($http) {
-      function request(method, url, parameters, auth) {
+    this.$get = ['$http', 'NarrativeAuth', function ($http, narrativeAuth) {
+      function request(method, url, parameters, authOrConfig) {
+        var config, requestConfig, _tempConfig = authOrConfig || {};
 
         // If parameters are omitted, left shift the two last arguments.
-        if (isUndefined(auth)) {
-          auth = parameters;
-          parameters = undefined;
+        if (isAuth(_tempConfig)) {
+          _tempConfig = {auth: _tempConfig};
         }
 
         // The request will be constructed throughout this function, with the
         // method and url attribute being the only necessary.
-        var requestConfig = {
+        config = extend({}, defaults, _tempConfig),
+        requestConfig = {
           method: method,
-          cache: defaults.cache,
-          url: fullPath(defaults.api, url)
+          cache: config.cache,
+          url: fullPath(config.api, url)
         };
+
+        if (!config.auth)
+          config.auth = narrativeAuth();
 
         // Unauthorized requests may be allowed to some endpoints, so only add
         // headers if a valid session exists.
-        if (auth.token()) {
-          requestConfig.headers = authHeadersFromToken(auth.token());
+        if (config.auth.token()) {
+          requestConfig.headers = authHeadersFromToken(config.auth.token());
         }
 
         if (!isUndefined(parameters)) {
           requestConfig = extend(requestConfig, {
             params: parameters,
-            paramSerializer: 'NarrativeParamSerializer'
+            paramSerializer: config.paramSerializer
           });
         }
 
