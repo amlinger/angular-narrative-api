@@ -86,7 +86,7 @@
 
     /**
      * A builder that combines the URLs provided in the API path along with
-     * the passed URL to create a c
+     * the passed URL to create a combined URL to make a request to.
      * @param  {string} url The relative URL to append to the base path.
      * @return {string}     The combined URL.
      */
