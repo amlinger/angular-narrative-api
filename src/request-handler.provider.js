@@ -69,15 +69,15 @@
 
       /**
        * @ngdoc property
-       * @name NarrativeRequestProvider#defaults['cache']
+       * @name NarrativeRequestProvider#defaults['cacheFactory']
        * @module api.narrative
        * @propertyOf api.narrative.NarrativeRequestProvider
        * @type {Cache|boolean}
        *
        * @description
-       * The cache to be passed on to `$http`. This could either be a cache
-       * instance or a boolean value for whether a standard Cache should be
-       * used or not.
+       * The cacheFactory producing the cache to be passed on to `$http`.
+       * This could either be a cache instance or a boolean value for whether
+       * a standard cacheFactory should be used or not.
        *
        * The default value is:
        * ---
@@ -85,7 +85,7 @@
        * true
        * ```
        */
-      cache: true,
+      cacheFactory: '$cacheFactory',
 
       paramSerializer: 'NarrativeParamSerializer'
     };
@@ -128,9 +128,12 @@
      * @param  {NarrativeAuth} auth [description]
      * @return {promise}            [description]
      */
-    this.$get = ['$http', 'NarrativeAuth', function ($http, narrativeAuth) {
+    this.$get = [
+      '$http', 'NarrativeAuth', '$injector',
+      function ($http, narrativeAuth, $injector) {
       function request(method, url, parameters, authOrConfig) {
-        var config, requestConfig, _tempConfig = authOrConfig || {};
+        var config, requestConfig, cacheFactory, cacheId,
+          _tempConfig = authOrConfig || {};
 
         // If parameters are omitted, left shift the two last arguments.
         if (isAuth(_tempConfig)) {
@@ -139,16 +142,31 @@
 
         // The request will be constructed throughout this function, with the
         // method and url attribute being the only necessary.
-        config = extend({}, defaults, _tempConfig),
+        config = extend({}, defaults, _tempConfig);
+
+        if (!config.auth)
+          config.auth = narrativeAuth();
+
+        // Fetching the cache factory.
+        if (isUndefined(config.cache)) {
+          if(config.cacheFactory) {
+            cacheFactory = config.cacheFactory;
+            if (isString(cacheFactory)) {
+              cacheFactory = $injector.get(cacheFactory);
+            }
+            cacheId = config.auth.config().name;
+            config.cache = cacheFactory.get(cacheId) || cacheFactory(cacheId);
+          } else {
+            config.cache = false;
+          }
+        }
+
         requestConfig = {
           method: method,
           cache: config.cache,
           url: fullPath(config.api, url)
         };
-
-        if (!config.auth)
-          config.auth = narrativeAuth();
-
+        
         // Unauthorized requests may be allowed to some endpoints, so only add
         // headers if a valid session exists.
         if (config.auth.token()) {

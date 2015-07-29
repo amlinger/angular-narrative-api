@@ -44,7 +44,7 @@
     beforeEach(module('api.narrative.mocks'));
 
     beforeEach(inject(function (_$httpBackend_,  _NarrativeAuthMock_,
-                                _$http_) {
+                                _$http_, _$injector_) {
       $httpBackend = _$httpBackend_;
       newAuth = _NarrativeAuthMock_;
       narrativeRequestProvider.defaults.api = {
@@ -54,7 +54,7 @@
       };
       path = "http://proxy/https://narrative.com/api/v75/";
       narrativeRequest = narrativeRequestProvider.$get.pop()(
-        _$http_, _NarrativeAuthMock_);
+        _$http_, _NarrativeAuthMock_, _$injector_);
     }));
 
     it('adds a new Auth if none is supplied.', function () {
