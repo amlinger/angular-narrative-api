@@ -69,7 +69,7 @@
 
       /**
        * @ngdoc property
-       * @name NarrativeAuthProvider.defaults['cacheFactoy']
+       * @name NarrativeAuthProvider.defaults['cacheFactory']
        * @module api.narrative
        * @propertyOf api.narrative.NarrativeAuthProvider
        * @type {CacheFactory-like|string}
@@ -86,7 +86,7 @@
        * 'NarrativeCache'
        * ```
        */
-      cacheFactoy: 'NarrativeCache',
+      cacheFactory: 'NarrativeCache',
 
       /**
        * @ngdoc property
@@ -198,7 +198,7 @@
      * @return {Object} The Auth object representing the created instance.
      */
     function NarrativeAuth(config, $http, $q, $window, $rootScope, $injector) {
-      var defer, cacheFactoy, tempToken;
+      var defer, cacheFactory, tempToken;
 
       this.$http = $http;
       this.$q = $q;
@@ -217,11 +217,11 @@
       this._initialRequest = defer.promise;
 
       // Fetching the cache factory.
-      cacheFactoy = this._config.cacheFactoy;
-      if (isString(cacheFactoy)) {
-        cacheFactoy = $injector.get(cacheFactoy);
+      cacheFactory = this._config.cacheFactory;
+      if (isString(cacheFactory)) {
+        cacheFactory = $injector.get(cacheFactory);
       }
-      this._cache = cacheFactoy(this._config.name);
+      this._cache = cacheFactory(this._config.name);
 
       // Initially, the token is set to null, which indicates that we are not
       // logged in.
