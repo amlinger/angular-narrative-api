@@ -122,11 +122,19 @@
      * A method for making authorized requests with parameters to Narratives
      * API on Narratives Open Platform.
      *
-     * @param  {string} method      [description]
-     * @param  {string} url         [description]
-     * @param  {Object} parameters  [description]
-     * @param  {NarrativeAuth} auth [description]
-     * @return {promise}            [description]
+     * @param  {string} method The HTTP method to be used for the reqest.
+     * @param  {string} url The URL relative to the supplied full API URL.
+     * @param  {object=} parameters Optional URL parameters to add to the
+     *                              request.
+     * @param  {NarrativeAuth|object=} authOrConfig Either a NarrativeAuth
+     *                                              or a configuration object
+     *                                              for this particular request.
+     *                                              The configuraiton object
+     *                                              accepts the same attributes
+     *                                              as the default selection for
+     *                                              `NarrativeCacheProvider`s
+     *                                              `default` values.
+     * @return {promise} Returns the promise produced by the `$http` service.
      */
     this.$get = [
       '$http', 'NarrativeAuth', '$injector',
@@ -166,7 +174,7 @@
           cache: config.cache,
           url: fullPath(config.api, url)
         };
-        
+
         // Unauthorized requests may be allowed to some endpoints, so only add
         // headers if a valid session exists.
         if (config.auth.token()) {
