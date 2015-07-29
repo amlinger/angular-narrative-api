@@ -57,6 +57,18 @@
         _$http_, _NarrativeAuthMock_);
     }));
 
+    it('adds a new Auth if none is supplied.', function () {
+      var headerSpy = jasmine.createSpy('headerSpy');
+
+      $httpBackend.expectGET(path + 'monkeys/')
+        .respond(function (method, url, data, headers) {
+          expect(headers.Authorization).toBeDefined();
+          return { data: 'Curious George' };
+        });
+      narrativeRequest('GET', 'monkeys/');
+      $httpBackend.flush();
+    });
+
     it('does not add headers to unauthorized requests.', function () {
       var headerSpy = jasmine.createSpy('headerSpy'),
         auth = newAuth({
