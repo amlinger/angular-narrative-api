@@ -44,7 +44,7 @@
     beforeEach(module('api.narrative.mocks'));
 
     beforeEach(inject(function (_$httpBackend_,  _NarrativeAuthMock_,
-                                _$http_) {
+                                _$http_, _$injector_) {
       $httpBackend = _$httpBackend_;
       newAuth = _NarrativeAuthMock_;
       narrativeRequestProvider.defaults.api = {
@@ -53,8 +53,21 @@
         apiSuffix: "api/v75/"
       };
       path = "http://proxy/https://narrative.com/api/v75/";
-      narrativeRequest = narrativeRequestProvider.$get.pop()(_$http_);
+      narrativeRequest = narrativeRequestProvider.$get.pop()(
+        _$http_, _NarrativeAuthMock_, _$injector_);
     }));
+
+    it('adds a new Auth if none is supplied.', function () {
+      var headerSpy = jasmine.createSpy('headerSpy');
+
+      $httpBackend.expectGET(path + 'monkeys/')
+        .respond(function (method, url, data, headers) {
+          expect(headers.Authorization).toBeDefined();
+          return { data: 'Curious George' };
+        });
+      narrativeRequest('GET', 'monkeys/');
+      $httpBackend.flush();
+    });
 
     it('does not add headers to unauthorized requests.', function () {
       var headerSpy = jasmine.createSpy('headerSpy'),
@@ -67,7 +80,7 @@
           expect(headers.Authorization).not.toBeDefined();
           return { data: 'Curious George' };
         });
-      narrativeRequest('GET', 'monkeys/', auth);
+      narrativeRequest('GET', 'monkeys/', {}, auth);
       $httpBackend.flush();
     });
 
@@ -81,7 +94,7 @@
           return { data: "Dolly, Dolly, Dolly" };
       });
 
-      narrativeRequest('GET', 'sheep/', auth);
+      narrativeRequest('GET', 'sheep/', {}, auth);
       $httpBackend.flush();
     });
 

@@ -11,9 +11,13 @@
     alwaysTrue  = function () { return true; },
     alwaysFalse = function () { return false; },
     Auth = {
+      _name: 'global',
       _token: {
         token_type: 'Bearer',
         access_token: ':bear_arms'
+      },
+      config: function () {
+        return {name: this._name};
       },
       unauth: alwaysTrue,
       getOauthToken: function(code, parameters) {
