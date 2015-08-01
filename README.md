@@ -8,7 +8,7 @@ itself can be found using the links below.
 * [Narrative Open Platform][OpenPlatform]
 
 ## Installation
-This package currently supports installation by [Bower.io]. With Bower
+This package currently supports installation by [Bower.io](BowerIO). With Bower
 installed, simply type the following in a terminal window:
 ```bash
 $ bower install angular-narrative-api --save
@@ -65,6 +65,7 @@ The links below are used for referencing above.
 -->
 [AngularJS]: https://angularjs.org/
 [APIdocs]: http://amlinger.github.io/angular-narrative-api/
+[BowerIO]: http://bower.io/
 [OpenPlatform]: http://open-staging.getnarrative.com/
 [minDist]: dist/angular-narrative-api.min.js
 [dist]: dist/angular-narrative-api.js
