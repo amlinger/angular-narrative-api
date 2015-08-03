@@ -663,8 +663,8 @@
          *
          * @return {Object} [description]
          */
-        this.locationSearch = function() {
-          var vars, url = $location.absUrl(), idx = url.indexOf('?'), hash = {};
+        this.locationSearch = function(url) {
+          var vars, idx = url.indexOf('?'), hash = {};
 
           if (idx !== -1) {
             vars = url.substring(idx + 1).split('#')[0];
