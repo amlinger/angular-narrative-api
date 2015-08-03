@@ -392,7 +392,7 @@
 
   describe('NarrativeUrlObserverFactory', function () {
     var narrativeUrlObserverFactory, $location, $window, redirectSpy,
-      $rootScope, authMock, urlObsFactoryProvider;
+      $rootScope, authMock, urlObsFactoryProvider, $q;
 
     function encodeState(obj) {
       return encodeURIComponent(toJson(obj));
@@ -429,9 +429,10 @@
     }));
 
     beforeEach(inject(function (_$window_, _NarrativeUrlObserverFactory_,
-                                _$rootScope_) {
+                                _$rootScope_, _$q_) {
       $window = _$window_;
       $rootScope = _$rootScope_;
+      $q = _$q_;
       narrativeUrlObserverFactory = _NarrativeUrlObserverFactory_;
     }));
 
@@ -544,6 +545,29 @@
 
       expect(getOauthTokenSpy.calls.mostRecent().args[0]).toEqual(code);
       expect(getOauthTokenSpy.calls.mostRecent().args[1]).toEqual(params);
+    });
+
+    it('calls location.replace after it has resolved the token.', function () {
+      var code = "A code is required.",
+        defer = $q.defer(),
+        winSpy = spyOn($window.location, 'replace'),
+        getOauthTokenSpy = spyOn(authMock(), 'getOauthToken')
+          .and.callFake(function () {
+            return defer.promise;
+          });
+
+      $location.$$absUrl ='http://home.page?code=code&state=' +
+        encodeURIComponent(toJson({config: {}}));
+      $location.$$html5 = false;
+
+      narrativeUrlObserverFactory();
+
+      expect(winSpy).not.toHaveBeenCalled();
+      expect(getOauthTokenSpy).toHaveBeenCalled();
+      defer.resolve();
+      $rootScope.$digest();
+      expect(winSpy).toHaveBeenCalled();
+      expect(getOauthTokenSpy).toHaveBeenCalled();
     });
   });
 }());
