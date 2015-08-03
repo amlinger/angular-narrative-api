@@ -715,10 +715,10 @@
             delete hash.error;
             cleanUpAndRedirectAfterPromise(hash);
           } else if (hash.hasOwnProperty('code')) {
-            delete hash.code;
             cleanUpAndRedirectAfterPromise(hash,
                 narrativeAuth(state.config)
                   .getOauthToken(hash.code, state.parameters));
+            delete hash.code;
           }
         };
       }])
