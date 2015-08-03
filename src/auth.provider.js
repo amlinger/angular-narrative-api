@@ -662,7 +662,7 @@
         function cleanUpAndRedirect(params) {
           delete params.state;
           if ($location.$$html5) {
-              $location.search(params).replace();
+            $location.search(params).replace();
           } else {
             redirectToHash(params);
           }
