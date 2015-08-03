@@ -641,32 +641,20 @@
                'NarrativeAuth', '$location', '$window',
       function (narrativeAuth ,  $location ,  $window) {
 
-        function redirectToHash(params) {
-          var absUrl = $location.absUrl(),
-            base = absUrl.substring(0, absUrl.indexOf('?')),
-            hash = absUrl.substring(0, absUrl.lastIndexOf('#') + 1),
-            parts = [];
+        this.rewriteSearchParams = function (url, params) {
+          var qm = url.indexOf('?'), num = url.lastIndexOf('#'),
+            parts = [],
+            href = qm >= 0 ? url.substring(0, qm)
+                           : ( num >= 0 ? url.substring(0, num) : url),
+            hash = num >= 0 ? url.substring(num) : '';
 
           forEach(params, function(value, key) {
             parts.push(key + '=' + value);
           });
 
-          $window.location.href = base;
-          if (parts) {
-            $window.location.search = parts.join('&');
-          }
-          $window.location.hash = hash;
-          $window.location.replace();
-        }
-
-        function cleanUpAndRedirect(params) {
-          delete params.state;
-          if ($location.$$html5) {
-            $location.search(params).replace();
-          } else {
-            redirectToHash(params);
-          }
-        }
+          return href + (parts.length ? '?' + parts.join('&') : '') + hash;
+        };
+        var rewriteSearchParams = this.rewriteSearchParams;
 
         /**
          * @name locationSearch
@@ -690,6 +678,17 @@
           return hash;
         };
         var locationSearch = this.locationSearch;
+
+
+        function cleanUpAndRedirect(params) {
+          delete params.state;
+          if ($location.$$html5) {
+            $location.search(params).replace();
+          } else {
+            $window.location.replace(rewriteSearchParams(
+              $location.absUrl(), params));
+          }
+        }
 
         return function () {
           var hash = $location.$$html5 ? $location.search()

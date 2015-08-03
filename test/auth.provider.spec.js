@@ -392,7 +392,7 @@
 
   describe('NarrativeUrlObserverFactory', function () {
     var narrativeUrlObserverFactory, $location, $window, redirectSpy,
-      authMock;
+      authMock, urlObsFactoryProvider;
 
     function encodeState(obj) {
       return encodeURIComponent(toJson(obj));
@@ -401,7 +401,8 @@
     beforeEach(module('api.narrative'));
     beforeEach(module('api.narrative.mocks'));
 
-    beforeEach(module(function($provide, _StaticAuthMockProvider_) {
+    beforeEach(module(function($provide, _StaticAuthMockProvider_,
+                               _NarrativeUrlObserverFactoryProvider_) {
       redirectSpy = jasmine.createSpy('redirectSpy');
       $location = {
         $$html5: true,
@@ -423,6 +424,7 @@
         return $location;
       });
       authMock = _StaticAuthMockProvider_.$get();
+      urlObsFactoryProvider = _NarrativeUrlObserverFactoryProvider_;
       $provide.provider('NarrativeAuth', _StaticAuthMockProvider_);
     }));
 
@@ -446,6 +448,51 @@
       narrativeUrlObserverFactory();
       expect(absUrlSpy).toHaveBeenCalled();
       expect(searchSpy).not.toHaveBeenCalled();
+    });
+
+    it('rewrites url without hash, or params as the same.', function () {
+      var url = 'https://the-brown.fox:8000/jumped',
+        params = {},
+        expected = url,
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('rewrites url without hash, with params to new search.', function () {
+      var url = 'https://the-brown.fox:8000/jumped',
+        params = { 'over': 'the' },
+        expected = url + '?over=the',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('rewrites concatenates params with ampersands.', function () {
+      var url = 'https://the-brown.fox:8000/jumped',
+        params = { 'over': 'the', 'lazy': 'dog' },
+        expected = url + '?over=the&lazy=dog',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('removes existing search.', function () {
+      var url = 'https://the-brown.fox:8000?over=the#lazy/dog',
+        params = {},
+        expected = 'https://the-brown.fox:8000#lazy/dog',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('replaces existing search.', function () {
+      var url = 'https://the-brown.fox:8000?over=the#lazy/dog',
+        params = { 'laughed': 'at' },
+        expected = 'https://the-brown.fox:8000?laughed=at#lazy/dog',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
     });
 
     it('aborts on invalid state.', function () {
