@@ -392,7 +392,7 @@
 
   describe('NarrativeUrlObserverFactory', function () {
     var narrativeUrlObserverFactory, $location, $window, redirectSpy,
-      authMock;
+      $rootScope, authMock, urlObsFactoryProvider, $q;
 
     function encodeState(obj) {
       return encodeURIComponent(toJson(obj));
@@ -401,12 +401,13 @@
     beforeEach(module('api.narrative'));
     beforeEach(module('api.narrative.mocks'));
 
-    beforeEach(module(function($provide, _StaticAuthMockProvider_) {
+    beforeEach(module(function($provide, _StaticAuthMockProvider_,
+                               _NarrativeUrlObserverFactoryProvider_) {
       redirectSpy = jasmine.createSpy('redirectSpy');
       $location = {
         $$html5: true,
         $$search: {},
-        $$absUrl: "",
+        $$absUrl: "http://server/",
         absUrl: function () {
           return this.$$absUrl;
         },
@@ -423,11 +424,15 @@
         return $location;
       });
       authMock = _StaticAuthMockProvider_.$get();
+      urlObsFactoryProvider = _NarrativeUrlObserverFactoryProvider_;
       $provide.provider('NarrativeAuth', _StaticAuthMockProvider_);
     }));
 
-    beforeEach(inject(function (_$window_, _NarrativeUrlObserverFactory_) {
+    beforeEach(inject(function (_$window_, _NarrativeUrlObserverFactory_,
+                                _$rootScope_, _$q_) {
       $window = _$window_;
+      $rootScope = _$rootScope_;
+      $q = _$q_;
       narrativeUrlObserverFactory = _NarrativeUrlObserverFactory_;
     }));
 
@@ -446,6 +451,51 @@
       narrativeUrlObserverFactory();
       expect(absUrlSpy).toHaveBeenCalled();
       expect(searchSpy).not.toHaveBeenCalled();
+    });
+
+    it('rewrites url without hash, or params as the same.', function () {
+      var url = 'https://the-brown.fox:8000/jumped',
+        params = {},
+        expected = url,
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('rewrites url without hash, with params to new search.', function () {
+      var url = 'https://the-brown.fox:8000/jumped',
+        params = { 'over': 'the' },
+        expected = url + '?over=the',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('rewrites concatenates params with ampersands.', function () {
+      var url = 'https://the-brown.fox:8000/jumped',
+        params = { 'over': 'the', 'lazy': 'dog' },
+        expected = url + '?over=the&lazy=dog',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('removes existing search.', function () {
+      var url = 'https://the-brown.fox:8000?over=the#lazy/dog',
+        params = {},
+        expected = 'https://the-brown.fox:8000#lazy/dog',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
+    });
+
+    it('replaces existing search.', function () {
+      var url = 'https://the-brown.fox:8000?over=the#lazy/dog',
+        params = { 'laughed': 'at' },
+        expected = 'https://the-brown.fox:8000?laughed=at#lazy/dog',
+        rewriteFn = urlObsFactoryProvider.rewriteSearchParams;
+
+        expect(rewriteFn(url, params)).toBe(expected);
     });
 
     it('aborts on invalid state.', function () {
@@ -495,6 +545,29 @@
 
       expect(getOauthTokenSpy.calls.mostRecent().args[0]).toEqual(code);
       expect(getOauthTokenSpy.calls.mostRecent().args[1]).toEqual(params);
+    });
+
+    it('calls location.replace after it has resolved the token.', function () {
+      var code = "A code is required.",
+        defer = $q.defer(),
+        winSpy = spyOn($window.location, 'replace'),
+        getOauthTokenSpy = spyOn(authMock(), 'getOauthToken')
+          .and.callFake(function () {
+            return defer.promise;
+          });
+
+      $location.$$absUrl ='http://home.page?code=code&state=' +
+        encodeURIComponent(toJson({config: {}}));
+      $location.$$html5 = false;
+
+      narrativeUrlObserverFactory();
+
+      expect(winSpy).not.toHaveBeenCalled();
+      expect(getOauthTokenSpy).toHaveBeenCalled();
+      defer.resolve();
+      $rootScope.$digest();
+      expect(winSpy).toHaveBeenCalled();
+      expect(getOauthTokenSpy).toHaveBeenCalled();
     });
   });
 }());
