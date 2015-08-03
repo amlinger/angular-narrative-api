@@ -680,10 +680,16 @@
         var locationSearch = this.locationSearch;
 
 
-        function cleanUpAndRedirect(params) {
+        function cleanUpAndRedirectAfterPromise(params, promise) {
           delete params.state;
+
           if ($location.$$html5) {
             $location.search(params).replace();
+          } else if (!isUndefined(promise)){
+            promise.finally(function () {
+              $window.location.replace(rewriteSearchParams(
+                $location.absUrl(), params));
+            });
           } else {
             $window.location.replace(rewriteSearchParams(
               $location.absUrl(), params));
@@ -707,12 +713,12 @@
           if (hash.hasOwnProperty('error')) {
             narrativeAuth(state.config).unauth();
             delete hash.error;
-            cleanUpAndRedirect(hash);
+            cleanUpAndRedirectAfterPromise(hash);
           } else if (hash.hasOwnProperty('code')) {
-            narrativeAuth(state.config)
-              .getOauthToken(hash.code, state.parameters);
             delete hash.code;
-            cleanUpAndRedirect(hash);
+            cleanUpAndRedirectAfterPromise(hash,
+                narrativeAuth(state.config)
+                  .getOauthToken(hash.code, state.parameters));
           }
         };
       }])
