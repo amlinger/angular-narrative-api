@@ -392,7 +392,7 @@
 
   describe('NarrativeUrlObserverFactory', function () {
     var narrativeUrlObserverFactory, $location, $window, redirectSpy,
-      authMock, urlObsFactoryProvider;
+      $rootScope, authMock, urlObsFactoryProvider;
 
     function encodeState(obj) {
       return encodeURIComponent(toJson(obj));
@@ -407,7 +407,7 @@
       $location = {
         $$html5: true,
         $$search: {},
-        $$absUrl: "",
+        $$absUrl: "http://server/",
         absUrl: function () {
           return this.$$absUrl;
         },
@@ -428,8 +428,10 @@
       $provide.provider('NarrativeAuth', _StaticAuthMockProvider_);
     }));
 
-    beforeEach(inject(function (_$window_, _NarrativeUrlObserverFactory_) {
+    beforeEach(inject(function (_$window_, _NarrativeUrlObserverFactory_,
+                                _$rootScope_) {
       $window = _$window_;
+      $rootScope = _$rootScope_;
       narrativeUrlObserverFactory = _NarrativeUrlObserverFactory_;
     }));
 
