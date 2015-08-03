@@ -637,10 +637,38 @@
 
   angular.module('api.narrative')
     .provider('NarrativeAuth', NarrativeAuthProvider)
+
+    /**
+     * @ngdoc service
+     * @name api.narrative.NarrativeUrlObserverFactory
+     * @module api.narrative
+     * @requires api.narrative.NarrativeAuth
+     * @requires ng.$location
+     * @requires ng.$window
+     *
+     * @description
+     * Creates an instance that observes the URL for Oauth2 response
+     * parameters. This is used internally for instanciating and triggers
+     * the login flow when the URL search parameters corresponds to what a
+     * Oauth login response looks like.
+     *
+     * @return {function} The factory function that creates the URL observer
+     *                    instance.
+     */
     .factory('NarrativeUrlObserverFactory', [
                'NarrativeAuth', '$location', '$window',
       function (narrativeAuth ,  $location ,  $window) {
 
+        /**
+         * @name rewriteSearchParams
+         *
+         * @description
+         * Rewrites the search param field of a given URL to the given params.
+         *
+         * @param  {string} url    The original URL to be rewritten.
+         * @param  {object} params Key/value pairs that will be parameters.
+         * @return {string}        The rewritten URL.
+         */
         this.rewriteSearchParams = function (url, params) {
           var qm = url.indexOf('?'), num = url.lastIndexOf('#'),
             parts = [],
@@ -658,10 +686,13 @@
 
         /**
          * @name locationSearch
+         *
          * @description
          *
          *
-         * @return {Object} [description]
+         * @param {string} url The URL to find the parameters in.
+         * @return {object} The search parameters of the URL as key/value
+         *                  pairs.
          */
         this.locationSearch = function(url) {
           var vars, idx = url.indexOf('?'), hash = {};
@@ -679,7 +710,20 @@
         };
         var locationSearch = this.locationSearch;
 
-
+        /**
+         * @name cleanUpAndRedirectAfterPromise
+         *
+         * @description
+         * Removes the state parameter and rewrites the current URL to match
+         * the passed params object, minus the state parameter.
+         *
+         * @param  {object} params An object of the new paramters of the URL.
+         *                         If a state parameter is present, it will
+         *                         be removed from the object.
+         * @param  {promise=} promise If included, and not in html5Mode, The
+         *                            redirect will wait until after the
+         *                            promise is resolved.
+         */
         function cleanUpAndRedirectAfterPromise(params, promise) {
           delete params.state;
 
@@ -704,17 +748,25 @@
           if(!hash.hasOwnProperty('state'))
             return;
 
+          // If the state cannot be decoded, it was not NarrativeAuth that
+          // sent the original request.
           try {
             state = fromJson(decodeURIComponent(hash['state']));
           } catch (e) {
             return;
           }
 
+          // For now, errors are just handled by logging out the Auth object,
+          // cleaning up the parameters and mocing on.
           if (hash.hasOwnProperty('error')) {
             narrativeAuth(state.config).unauth();
             delete hash.error;
             cleanUpAndRedirectAfterPromise(hash);
           } else if (hash.hasOwnProperty('code')) {
+
+            // The promise is added to the redirect function, as the redirect
+            // cannot be performed until the token is fetched, since This
+            // trigger a page reload.
             cleanUpAndRedirectAfterPromise(hash,
                 narrativeAuth(state.config)
                   .getOauthToken(hash.code, state.parameters));
