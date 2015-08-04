@@ -110,7 +110,7 @@
        * Removes all entries from the cache.
        */
       removeAll: function () {
-        var start = keySerializer(this.name, "");
+        var start = keySerializer(this.name, '');
         forEach(localStorage, function (value, key) {
           if (key.indexOf(start) === 0) {
             localStorage.removeItem(key);

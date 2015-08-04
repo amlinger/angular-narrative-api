@@ -152,8 +152,8 @@
        * ```
        */
       oauthRoutes: {
-        authorize: "https://narrativeapp.com/oauth2/authorize/",
-        token: "https://narrativeapp.com/oauth2/token/"
+        authorize: 'https://narrativeapp.com/oauth2/authorize/',
+        token: 'https://narrativeapp.com/oauth2/token/'
       }
     };
     var defaults = this.defaults;
@@ -339,14 +339,14 @@
           url: this._config.oauthRoutes.token,
           method: 'POST',
           params: {
-            grant_type: "authorization_code",
+            grant_type: 'authorization_code',
             code: code,
             redirect_uri: this._config.oauthApplication.redirectURI,
             client_id: this._config.oauthApplication.clientID
           },
           headers : {
-            Authorization : "Basic " + window.btoa(
-              this._config.oauthApplication.clientID + ":" +
+            Authorization : 'Basic ' + window.btoa(
+              this._config.oauthApplication.clientID + ':' +
                 this._config.oauthApplication.clientSecret)
             }
         }).then(function (tokenData) {
@@ -394,8 +394,8 @@
        * @description
        * *NOT IMPLEMENTED YET.*
        */
-      oauthImplicit: function (params) {
-        throw "Implicit Grant flow is not supported yet.";
+      oauthImplicit: function (/*params*/) {
+        throw 'Implicit Grant flow is not supported yet.';
       },
 
       /**
@@ -410,8 +410,8 @@
        * @description
        * *NOT IMPLEMENTED YET.*
        */
-      oauthClientCredentials: function(params) {
-        throw "Client Credentials Grant flow is not supported yet.";
+      oauthClientCredentials: function(/*params*/) {
+        throw 'Client Credentials Grant flow is not supported yet.';
       },
 
       /**
@@ -426,8 +426,8 @@
        * @description
        * *NOT IMPLEMENTED YET.*
        */
-      oauthRefreshToken: function (params) {
-        throw "Refresh Token Grant flow is not supported yet.";
+      oauthRefreshToken: function (/*params*/) {
+        throw 'Refresh Token Grant flow is not supported yet.';
       },
 
       /**
@@ -455,7 +455,7 @@
           } else {
             var defer = _auth.$q.defer();
             _auth.$rootScope.$on(eventName(_auth._config.name, 'auth'),
-              function (evt, auth) {
+              function (/*evt, auth*/) {
                 defer.resolve(_auth._object);
               }
             );
@@ -481,13 +481,13 @@
        *
        * @return {Promise} A promise that resolves with the auth object if
        *                     a successful login has been made, and rejects with
-       *                     the reason `"AUTH_REQUIRED"` if not.
+       *                     the reason `'AUTH_REQUIRED'` if not.
        */
       requireAuth: function () {
         var _auth = this;
         return this._initialRequest.then(function () {
           if (!_auth.token()) {
-            return _auth.$q.reject("AUTH_REQUIRED");
+            return _auth.$q.reject('AUTH_REQUIRED');
           }
           return _auth._object;
         });
@@ -568,7 +568,7 @@
       token: function (tokenObject) {
         if (!isUndefined(tokenObject)) {
           if (!this._validateToken(tokenObject))
-            throw "The given token is not valid!";
+            throw 'The given token is not valid!';
 
           this._cache.put('token', tokenObject);
 
@@ -700,10 +700,10 @@
           if (idx !== -1) {
             vars = url.substring(idx + 1).split('#')[0];
 
-            forEach((vars ? vars.split("&") : []), function (urlVar) {
-              var pair = urlVar.split("=");
+            forEach((vars ? vars.split('&') : []), function (urlVar) {
+              var pair = urlVar.split('=');
               // Remove trailing slashes
-              hash[pair[0]] = pair[1].replace(/\/+$/, "");
+              hash[pair[0]] = pair[1].replace(/\/+$/, '');
             });
           }
           return hash;
@@ -751,7 +751,7 @@
           // If the state cannot be decoded, it was not NarrativeAuth that
           // sent the original request.
           try {
-            state = fromJson(decodeURIComponent(hash['state']));
+            state = fromJson(decodeURIComponent(hash.state));
           } catch (e) {
             return;
           }
@@ -762,7 +762,7 @@
             narrativeAuth(state.config).unauth();
             delete hash.error;
             cleanUpAndRedirectAfterPromise(hash);
-          } else if (hash.hasOwnProperty('code')) {
+          } else if (hash.hasOwnProperty('code')) {
 
             // The promise is added to the redirect function, as the redirect
             // cannot be performed until the token is fetched, since This

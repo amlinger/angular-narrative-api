@@ -62,9 +62,9 @@
        * ```
        */
       api: {
-        proxy: "",
-        baseUrl: "https://narrativeapp.com/",
-        apiSuffix: "api/v2/"
+        proxy: '',
+        baseUrl: 'https://narrativeapp.com/',
+        apiSuffix: 'api/v2/'
       },
 
       /**
@@ -109,7 +109,7 @@
      * @return {string}     The relative, stripped URL.
      */
     function stripApiBase(api, url) {
-      return url.replace(api.baseUrl + api.apiSuffix, "");
+      return url.replace(api.baseUrl + api.apiSuffix, '');
     }
 
     /**
@@ -141,7 +141,7 @@
       function ($http, narrativeAuth, $injector) {
       function request(method, url, parameters, authOrConfig) {
         var config, requestConfig, cacheFactory, cacheId,
-          _tempConfig = authOrConfig || {};
+          _tempConfig = authOrConfig || {};
 
         // If parameters are omitted, left shift the two last arguments.
         if (isAuth(_tempConfig)) {
@@ -163,7 +163,7 @@
               cacheFactory = $injector.get(cacheFactory);
             }
             cacheId = config.auth.config().name;
-            config.cache = cacheFactory.get(cacheId) || cacheFactory(cacheId);
+            config.cache = cacheFactory.get(cacheId) || cacheFactory(cacheId);
           } else {
             config.cache = false;
           }
@@ -242,10 +242,10 @@
           if (isArray(value)) {
             rhs = toJson(value);
           }
-          parts.push(encodeURIComponent(key) + "=" + encodeURIComponent(rhs));
+          parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(rhs));
         });
 
-        return parts.join("&");
+        return parts.join('&');
       };
     };
   }

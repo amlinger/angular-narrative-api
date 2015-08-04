@@ -10,7 +10,7 @@
    * @param  {NrtvItemResource} hook The hook to construct for.
    * @return {function} A function with the signature(uuid, options).
    */
-  function constructItem(factory, path, auth, transforms, options) {
+  function constructItem(factory, path, auth, transforms) {
     return function (uuid, options) {
       var hook = factory(path, auth, options);
       angular.forEach(transforms, function (transform) {
@@ -29,8 +29,7 @@
    * @param  {NrtvArrayResource} hook The hook to construct for.
    * @return {function} A function with the signature(uuid, options).
    */
-  function constructArray(factory, path, auth, transforms, itemTransforms,
-                          options) {
+  function constructArray(factory, path, auth, transforms, itemTransforms) {
     return function (options) {
       var hook = factory(path, auth, options);
       angular.forEach(transforms, function (transform) {
@@ -88,7 +87,7 @@
       return function (config) {
         var api = {};
 
-        config = angular.extend(defaults, config || {});
+        config = angular.extend(defaults, config || {});
         if (!config.auth) {
           config.auth = auth();
         }

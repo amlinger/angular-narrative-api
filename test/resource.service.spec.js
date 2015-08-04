@@ -7,7 +7,7 @@
 
   describe('NarrativeItemFactory', function () {
     var $httpBackend, itemFactory, auth, $rootScope,
-      basePath = "https://narrativeapp.com/api/v2/";
+      basePath = 'https://narrativeapp.com/api/v2/';
 
     beforeEach(module('api.narrative'));
     beforeEach(module('api.narrative.mocks'));
@@ -40,7 +40,7 @@
         $httpBackend.flush();
         $rootScope.$digest();
         expect(rejectSpy).toHaveBeenCalledWith(
-          "Need to invoke construct() before calling this method");
+          'Need to invoke construct() before calling this method');
     });
 
     it('caches its promises with q().', function () {
@@ -124,10 +124,10 @@
 
   describe('NarrativeItemFactory', function () {
     var $httpBackend, arrayFactory, auth, $rootScope,
-      basePath = "https://narrativeapp.com/api/v2/",
+      basePath = 'https://narrativeapp.com/api/v2/',
       defaultResp = {
         count: 2,
-        results: [{uuid: "owl"}, {uuid: "bear"}],
+        results: [{uuid: 'owl'}, {uuid: 'bear'}],
         next: null,
         previous: null
       };
@@ -161,7 +161,7 @@
         array.q().then(null, rejectSpy);
         $rootScope.$digest();
         expect(rejectSpy).toHaveBeenCalledWith(
-          "Need to invoke construct() before calling this method");
+          'Need to invoke construct() before calling this method');
     });
 
     it('caches its promises with q().', function () {

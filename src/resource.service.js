@@ -24,7 +24,7 @@
   NrtvResource.prototype = {
 
     construct: function (options) {
-      this._options = options || {};
+      this._options = options || {};
 
       this._obj = {
         q: this.q.bind(this),
@@ -41,11 +41,11 @@
     },
     _object: function() {
       if(!this._obj)
-        throw "Need to invoke construct() before calling this method";
+        throw 'Need to invoke construct() before calling this method';
       return this._obj;
     },
     q: function () {
-      throw "Abstract method q() must be overriden.";
+      throw 'Abstract method q() must be overriden.';
     },
     path: function () {
       return this._path;
@@ -206,7 +206,7 @@
      * @return {string} The path relative from the API root to this resource.
      */
     path: function() {
-      return this._super.path.call(this).replace(':uuid', this.uuid || "");
+      return this._super.path.call(this).replace(':uuid', this.uuid || '');
     }
   });
   NrtvItemResource.prototype.constructor = NrtvItemResource;
@@ -390,7 +390,7 @@
     nextPage: function () {
       // If next us set to null, then we can return.
       if (this._object() && this._next === null) {
-        throw "No more entries to get";
+        throw 'No more entries to get';
       }
 
       var resource = this;
@@ -459,7 +459,7 @@
         while (index < resource.results.length) {
           callback(resource.results[index], index++, doAbort);
           if (abort) {
-            defer.reject("FOREACH_ABORTED");
+            defer.reject('FOREACH_ABORTED');
             return;
           }
         }
