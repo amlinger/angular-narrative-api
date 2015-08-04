@@ -65,6 +65,10 @@ module.exports = function(grunt) {
     karma: {
       unit: {
         configFile: 'karma.conf.js'
+      },
+      CI: {
+        singleRun: true,
+        configFile: 'karma.conf.js'
       }
     },
 
@@ -78,12 +82,28 @@ module.exports = function(grunt) {
         files: ['.jshintrc', 'src/.jshintrc', 'test/.jshintrc',
                 '*.js', 'src/*.js', 'test/*.js'],
         tasks: ['jshint:all']
+      },
+      test: {
+        files: ['.jshintrc', 'src/.jshintrc', 'test/.jshintrc',
+                '*.js', 'src/*.js', 'test/*.js'],
+        tasks: ['jshint:all', 'karma:CI']
       }
     }
   });
 
   // Testing task
-  grunt.registerTask('test', ['jshint:all', 'karma:unit']);
+  grunt.registerTask('test', 'Runs unit tests and Lints.', function(run) {
+    run = run || 'repeat';
+
+    if (run === 'CI')
+      grunt.task.run(['jshint:all', 'karma:CI']);
+
+    else if (run === 'repeat')
+      grunt.task.run(['watch:test']);
+
+    else
+      throw 'No such option: "' + run + '"';
+  });
 
   grunt.registerTask('docs', ['clean:docs', 'ngdocs:reference']);
   // Default task(s).
