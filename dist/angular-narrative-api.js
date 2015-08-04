@@ -175,7 +175,7 @@ if (!Function.prototype.bind) {
        * Removes all entries from the cache.
        */
       removeAll: function () {
-        var start = keySerializer(this.name, "");
+        var start = keySerializer(this.name, '');
         forEach(localStorage, function (value, key) {
           if (key.indexOf(start) === 0) {
             localStorage.removeItem(key);
@@ -305,9 +305,9 @@ if (!Function.prototype.bind) {
        * ```
        */
       api: {
-        proxy: "",
-        baseUrl: "https://narrativeapp.com/",
-        apiSuffix: "api/v2/"
+        proxy: '',
+        baseUrl: 'https://narrativeapp.com/',
+        apiSuffix: 'api/v2/'
       },
 
       /**
@@ -352,7 +352,7 @@ if (!Function.prototype.bind) {
      * @return {string}     The relative, stripped URL.
      */
     function stripApiBase(api, url) {
-      return url.replace(api.baseUrl + api.apiSuffix, "");
+      return url.replace(api.baseUrl + api.apiSuffix, '');
     }
 
     /**
@@ -384,7 +384,7 @@ if (!Function.prototype.bind) {
       function ($http, narrativeAuth, $injector) {
       function request(method, url, parameters, authOrConfig) {
         var config, requestConfig, cacheFactory, cacheId,
-          _tempConfig = authOrConfig || {};
+          _tempConfig = authOrConfig || {};
 
         // If parameters are omitted, left shift the two last arguments.
         if (isAuth(_tempConfig)) {
@@ -406,7 +406,7 @@ if (!Function.prototype.bind) {
               cacheFactory = $injector.get(cacheFactory);
             }
             cacheId = config.auth.config().name;
-            config.cache = cacheFactory.get(cacheId) || cacheFactory(cacheId);
+            config.cache = cacheFactory.get(cacheId) || cacheFactory(cacheId);
           } else {
             config.cache = false;
           }
@@ -485,10 +485,10 @@ if (!Function.prototype.bind) {
           if (isArray(value)) {
             rhs = toJson(value);
           }
-          parts.push(encodeURIComponent(key) + "=" + encodeURIComponent(rhs));
+          parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(rhs));
         });
 
-        return parts.join("&");
+        return parts.join('&');
       };
     };
   }
@@ -526,7 +526,7 @@ if (!Function.prototype.bind) {
   NrtvResource.prototype = {
 
     construct: function (options) {
-      this._options = options || {};
+      this._options = options || {};
 
       this._obj = {
         q: this.q.bind(this),
@@ -543,11 +543,11 @@ if (!Function.prototype.bind) {
     },
     _object: function() {
       if(!this._obj)
-        throw "Need to invoke construct() before calling this method";
+        throw 'Need to invoke construct() before calling this method';
       return this._obj;
     },
     q: function () {
-      throw "Abstract method q() must be overriden.";
+      throw 'Abstract method q() must be overriden.';
     },
     path: function () {
       return this._path;
@@ -708,7 +708,7 @@ if (!Function.prototype.bind) {
      * @return {string} The path relative from the API root to this resource.
      */
     path: function() {
-      return this._super.path.call(this).replace(':uuid', this.uuid || "");
+      return this._super.path.call(this).replace(':uuid', this.uuid || '');
     }
   });
   NrtvItemResource.prototype.constructor = NrtvItemResource;
@@ -892,7 +892,7 @@ if (!Function.prototype.bind) {
     nextPage: function () {
       // If next us set to null, then we can return.
       if (this._object() && this._next === null) {
-        throw "No more entries to get";
+        throw 'No more entries to get';
       }
 
       var resource = this;
@@ -961,7 +961,7 @@ if (!Function.prototype.bind) {
         while (index < resource.results.length) {
           callback(resource.results[index], index++, doAbort);
           if (abort) {
-            defer.reject("FOREACH_ABORTED");
+            defer.reject('FOREACH_ABORTED');
             return;
           }
         }
@@ -1092,7 +1092,7 @@ if (!Function.prototype.bind) {
 
       /**
        * @ngdoc property
-       * @name NarrativeAuthProvider.defaults['cacheFactoy']
+       * @name NarrativeAuthProvider.defaults['cacheFactory']
        * @module api.narrative
        * @propertyOf api.narrative.NarrativeAuthProvider
        * @type {CacheFactory-like|string}
@@ -1109,7 +1109,7 @@ if (!Function.prototype.bind) {
        * 'NarrativeCache'
        * ```
        */
-      cacheFactoy: 'NarrativeCache',
+      cacheFactory: 'NarrativeCache',
 
       /**
        * @ngdoc property
@@ -1175,8 +1175,8 @@ if (!Function.prototype.bind) {
        * ```
        */
       oauthRoutes: {
-        authorize: "https://narrativeapp.com/oauth2/authorize/",
-        token: "https://narrativeapp.com/oauth2/token/"
+        authorize: 'https://narrativeapp.com/oauth2/authorize/',
+        token: 'https://narrativeapp.com/oauth2/token/'
       }
     };
     var defaults = this.defaults;
@@ -1221,7 +1221,7 @@ if (!Function.prototype.bind) {
      * @return {Object} The Auth object representing the created instance.
      */
     function NarrativeAuth(config, $http, $q, $window, $rootScope, $injector) {
-      var defer, cacheFactoy, tempToken;
+      var defer, cacheFactory, tempToken;
 
       this.$http = $http;
       this.$q = $q;
@@ -1240,11 +1240,11 @@ if (!Function.prototype.bind) {
       this._initialRequest = defer.promise;
 
       // Fetching the cache factory.
-      cacheFactoy = this._config.cacheFactoy;
-      if (isString(cacheFactoy)) {
-        cacheFactoy = $injector.get(cacheFactoy);
+      cacheFactory = this._config.cacheFactory;
+      if (isString(cacheFactory)) {
+        cacheFactory = $injector.get(cacheFactory);
       }
-      this._cache = cacheFactoy(this._config.name);
+      this._cache = cacheFactory(this._config.name);
 
       // Initially, the token is set to null, which indicates that we are not
       // logged in.
@@ -1362,14 +1362,14 @@ if (!Function.prototype.bind) {
           url: this._config.oauthRoutes.token,
           method: 'POST',
           params: {
-            grant_type: "authorization_code",
+            grant_type: 'authorization_code',
             code: code,
             redirect_uri: this._config.oauthApplication.redirectURI,
             client_id: this._config.oauthApplication.clientID
           },
           headers : {
-            Authorization : "Basic " + window.btoa(
-              this._config.oauthApplication.clientID + ":" +
+            Authorization : 'Basic ' + window.btoa(
+              this._config.oauthApplication.clientID + ':' +
                 this._config.oauthApplication.clientSecret)
             }
         }).then(function (tokenData) {
@@ -1417,8 +1417,8 @@ if (!Function.prototype.bind) {
        * @description
        * *NOT IMPLEMENTED YET.*
        */
-      oauthImplicit: function (params) {
-        throw "Implicit Grant flow is not supported yet.";
+      oauthImplicit: function (/*params*/) {
+        throw 'Implicit Grant flow is not supported yet.';
       },
 
       /**
@@ -1433,8 +1433,8 @@ if (!Function.prototype.bind) {
        * @description
        * *NOT IMPLEMENTED YET.*
        */
-      oauthClientCredentials: function(params) {
-        throw "Client Credentials Grant flow is not supported yet.";
+      oauthClientCredentials: function(/*params*/) {
+        throw 'Client Credentials Grant flow is not supported yet.';
       },
 
       /**
@@ -1449,8 +1449,8 @@ if (!Function.prototype.bind) {
        * @description
        * *NOT IMPLEMENTED YET.*
        */
-      oauthRefreshToken: function (params) {
-        throw "Refresh Token Grant flow is not supported yet.";
+      oauthRefreshToken: function (/*params*/) {
+        throw 'Refresh Token Grant flow is not supported yet.';
       },
 
       /**
@@ -1478,7 +1478,7 @@ if (!Function.prototype.bind) {
           } else {
             var defer = _auth.$q.defer();
             _auth.$rootScope.$on(eventName(_auth._config.name, 'auth'),
-              function (evt, auth) {
+              function (/*evt, auth*/) {
                 defer.resolve(_auth._object);
               }
             );
@@ -1504,13 +1504,13 @@ if (!Function.prototype.bind) {
        *
        * @return {Promise} A promise that resolves with the auth object if
        *                     a successful login has been made, and rejects with
-       *                     the reason `"AUTH_REQUIRED"` if not.
+       *                     the reason `'AUTH_REQUIRED'` if not.
        */
       requireAuth: function () {
         var _auth = this;
         return this._initialRequest.then(function () {
           if (!_auth.token()) {
-            return _auth.$q.reject("AUTH_REQUIRED");
+            return _auth.$q.reject('AUTH_REQUIRED');
           }
           return _auth._object;
         });
@@ -1591,7 +1591,7 @@ if (!Function.prototype.bind) {
       token: function (tokenObject) {
         if (!isUndefined(tokenObject)) {
           if (!this._validateToken(tokenObject))
-            throw "The given token is not valid!";
+            throw 'The given token is not valid!';
 
           this._cache.put('token', tokenObject);
 
@@ -1660,59 +1660,108 @@ if (!Function.prototype.bind) {
 
   angular.module('api.narrative')
     .provider('NarrativeAuth', NarrativeAuthProvider)
+
+    /**
+     * @ngdoc service
+     * @name api.narrative.NarrativeUrlObserverFactory
+     * @module api.narrative
+     * @requires api.narrative.NarrativeAuth
+     * @requires ng.$location
+     * @requires ng.$window
+     *
+     * @description
+     * Creates an instance that observes the URL for Oauth2 response
+     * parameters. This is used internally for instanciating and triggers
+     * the login flow when the URL search parameters corresponds to what a
+     * Oauth login response looks like.
+     *
+     * @return {function} The factory function that creates the URL observer
+     *                    instance.
+     */
     .factory('NarrativeUrlObserverFactory', [
                'NarrativeAuth', '$location', '$window',
       function (narrativeAuth ,  $location ,  $window) {
 
-        function redirectToHash(params) {
-          var absUrl = $location.absUrl(),
-            base = absUrl.substring(0, absUrl.indexOf('?')),
-            hash = absUrl.substring(0, absUrl.lastIndexOf('#') + 1),
-            parts = [];
+        /**
+         * @name rewriteSearchParams
+         *
+         * @description
+         * Rewrites the search param field of a given URL to the given params.
+         *
+         * @param  {string} url    The original URL to be rewritten.
+         * @param  {object} params Key/value pairs that will be parameters.
+         * @return {string}        The rewritten URL.
+         */
+        this.rewriteSearchParams = function (url, params) {
+          var qm = url.indexOf('?'), num = url.lastIndexOf('#'),
+            parts = [],
+            href = qm >= 0 ? url.substring(0, qm)
+                           : ( num >= 0 ? url.substring(0, num) : url),
+            hash = num >= 0 ? url.substring(num) : '';
 
           forEach(params, function(value, key) {
             parts.push(key + '=' + value);
           });
 
-          $window.location.href = base;
-          if (parts) {
-            $window.location.search = parts.join('&');
-          }
-          $window.location.hash = hash;
-          $window.location.replace();
-        }
-
-        function cleanUpAndRedirect(params) {
-          delete params.state;
-          if ($location.$$html5) {
-              $location.search(params).replace();
-          } else {
-            redirectToHash(params);
-          }
-        }
+          return href + (parts.length ? '?' + parts.join('&') : '') + hash;
+        };
+        var rewriteSearchParams = this.rewriteSearchParams;
 
         /**
          * @name locationSearch
+         *
          * @description
          *
          *
-         * @return {Object} [description]
+         * @param {string} url The URL to find the parameters in.
+         * @return {object} The search parameters of the URL as key/value
+         *                  pairs.
          */
-        this.locationSearch = function() {
-          var vars, url = $location.absUrl(), idx = url.indexOf('?'), hash = {};
+        this.locationSearch = function(url) {
+          var vars, idx = url.indexOf('?'), hash = {};
 
           if (idx !== -1) {
             vars = url.substring(idx + 1).split('#')[0];
 
-            forEach((vars ? vars.split("&") : []), function (urlVar) {
-              var pair = urlVar.split("=");
+            forEach((vars ? vars.split('&') : []), function (urlVar) {
+              var pair = urlVar.split('=');
               // Remove trailing slashes
-              hash[pair[0]] = pair[1].replace(/\/+$/, "");
+              hash[pair[0]] = pair[1].replace(/\/+$/, '');
             });
           }
           return hash;
         };
         var locationSearch = this.locationSearch;
+
+        /**
+         * @name cleanUpAndRedirectAfterPromise
+         *
+         * @description
+         * Removes the state parameter and rewrites the current URL to match
+         * the passed params object, minus the state parameter.
+         *
+         * @param  {object} params An object of the new paramters of the URL.
+         *                         If a state parameter is present, it will
+         *                         be removed from the object.
+         * @param  {promise=} promise If included, and not in html5Mode, The
+         *                            redirect will wait until after the
+         *                            promise is resolved.
+         */
+        function cleanUpAndRedirectAfterPromise(params, promise) {
+          delete params.state;
+
+          if ($location.$$html5) {
+            $location.search(params).replace();
+          } else if (!isUndefined(promise)){
+            promise.finally(function () {
+              $window.location.replace(rewriteSearchParams(
+                $location.absUrl(), params));
+            });
+          } else {
+            $window.location.replace(rewriteSearchParams(
+              $location.absUrl(), params));
+          }
+        }
 
         return function () {
           var hash = $location.$$html5 ? $location.search()
@@ -1722,21 +1771,29 @@ if (!Function.prototype.bind) {
           if(!hash.hasOwnProperty('state'))
             return;
 
+          // If the state cannot be decoded, it was not NarrativeAuth that
+          // sent the original request.
           try {
-            state = fromJson(decodeURIComponent(hash['state']));
+            state = fromJson(decodeURIComponent(hash.state));
           } catch (e) {
             return;
           }
 
+          // For now, errors are just handled by logging out the Auth object,
+          // cleaning up the parameters and mocing on.
           if (hash.hasOwnProperty('error')) {
             narrativeAuth(state.config).unauth();
             delete hash.error;
-            cleanUpAndRedirect(hash);
-          } else if (hash.hasOwnProperty('code')) {
-            narrativeAuth(state.config)
-              .getOauthToken(hash.code, state.parameters);
+            cleanUpAndRedirectAfterPromise(hash);
+          } else if (hash.hasOwnProperty('code')) {
+
+            // The promise is added to the redirect function, as the redirect
+            // cannot be performed until the token is fetched, since This
+            // trigger a page reload.
+            cleanUpAndRedirectAfterPromise(hash,
+                narrativeAuth(state.config)
+                  .getOauthToken(hash.code, state.parameters));
             delete hash.code;
-            cleanUpAndRedirect(hash);
           }
         };
       }])
@@ -1758,7 +1815,7 @@ if (!Function.prototype.bind) {
    * @param  {NrtvItemResource} hook The hook to construct for.
    * @return {function} A function with the signature(uuid, options).
    */
-  function constructItem(factory, path, auth, transforms, options) {
+  function constructItem(factory, path, auth, transforms) {
     return function (uuid, options) {
       var hook = factory(path, auth, options);
       angular.forEach(transforms, function (transform) {
@@ -1777,8 +1834,7 @@ if (!Function.prototype.bind) {
    * @param  {NrtvArrayResource} hook The hook to construct for.
    * @return {function} A function with the signature(uuid, options).
    */
-  function constructArray(factory, path, auth, transforms, itemTransforms,
-                          options) {
+  function constructArray(factory, path, auth, transforms, itemTransforms) {
     return function (options) {
       var hook = factory(path, auth, options);
       angular.forEach(transforms, function (transform) {
@@ -1836,7 +1892,7 @@ if (!Function.prototype.bind) {
       return function (config) {
         var api = {};
 
-        config = angular.extend(defaults, config || {});
+        config = angular.extend(defaults, config || {});
         if (!config.auth) {
           config.auth = auth();
         }
