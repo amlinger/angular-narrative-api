@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-contrib-clean');
-
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
   // Project configuration.
   grunt.initConfig({
@@ -45,6 +45,14 @@ module.exports = function(grunt) {
         title: 'API reference',
         api: true,
         src: ['src/*.js']
+      }
+    },
+
+    jshint: {
+      all: ['*.js', 'src/*.js', 'test/*.js'],
+      options: {
+        jshintrc: true,
+        force: true
       }
     },
 
