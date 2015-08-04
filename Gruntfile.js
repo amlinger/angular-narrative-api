@@ -9,6 +9,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-karma');
 
   // Project configuration.
   grunt.initConfig({
@@ -61,6 +62,12 @@ module.exports = function(grunt) {
       }
     },
 
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js'
+      }
+    },
+
     clean: {
       docs: ['docs'],
       dist: ['dist']
@@ -75,6 +82,8 @@ module.exports = function(grunt) {
     }
   });
 
+  // Testing task
+  grunt.registerTask('test', ['jshint:all', 'karma:unit']);
 
   grunt.registerTask('docs', ['clean:docs', 'ngdocs:reference']);
   // Default task(s).
