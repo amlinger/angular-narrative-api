@@ -1,12 +1,12 @@
 {
+  "extends": "../.jshintrc",
+  /* We are not in a browser, but in Jasmine executing tests.
+   */
+  "jasmine": true,
+
   "predef": [
+    "angular",
     "module",
-    "inject",
-    "describe",
-    "beforeEach",
-    "it",
-    "expect",
-    "jasmine",
-    "MockFirebase"
+    "inject"
   ]
 }
