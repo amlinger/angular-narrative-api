@@ -1,10 +1,14 @@
+/*global module*/
+
 module.exports = function(grunt) {
+  'use strict';
 
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-contrib-clean');
-
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Project configuration.
   grunt.initConfig({
@@ -28,7 +32,8 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+        banner: '/*! <%= pkg.name %> ' +
+                '<%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       build: {
         src: 'dist/<%= pkg.name %>.js',
@@ -39,7 +44,8 @@ module.exports = function(grunt) {
     ngdocs: {
       options: {
         startPage: '/reference/api.narrative',
-        sourceLink: 'https://github.com/amlinger/angular-narrative-api/blob/master/{{file}}#L{{codeline}}'
+        sourceLink: 'https://github.com/amlinger/angular-narrative-api/blob/' +
+                    'master/{{file}}#L{{codeline}}'
       },
       reference: {
         title: 'API reference',
@@ -48,9 +54,24 @@ module.exports = function(grunt) {
       }
     },
 
+    jshint: {
+      all: ['*.js', 'src/*.js', 'test/*.js'],
+      options: {
+        jshintrc: true
+      }
+    },
+
     clean: {
       docs: ['docs'],
       dist: ['dist']
+    },
+
+    watch: {
+      jshint: {
+        files: ['.jshintrc', 'src/.jshintrc', 'test/.jshintrc',
+                '*.js', 'src/*.js', 'test/*.js'],
+        tasks: ['jshint:all']
+      }
     }
   });
 

@@ -3,10 +3,7 @@
 (function () {
   'use strict';
 
-  var identity = angular.identity,
-    noop = angular.noop,
-    extend = angular.extend,
-    emptyResponse = {
+  var emptyResponse = {
       count: 0,
       next: null,
       previous: null,
@@ -23,7 +20,7 @@
 
   describe('NarrativeApi', function () {
     var $httpBackend, itemFactory, arrayFactory, auth, $rootScope, apiFactory,
-      narrativeApiProvider, basePath = "https://narrativeapp.com/api/v2/";
+      narrativeApiProvider, basePath = 'https://narrativeapp.com/api/v2/';
 
     beforeEach(module('api.narrative', function (_NarrativeApiProvider_) {
       narrativeApiProvider = _NarrativeApiProvider_;

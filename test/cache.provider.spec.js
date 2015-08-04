@@ -60,8 +60,7 @@
 
     it('gets values previously put.', function () {
       var namespace = 'circus', key = 'ball-juggler', value = 'seal',
-        cache = narrativeCache(namespace),
-        originalSerializer = narrativeCacheProvider.keySerializer;
+        cache = narrativeCache(namespace);
 
       cache.put(key, value);
       expect(cache.get(key)).toBe(value);
@@ -69,8 +68,7 @@
 
     it('gets values previously put, on page refresh', function () {
       var namespace = 'circus', key = 'ball-juggler', value = 'seal',
-        cache = narrativeCache(namespace), factory,
-        originalSerializer = narrativeCacheProvider.keySerializer;
+        cache = narrativeCache(namespace), factory;
 
       cache.put(key, value);
       expect(cache.get(key)).toBe(value);
@@ -91,8 +89,7 @@
 
     it('returns the value stored on remove()', function () {
       var namespace = 'circus', key = 'ball-juggler', value = 'seal',
-        cache = narrativeCache(namespace), factory,
-        originalSerializer = narrativeCacheProvider.keySerializer;
+        cache = narrativeCache(namespace);
 
       cache.put(key, value);
       expect(cache.remove(key)).toBe(value);
@@ -100,7 +97,7 @@
 
     it('removes from localStorage on remove().', function () {
       var namespace = 'circus', key = 'ball-juggler', value = 'seal',
-        cache = narrativeCache(namespace), factory,
+        cache = narrativeCache(namespace),
         originalSerializer = narrativeCacheProvider.keySerializer;
 
       cache.put(key, value);
@@ -118,7 +115,7 @@
 
     it('removes from localStorage on removeAll().', function () {
       var namespace = 'circus', key = 'ball-juggler', value = 'seal',
-        cache = narrativeCache(namespace), factory,
+        cache = narrativeCache(namespace),
         originalSerializer = narrativeCacheProvider.keySerializer;
 
       cache.put(key, value);

@@ -9,7 +9,6 @@
     isUndefined = angular.isUndefined,
     mocks = angular.module('api.narrative.mocks'),
     alwaysTrue  = function () { return true; },
-    alwaysFalse = function () { return false; },
     Auth = {
       _name: 'global',
       _token: {
@@ -33,7 +32,7 @@
   mocks.provider('NarrativeAuthMock', function () {
     this.$get = function () {
       return function (config) {
-        return extend(copy(Auth), config || {});
+        return extend(copy(Auth), config || {});
       };
     };
   });
@@ -48,7 +47,7 @@
   });
 
   mocks.factory('PrenamedCachFactoryMock', function ($cacheFactory) {
-    return function (name) {
+    return function () {
       return $cacheFactory('thisIsAlreadyPreNamed');
     };
   });

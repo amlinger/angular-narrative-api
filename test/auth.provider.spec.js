@@ -1,18 +1,6 @@
 (function () {
   'use strict';
 
-  function locationSearch(windowLocation) {
-    var vars = windowLocation-split('?')[0], hash = {};
-
-    forEach((vars ? vars.split("&") : []), function (urlVar) {
-      var pair = urlVar.split("=");
-      // Remove trailing slashes
-      hash[pair[0]] = pair[1].replace(/\/+$/, "");
-    });
-
-    return hash;
-  }
-
   var toJson = angular.toJson;
 
   describe('NarrativeAuth', function () {
@@ -164,7 +152,7 @@
     it('trows on malformatted token.', function () {
       var auth = narrativeAuth();
       expect(function () {
-        auth.token("Malicious Mallard Token!");
+        auth.token('Malicious Mallard Token!');
       }).toThrow();
     });
 
@@ -370,8 +358,8 @@
       it('handles multiple contexts.', function () {
         var context1 = null,
           context2 = null,
-          expected1 = { firstcontext : "bear" },
-          expected2 = { secondcontext : "grizzly" };
+          expected1 = { firstcontext : 'bear' },
+          expected2 = { secondcontext : 'grizzly' };
 
         auth.onAuth(function () {
           context1 = this;
@@ -407,7 +395,7 @@
       $location = {
         $$html5: true,
         $$search: {},
-        $$absUrl: "http://server/",
+        $$absUrl: 'http://server/',
         absUrl: function () {
           return this.$$absUrl;
         },
@@ -499,15 +487,15 @@
     });
 
     it('aborts on invalid state.', function () {
-      $location.$$search = {state: "I'm not valid JSON."};
+      $location.$$search = {state: 'I\'m not valid JSON.'};
       narrativeUrlObserverFactory();
     });
 
     it('calls unauth on error param.', function () {
       var unauthSpy = spyOn(authMock(), 'unauth');
       $location.$$search = {
-        state: encodeURIComponent(toJson({name : "name"})),
-        error: "invalid_client"
+        state: encodeState({name : 'name'}),
+        error: 'invalid_client'
       };
       narrativeUrlObserverFactory();
       expect(unauthSpy).toHaveBeenCalled();
@@ -516,9 +504,8 @@
     });
 
     it('keeps parameters that are not needed.', function () {
-      var unauthSpy = spyOn(authMock(), 'unauth');
       $location.$$search = {
-        state: encodeURIComponent(toJson({name : "name"})),
+        state: encodeState({name : 'name'}),
         error: 'invalid_client',
         grizzly: 'bear'
       };
@@ -529,16 +516,16 @@
     });
 
     it('calls getOauthToken on a successful URL.', function () {
-      var code = "A code is required.",
-        params = { para: "meters" },
+      var code = 'A code is required.',
+        params = { para: 'meters' },
         getOauthTokenSpy = spyOn(authMock(), 'getOauthToken');
 
       $location.$$search = {
         code: code,
-        state: encodeURIComponent(toJson({
+        state: encodeState({
           config: {},
           parameters: params
-        }))
+        })
       };
       narrativeUrlObserverFactory();
       expect(getOauthTokenSpy).toHaveBeenCalled();
@@ -548,8 +535,7 @@
     });
 
     it('calls location.replace after it has resolved the token.', function () {
-      var code = "A code is required.",
-        defer = $q.defer(),
+      var defer = $q.defer(),
         winSpy = spyOn($window.location, 'replace'),
         getOauthTokenSpy = spyOn(authMock(), 'getOauthToken')
           .and.callFake(function () {
@@ -557,7 +543,7 @@
           });
 
       $location.$$absUrl ='http://home.page?code=code&state=' +
-        encodeURIComponent(toJson({config: {}}));
+        encodeState({config: {}});
       $location.$$html5 = false;
 
       narrativeUrlObserverFactory();

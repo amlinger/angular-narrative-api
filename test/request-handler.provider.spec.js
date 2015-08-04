@@ -21,17 +21,17 @@
       expect(converted).toBe('dotted=%5B%22jaguar%22%5D');
 
       converted = narrativeParamSerializer({
-        striped: ['zebra', "tiger"]
+        striped: ['zebra', 'tiger']
       });
       expect(converted).toBe('striped=%5B%22zebra%22%2C%22tiger%22%5D');
     });
 
     it('joins multiple parameters with ampersand.', function () {
       var converted = narrativeParamSerializer({
-        penguin: "tuxedo",
-        kangaroo: "fanny-pack"
+        penguin: 'tuxedo',
+        kangaroo: 'fanny-pack'
       });
-      expect(converted).toBe("penguin=tuxedo&kangaroo=fanny-pack");
+      expect(converted).toBe('penguin=tuxedo&kangaroo=fanny-pack');
     });
   });
 
@@ -48,18 +48,16 @@
       $httpBackend = _$httpBackend_;
       newAuth = _NarrativeAuthMock_;
       narrativeRequestProvider.defaults.api = {
-        proxy: "http://proxy/",
-        baseUrl: "https://narrative.com/",
-        apiSuffix: "api/v75/"
+        proxy: 'http://proxy/',
+        baseUrl: 'https://narrative.com/',
+        apiSuffix: 'api/v75/'
       };
-      path = "http://proxy/https://narrative.com/api/v75/";
+      path = 'http://proxy/https://narrative.com/api/v75/';
       narrativeRequest = narrativeRequestProvider.$get.pop()(
         _$http_, _NarrativeAuthMock_, _$injector_);
     }));
 
     it('adds a new Auth if none is supplied.', function () {
-      var headerSpy = jasmine.createSpy('headerSpy');
-
       $httpBackend.expectGET(path + 'monkeys/')
         .respond(function (method, url, data, headers) {
           expect(headers.Authorization).toBeDefined();
@@ -70,8 +68,7 @@
     });
 
     it('does not add headers to unauthorized requests.', function () {
-      var headerSpy = jasmine.createSpy('headerSpy'),
-        auth = newAuth({
+      var auth = newAuth({
           token: function () { return null; }
         });
 
@@ -91,7 +88,7 @@
       $httpBackend.expectGET(path + 'sheep/')
         .respond(function (method, url, data, headers) {
           expect(headers.Authorization).toEqual(key);
-          return { data: "Dolly, Dolly, Dolly" };
+          return { data: 'Dolly, Dolly, Dolly' };
       });
 
       narrativeRequest('GET', 'sheep/', {}, auth);
@@ -99,11 +96,10 @@
     });
 
     it('does adds parameters to url if passed.', function () {
-      var key = 'Bearer :bear',
-        auth = newAuth({isLoggedIn: function () { return false; }});
+      var auth = newAuth({isLoggedIn: function () { return false; }});
 
       $httpBackend.expectGET(path + 'sheep/?clones=false')
-        .respond(200, { data: "Dolly" });
+        .respond(200, { data: 'Dolly' });
 
       narrativeRequest('GET', 'sheep/', { clones: false }, auth);
       $httpBackend.flush();
