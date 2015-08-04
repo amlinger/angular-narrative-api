@@ -5,6 +5,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Project configuration.
   grunt.initConfig({
@@ -59,6 +60,13 @@ module.exports = function(grunt) {
     clean: {
       docs: ['docs'],
       dist: ['dist']
+    },
+
+    watch: {
+      jshint: {
+        files: ['*.js', 'src/*.js', 'test/*.js'],
+        tasks: ['jshint:all']
+      }
     }
   });
 
