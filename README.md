@@ -1,10 +1,13 @@
+[![Build Status](https://travis-ci.org/amlinger/angular-narrative-api.svg?branch=master)](https://travis-ci.org/amlinger/angular-narrative-api)
 # Angular Narrative API
+*Note that this is only a pre-build, and is not recommended for use in production code*
+
 Narrative Open Platform made easy for [AngularJS]. For now, all API hooks in
 Narratives Open Platform is not supported, for a more complete overview of
 what can be accomplished with this tool and with Narratives Open Platform
 itself can be found using the links below.
 
-* [Angular Narrative API reference.][APIdocs]
+* [Angular Narrative API reference][APIdocs]
 * [Narrative Open Platform][OpenPlatform]
 
 ## Installation
