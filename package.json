@@ -14,9 +14,8 @@
   "scripts": {
     "postinstall": "bower install",
     "prestart": "npm install",
-    "start": "http-server -a localhost -p 9000 -c-1",
     "pretest": "npm install",
-    "test": "karma start karma.conf.js"
+    "test": "grunt test:CI"
   },
   "keywords": [
     "AngularJS",
