@@ -5,5 +5,12 @@ node_js:
 before_script:
   - npm install grunt-cli -g
 
+after_script: bash ./deploy-gh-pages.sh
+
+env:
+  global:
+  - GH_REF: github.com/amlinger/angular-narrative-api.git
+  secure: "1MEva6BMIZUBBw4PkQBUWUSEyCQua2QkFq1ETz6Z8HP9EmU2HHPPxhXWZLGrDCqpGdS9ewJ+qBsHRi1P65sPWy7B+QmAGOYCjbTJxJHjgQ1jFQfgmSVQgSqO4Q+fOmF/mBnMe+QrGtd+iXdpRLZWIGCfg2plWeGKWPdTQP7zMGe1QG8gEnFrwwVs94bviM1A1MCaxO0REbjZr7zDH9vUW+Qbn3iJjqa+Gmlm+6p/vQsGJ6gRswW4Y5vGxm5LySrKB30cwXrtRLwhyF3oI/nsYJCVkf77oMp1ZyNsixKvnnTYlEzpuakMjB0GQZsXqZYkndmMzVKI5jFkrNNDvW0xQkR4eoAxX/ULPp6qPcPSzoQ3QiOafRtizGXtLoJae+Ol82ZXQUlwVrIkdQZHm5jHz5TpCQIllwtBUoyhsJJbGDjS+ZjX3xnK5wOTFx3Nhaho5rhuqXodTXQf/QaeFr8Wv7sBIcvLTauUy8bvo5to31pRWS9iiZF83x75aruB+ErMRAQvxLIRwPK0yFV14JXHca+QhKcfBx92uOagJgn/e87rW8tswpXJ87YUDvGjY58MyDb0bVyaaNoFyYKRsvjiEIADYjFhR1GMhGtuyyCXXSuk84LG6Gz1p2fc8dHthlyzfp+M+L0YsaZL+zk8fuqzMrh+Bw5El8aqA4VwyuWvyXE="
+
 notifications:
   email: false
