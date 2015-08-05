@@ -1,4 +1,7 @@
 #!/bin/bash
+
+grunt docs
+
 if [ -z "$(git status --porcelain)" ]; then
   echo "needs not be pushed"
 else
