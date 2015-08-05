@@ -8,7 +8,7 @@ before_script:
 script:
   - npm test
 
-after_script:
+after_success:
   - bash ./deploy-gh-pages.sh
 
 env:
