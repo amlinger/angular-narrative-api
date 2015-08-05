@@ -46,7 +46,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "api.narrative",
       "shortDescription": "Use NarrativeAuthProvider for changing the default behaviour of",
-      "keywords": "$http $injector $q $rootscope $window access_token active additional api appropriate argument arguments assoiciated attributes auth_required authenticated authentication authenticeted authoritychicken authorization authorized behaviour bunch cache call callback called case changing client code complete config configuration configurations configured contining cool correct create created creates data decided default defauts desired determine emitted event exception existing fails fetch fetched firstly flow getoauthtoken getter grant implemented initializes instance instantiated instantly javascript landing location logged login matter method moving namespace narrative narrativeauth narrativeauthprovider note null oauth oauthauthorizationcode oauthclientcredentials oauthimplicit oauthrefreshtoken object outcome parameters post prevents progress promise provided reason recieve recieved redirect redirects reference referenced reject rejected rejecting rejects remove removel representing request requesting requireauth requiring resolve resolved resolves response return returned secret server service set setter specific stored successful supplied supporting throw token token_type tokenobject true unauth unconfigured url valid var wait waitforauth waiting window"
+      "keywords": "$http $injector $q $rootscope $window access_token active additional api applies appropriate argument arguments assoiciated attributes auth_required authenticated authentication authenticeted authoritychicken authorization authorized behaviour bunch cache call callback called case chaining changing client code complete config configuration configurations configured context contining cool correct create created creates data decided default defauts desired determine emitted event exception existing fails fetch fetched firstly flow function getoauthtoken getter grant implemented initializes initiator instance instantiated instantly javascript landing location logged login matter method moving namespace narrative narrativeauth narrativeauthprovider newly note null oauth oauthauthorizationcode oauthclientcredentials oauthimplicit oauthrefreshtoken object onauth optional outcome parameters passed post prevents progress promise provided purposes reason recieve recieved redirect redirects reference referenced reject rejected rejecting rejects remove removel representing request requesting requireauth requiring resolve resolved resolves response return returned secret server service set sets setter signature specific stored successful supplied supporting throw token token_type tokenobject true unauth unconfigured url user valid var wait waitforauth waiting window"
     },
     {
       "section": "reference",
@@ -55,7 +55,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "api.narrative",
       "shortDescription": "Use NarrativeAuthProvider for changing the default behaviour of",
-      "keywords": "$cachefactory $injector accepts api app application applications attributes authorization authorize bad base behaviour browser cache cachefactory-like cachefactoy care changing client clientid clients clientsecret code configuration configured default defaults defines factory fields flow global grant https individually instance instances instantiation js library moment narrative narrativeauth narrativeauthprovider narrativecache narratives note null oauth oauthapplication oauthroutes object open passing path platform practice property redirect redirecturi reference reflect request requests required resides resolved routes secret service settings storing string support token url user values verify writing"
+      "keywords": "$cachefactory $injector accepts api app application applications attributes authorization authorize bad base behaviour browser cache cachefactory cachefactory-like care changing client clientid clients clientsecret code configuration configured default defaults defines factory fields flow global grant https individually instance instances instantiation js library moment narrative narrativeauth narrativeauthprovider narrativecache narratives note null oauth oauthapplication oauthroutes object open passing path platform practice property redirect redirecturi reference reflect request requests required resides resolved routes secret service settings storing string support token url user values verify writing"
     },
     {
       "section": "reference",
@@ -118,7 +118,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "api.narrative",
       "shortDescription": "A method for making authorized requests with parameters to Narratives",
-      "keywords": "$http api authorized making method narrative narrativerequest narratives open parameters platform reference requests service url"
+      "keywords": "$http accepts add api attributes authorconfig authorized configuraiton configuration default full http making method narrative narrativeauth narrativecacheprovider narrativerequest narratives object open optional parameters platform produced promise reference relative reqest request requests returns selection service supplied url values"
     },
     {
       "section": "reference",
@@ -127,7 +127,16 @@ NG_DOCS={
       "type": "service",
       "moduleName": "api.narrative",
       "shortDescription": "NarrativeRequestProvider provides a request method that can be used",
-      "keywords": "$http api apisuffix backend baseurl boolean cache communicating default defaults fetching https instance instances method narrative narrativerequest narrativerequestprovider narratives open passed paths platform property proxy reference request resources service settings standard true"
+      "keywords": "$http api apisuffix backend baseurl boolean cache cachefactory communicating default defaults fetching https instance instances method narrative narrativerequest narrativerequestprovider narratives open passed paths platform producing property proxy reference request resources service settings standard true"
+    },
+    {
+      "section": "reference",
+      "id": "api.narrative.NarrativeUrlObserverFactory",
+      "shortName": "api.narrative.NarrativeUrlObserverFactory",
+      "type": "service",
+      "moduleName": "api.narrative",
+      "shortDescription": "Creates an instance that observes the URL for Oauth2 response",
+      "keywords": "$location $window api corresponds creates factory flow function instance instanciating internally login narrative narrativeauth narrativeurlobserverfactory ng oauth oauth2 observer observes parameters reference response search service triggers url"
     }
   ],
   "apis": {
