@@ -14,4 +14,6 @@ else
   git subtree push --prefix $DOC_FOLDER "https://${GH_TOKEN}@${GH_REF}" origin:gh-pages
   git checkout $BRANCH
   git branch -d temp-gh-branch
+
+  exit 0
 fi
