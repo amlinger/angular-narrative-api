@@ -8,8 +8,8 @@ before_script:
 script:
   - npm test
 
-# after_script:
-#   - bash ./deploy-gh-pages.sh
+after_script:
+  - bash ./deploy-gh-pages.sh
 
 env:
   global:
