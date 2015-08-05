@@ -5,7 +5,11 @@ node_js:
 before_script:
   - npm install grunt-cli -g
 
-after_script: bash ./deploy-gh-pages.sh
+script:
+  - npm test
+
+after_script:
+  - bash ./deploy-gh-pages.sh
 
 env:
   global:
