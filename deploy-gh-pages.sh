@@ -23,7 +23,8 @@ else
   echo https://$GH_TOKEN@$GH_REF gh-pages
 
   git push https://${GH_TOKEN}@${GH_REF} `git subtree split --prefix=$DOC_FOLDER temporary-gh-pages`:gh-pages --force
-  #git subtree push --prefix=$DOC_FOLDER https://${GH_TOKEN}@${GH_REF} gh-pages
+
+  # Switching to previous brancs, cleaning up.
   git checkout $BRANCH
   git branch -D temporary-gh-pages
 
