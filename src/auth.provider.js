@@ -261,11 +261,12 @@
         return this._object;
       },
 
-        /**
+      /**
        * @name _oauthInitRedirect
        *
        * @description
        * Redirects the window location to the set Oauth server landing page.
+       * This could soon be switched for another service.
        *
        * @param {string} grantType Which type of Grant that is desired.
        * @param {object} params Additional params which will be JSON
