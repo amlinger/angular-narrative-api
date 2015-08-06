@@ -3,6 +3,7 @@
 
   // Import shorthands for functions.
   var isString = angular.isString,
+    bind = angular.bind,
     isUndefined = angular.isUndefined,
     extend = angular.extend,
     toJson = angular.toJson,
@@ -14,7 +15,7 @@
    * @description
    * Based on an event string and a the name of a Auth Service, it resolves
    * a name for an event specific for that named Auth Service.
-   *
+   *
    * @param  {string} event The name of the event.
    * @param  {string} name  The name of the Auth.
    * @return {string}       The name of the event.
@@ -245,17 +246,17 @@
        */
       construct: function () {
         this._object = {
-          getOauthToken: this.getOauthToken.bind(this),
-          oauthAuthorizationCode: this.oauthAuthorizationCode.bind(this),
-          oauthImplicit: this.oauthImplicit.bind(this),
-          oauthClientCredentials: this.oauthClientCredentials.bind(this),
-          oauthRefreshToken: this.oauthRefreshToken.bind(this),
-          waitForAuth: this.waitForAuth.bind(this),
-          requireAuth: this.requireAuth.bind(this),
-          onAuth: this.onAuth.bind(this),
-          token: this.token.bind(this),
-          unauth: this.unauth.bind(this),
-          config: this.config.bind(this)
+          getOauthToken: bind(this, this.getOauthToken),
+          oauthAuthorizationCode: bind(this, this.oauthAuthorizationCode),
+          oauthImplicit: bind(this, this.oauthImplicit),
+          oauthClientCredentials: bind(this, this.oauthClientCredentials),
+          oauthRefreshToken: bind(this, this.oauthRefreshToken),
+          waitForAuth: bind(this, this.waitForAuth),
+          requireAuth: bind(this, this.requireAuth),
+          onAuth: bind(this, this.onAuth),
+          token: bind(this, this.token),
+          unauth: bind(this, this.unauth),
+          config: bind(this, this.config)
         };
 
         return this._object;

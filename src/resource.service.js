@@ -3,6 +3,7 @@
   'use strict';
 
   var identity = angular.identity,
+    bind = angular.bind,
     extend = angular.extend,
     isUndefined = angular.isUndefined;
 
@@ -27,10 +28,10 @@
       this._options = options || {};
 
       this._obj = {
-        q: this.q.bind(this),
-        get: this.get.bind(this),
-        path: this.path.bind(this),
-        transform: this.transform.bind(this)
+        q: bind(this, this.q),
+        get: bind(this, this.get),
+        path: bind(this, this.path),
+        transform: bind(this, this.transform)
       };
 
       return this._obj;
@@ -279,9 +280,9 @@
       this.results = [];
 
       return extend(this._super.construct.call(this, options), {
-        nextPage: this.nextPage.bind(this),
-        forEach: this.forEach.bind(this),
-        itemTransform: this.itemTransform.bind(this),
+        nextPage: bind(this, this.nextPage),
+        forEach: bind(this, this.forEach),
+        itemTransform: bind(this, this.itemTransform),
         results: this.results
       });
     },
