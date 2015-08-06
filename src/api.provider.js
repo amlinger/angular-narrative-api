@@ -26,7 +26,11 @@
    * @description
    * Returns a handler for constructing an array object.
    *
-   * @param  {NrtvArrayResource} hook The hook to construct for.
+   * @param  {NrtvArrayResource} factory The hook to construct the factory for.
+   * @param  {string} path
+   * @param  {NarrativeAuth} auth
+   * @param  {function} transforms
+   * @param  {function} itemTransforms
    * @return {function} A function with the signature(uuid, options).
    */
   function constructArray(factory, path, auth, transforms, itemTransforms) {
