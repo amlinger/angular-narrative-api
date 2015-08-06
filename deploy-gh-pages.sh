@@ -2,6 +2,8 @@
 
 DOC_FOLDER=docs/
 
+git subtree pull --prefix=$DOC_FOLDER https://${GH_TOKEN}@${GH_REF} gh-pages
+
 # Making Grunt be quiet.
 grunt docs #> /dev/null
 
@@ -16,6 +18,7 @@ else
 
   BRANCH="$(git name-rev --name-only HEAD)"
   git checkout -b temporary-gh-pages
+
   git add $DOC_FOLDER && git commit -m "Updated documentation"
 
   echo "Pushing to:"
