@@ -21,7 +21,7 @@ else
   echo "Pushing to:"
   echo https://$GH_TOKEN@$GH_REF temporary-gh-pages:gh-pages
 
-  git subtree push --prefix --force $DOC_FOLDER "https://${GH_TOKEN}@${GH_REF}" gh-pages
+  git subtree push --prefix=$DOC_FOLDER "https://${GH_TOKEN}@${GH_REF}" gh-pages --force
   git checkout $BRANCH
   git branch -D temporary-gh-pages
 
