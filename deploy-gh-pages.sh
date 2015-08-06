@@ -17,11 +17,11 @@ else
   BRANCH="$(git name-rev --name-only HEAD)"
   git checkout -b temporary-gh-pages
   git add $DOC_FOLDER && git commit -m "Updated documentation"
-
+  
   echo "Pushing to:"
   echo https://$GH_TOKEN@$GH_REF temporary-gh-pages:gh-pages
 
-  git subtree push --prefix $DOC_FOLDER https://$GH_TOKEN@$GH_REF temporary-gh-pages:gh-pages
+  git subtree push --prefix $DOC_FOLDER "https://${GH_TOKEN}@${GH_REF}" origin gh-pages:temporary-gh-pages
   git checkout $BRANCH
   git branch -D temporary-gh-pages
 
