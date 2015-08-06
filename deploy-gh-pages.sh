@@ -3,7 +3,7 @@
 DOC_FOLDER=docs/
 
 # Making Grunt be quiet.
-grunt docs > /dev/null
+grunt docs #> /dev/null
 
 if [ -z "$(git status --porcelain $DOC_FOLDER)" ]; then
   echo "$DOC_FOLDER is up to date."
