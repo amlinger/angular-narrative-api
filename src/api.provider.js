@@ -99,9 +99,9 @@
         function momentTransform(moment) {
           return angular.extend(moment, {
             positions: constructArray(
-              arrayFactory, moment.path() + '/positions/', config.auth, [], []),
+              arrayFactory, moment.path() + 'positions/', config.auth, [], []),
             photos: constructArray(
-              arrayFactory, moment.path() + '/photos/', config.auth, [], [])
+              arrayFactory, moment.path() + 'photos/', config.auth, [], [])
           });
         }
 
@@ -138,7 +138,7 @@
          *                             the moment.
          */
         api.moment = constructItem(
-          itemFactory, 'moments/:uuid', config.auth, [momentTransform]);
+          itemFactory, 'moments/:uuid/', config.auth, [momentTransform]);
 
         /**
          * @ngdoc method
@@ -190,7 +190,7 @@
          *                             the user.
          */
         api.user = constructItem(
-          itemFactory, 'users/:uuid', config.auth, []);
+          itemFactory, 'users/:uuid/', config.auth, []);
 
         /**
          * @ngdoc method
