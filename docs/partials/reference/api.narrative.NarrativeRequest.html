@@ -1,4 +1,4 @@
-<a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/request-handler.provider.js#L124" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">NarrativeRequest</code>
+<a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/request-handler.provider.js#L139" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">NarrativeRequest</code>
 <div><span class="hint">service in module <code ng:non-bindable="">api.narrative</code>
 </span>
 </div>
@@ -12,11 +12,19 @@ API on Narratives Open Platform.</p>
 </li>
 </ul>
 <h2 id="usage">Usage</h2>
-<div class="usage"><pre class="prettyprint linenums">NarrativeRequest(method, url, parameters, auth);</pre>
-<h4 id="usage_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>method</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="api-narrative-narrativerequest-page"><p>[description]</p>
-</div></td></tr><tr><td>url</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="api-narrative-narrativerequest-page"><p>[description]</p>
-</div></td></tr><tr><td>parameters</td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="api-narrative-narrativerequest-page"><p>[description]</p>
-</div></td></tr><tr><td>auth</td><td><a href="" class="label type-hint type-hint-narrativeauth">NarrativeAuth</a></td><td><div class="api-narrative-narrativerequest-page"><p>[description]</p>
-</div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">promise</a></td><td><div class="api-narrative-narrativerequest-page"><p>[description]</p>
+<div class="usage"><pre class="prettyprint linenums">NarrativeRequest(method, url[, parameters][, authOrConfig]);</pre>
+<h4 id="usage_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>method</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="api-narrative-narrativerequest-page"><p>The HTTP method to be used for the reqest.</p>
+</div></td></tr><tr><td>url</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="api-narrative-narrativerequest-page"><p>The URL relative to the supplied full API URL.</p>
+</div></td></tr><tr><td>parameters <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="api-narrative-narrativerequest-page"><p>Optional URL parameters to add to the
+request.</p>
+</div></td></tr><tr><td>authOrConfig <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-narrativeauth">NarrativeAuth</a><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="api-narrative-narrativerequest-page"><p>Either a NarrativeAuth
+or a configuration object
+for this particular request.
+The configuraiton object
+accepts the same attributes
+as the default selection for
+<code>NarrativeCacheProvider</code>s
+<code>default</code> values.</p>
+</div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">promise</a></td><td><div class="api-narrative-narrativerequest-page"><p>Returns the promise produced by the <code>$http</code> service.</p>
 </div></td></tr></table></div>
 </div>

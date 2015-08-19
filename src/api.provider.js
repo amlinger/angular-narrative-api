@@ -26,7 +26,11 @@
    * @description
    * Returns a handler for constructing an array object.
    *
-   * @param  {NrtvArrayResource} hook The hook to construct for.
+   * @param  {NrtvArrayResource} factory The hook to construct the factory for.
+   * @param  {string} path
+   * @param  {NarrativeAuth} auth
+   * @param  {function} transforms
+   * @param  {function} itemTransforms
    * @return {function} A function with the signature(uuid, options).
    */
   function constructArray(factory, path, auth, transforms, itemTransforms) {
@@ -95,9 +99,9 @@
         function momentTransform(moment) {
           return angular.extend(moment, {
             positions: constructArray(
-              arrayFactory, moment.path() + '/positions/', config.auth, [], []),
+              arrayFactory, moment.path() + 'positions/', config.auth, [], []),
             photos: constructArray(
-              arrayFactory, moment.path() + '/photos/', config.auth, [], [])
+              arrayFactory, moment.path() + 'photos/', config.auth, [], [])
           });
         }
 
@@ -134,7 +138,7 @@
          *                             the moment.
          */
         api.moment = constructItem(
-          itemFactory, 'moments/:uuid', config.auth, [momentTransform]);
+          itemFactory, 'moments/:uuid/', config.auth, [momentTransform]);
 
         /**
          * @ngdoc method
@@ -186,7 +190,7 @@
          *                             the user.
          */
         api.user = constructItem(
-          itemFactory, 'users/:uuid', config.auth, []);
+          itemFactory, 'users/:uuid/', config.auth, []);
 
         /**
          * @ngdoc method

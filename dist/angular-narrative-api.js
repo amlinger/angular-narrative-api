@@ -55,6 +55,7 @@ if (!Function.prototype.bind) {
    *     NarrativeRequestProvider.defaults.api.proxy = 'http://cors.proxy/';
    *   })
    *   .controller('Controller', function (NarrativeAuth,  NarrativeApi) {
+   *     var api = NarrativeApi(NarrativeAuth());
    *     // Go right ahead and use the Auth and the API!
    *   });
    * ```
