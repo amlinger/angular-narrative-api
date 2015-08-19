@@ -1,33 +1,3 @@
-(function () {
-  'use strict';
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
-if (!Function.prototype.bind) {
-  Function.prototype.bind = function (oThis) {
-    if (typeof this !== "function") {
-      // closest thing possible to the ECMAScript 5
-      // internal IsCallable function
-      throw new TypeError(
-        "Function.prototype.bind - what is trying to be bound is not callable");
-    }
-
-    var aArgs = Array.prototype.slice.call(arguments, 1),
-      fToBind = this,
-      fNOP = function () {},
-      fBound = function () {
-        return fToBind.apply(this instanceof fNOP && oThis
-            ? this
-            : oThis,
-          aArgs.concat(Array.prototype.slice.call(arguments)));
-      };
-
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
-
-    return fBound;
-  };
-}
-}());
-
 
 (function (window, angular, undefined) {
   'use strict';
@@ -55,7 +25,6 @@ if (!Function.prototype.bind) {
    *     NarrativeRequestProvider.defaults.api.proxy = 'http://cors.proxy/';
    *   })
    *   .controller('Controller', function (NarrativeAuth,  NarrativeApi) {
-   *     var api = NarrativeApi(NarrativeAuth());
    *     // Go right ahead and use the Auth and the API!
    *   });
    * ```
@@ -506,6 +475,7 @@ if (!Function.prototype.bind) {
   'use strict';
 
   var identity = angular.identity,
+    bind = angular.bind,
     extend = angular.extend,
     isUndefined = angular.isUndefined;
 
@@ -530,10 +500,10 @@ if (!Function.prototype.bind) {
       this._options = options || {};
 
       this._obj = {
-        q: this.q.bind(this),
-        get: this.get.bind(this),
-        path: this.path.bind(this),
-        transform: this.transform.bind(this)
+        q: bind(this, this.q),
+        get: bind(this, this.get),
+        path: bind(this, this.path),
+        transform: bind(this, this.transform)
       };
 
       return this._obj;
@@ -782,9 +752,9 @@ if (!Function.prototype.bind) {
       this.results = [];
 
       return extend(this._super.construct.call(this, options), {
-        nextPage: this.nextPage.bind(this),
-        forEach: this.forEach.bind(this),
-        itemTransform: this.itemTransform.bind(this),
+        nextPage: bind(this, this.nextPage),
+        forEach: bind(this, this.forEach),
+        itemTransform: bind(this, this.itemTransform),
         results: this.results
       });
     },
@@ -905,7 +875,7 @@ if (!Function.prototype.bind) {
         resource._count = page.count;
 
         page.results = page.results.map(function (item) {
-          var obj = new NrtvItemResource(resource.path() + ':uuid',
+          var obj = new NrtvItemResource(resource.path() + ':uuid/',
                                          resource._auth, {}, resource._request,
                                          resource._$q);
 
@@ -1027,6 +997,7 @@ if (!Function.prototype.bind) {
 
   // Import shorthands for functions.
   var isString = angular.isString,
+    bind = angular.bind,
     isUndefined = angular.isUndefined,
     extend = angular.extend,
     toJson = angular.toJson,
@@ -1038,7 +1009,7 @@ if (!Function.prototype.bind) {
    * @description
    * Based on an event string and a the name of a Auth Service, it resolves
    * a name for an event specific for that named Auth Service.
-   *
+   *
    * @param  {string} event The name of the event.
    * @param  {string} name  The name of the Auth.
    * @return {string}       The name of the event.
@@ -1269,27 +1240,28 @@ if (!Function.prototype.bind) {
        */
       construct: function () {
         this._object = {
-          getOauthToken: this.getOauthToken.bind(this),
-          oauthAuthorizationCode: this.oauthAuthorizationCode.bind(this),
-          oauthImplicit: this.oauthImplicit.bind(this),
-          oauthClientCredentials: this.oauthClientCredentials.bind(this),
-          oauthRefreshToken: this.oauthRefreshToken.bind(this),
-          waitForAuth: this.waitForAuth.bind(this),
-          requireAuth: this.requireAuth.bind(this),
-          onAuth: this.onAuth.bind(this),
-          token: this.token.bind(this),
-          unauth: this.unauth.bind(this),
-          config: this.config.bind(this)
+          getOauthToken: bind(this, this.getOauthToken),
+          oauthAuthorizationCode: bind(this, this.oauthAuthorizationCode),
+          oauthImplicit: bind(this, this.oauthImplicit),
+          oauthClientCredentials: bind(this, this.oauthClientCredentials),
+          oauthRefreshToken: bind(this, this.oauthRefreshToken),
+          waitForAuth: bind(this, this.waitForAuth),
+          requireAuth: bind(this, this.requireAuth),
+          onAuth: bind(this, this.onAuth),
+          token: bind(this, this.token),
+          unauth: bind(this, this.unauth),
+          config: bind(this, this.config)
         };
 
         return this._object;
       },
 
-        /**
+      /**
        * @name _oauthInitRedirect
        *
        * @description
        * Redirects the window location to the set Oauth server landing page.
+       * This could soon be switched for another service.
        *
        * @param {string} grantType Which type of Grant that is desired.
        * @param {object} params Additional params which will be JSON
@@ -1832,7 +1804,11 @@ if (!Function.prototype.bind) {
    * @description
    * Returns a handler for constructing an array object.
    *
-   * @param  {NrtvArrayResource} hook The hook to construct for.
+   * @param  {NrtvArrayResource} factory The hook to construct the factory for.
+   * @param  {string} path
+   * @param  {NarrativeAuth} auth
+   * @param  {function} transforms
+   * @param  {function} itemTransforms
    * @return {function} A function with the signature(uuid, options).
    */
   function constructArray(factory, path, auth, transforms, itemTransforms) {
@@ -1901,9 +1877,9 @@ if (!Function.prototype.bind) {
         function momentTransform(moment) {
           return angular.extend(moment, {
             positions: constructArray(
-              arrayFactory, moment.path() + '/positions/', config.auth, [], []),
+              arrayFactory, moment.path() + 'positions/', config.auth, [], []),
             photos: constructArray(
-              arrayFactory, moment.path() + '/photos/', config.auth, [], [])
+              arrayFactory, moment.path() + 'photos/', config.auth, [], [])
           });
         }
 
@@ -1940,7 +1916,7 @@ if (!Function.prototype.bind) {
          *                             the moment.
          */
         api.moment = constructItem(
-          itemFactory, 'moments/:uuid', config.auth, [momentTransform]);
+          itemFactory, 'moments/:uuid/', config.auth, [momentTransform]);
 
         /**
          * @ngdoc method
@@ -1992,7 +1968,7 @@ if (!Function.prototype.bind) {
          *                             the user.
          */
         api.user = constructItem(
-          itemFactory, 'users/:uuid', config.auth, []);
+          itemFactory, 'users/:uuid/', config.auth, []);
 
         /**
          * @ngdoc method
