@@ -400,7 +400,7 @@
         resource._auth
       ).then(function (page) {
         resource._next = page.next;
-        resource._count = page.count;
+        resource._count = page.count || page.results.length;
 
         page.results = page.results.map(function (item) {
           var obj = new NrtvItemResource(resource.path() + ':uuid/',
