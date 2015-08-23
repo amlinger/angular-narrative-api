@@ -4,6 +4,7 @@ module.exports = function(grunt) {
   'use strict';
 
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -31,6 +32,19 @@ module.exports = function(grunt) {
       }
     },
 
+    connect: {
+      options: {
+        livereload: false,
+        hostname: 'localhost'
+      },
+      docs: {
+        options: {
+          port: 9999,
+          base: ['./docs']
+        }
+      }
+    },
+
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> ' +
@@ -44,9 +58,13 @@ module.exports = function(grunt) {
 
     ngdocs: {
       options: {
+        title: 'Narrative API for AngularJS',
         startPage: '/reference/api.narrative',
         sourceLink: 'https://github.com/amlinger/angular-narrative-api/blob/' +
-                    'master/{{file}}#L{{codeline}}'
+                    'master/{{file}}#L{{codeline}}',
+        analytics: {
+          account: 'UA-66626170-1'
+        }
       },
       reference: {
         title: 'API reference',
@@ -73,11 +91,17 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      docs: ['docs'],
+      docs: {
+        src: ['docs/*', '!docs/src'],
+      },
       dist: ['dist']
     },
 
     watch: {
+      docs: {
+        files: ['*.js', 'src/*.js'],
+        tasks: ['clean:docs', 'ngdocs:reference']
+      },
       jshint: {
         files: ['.jshintrc', 'src/.jshintrc', 'test/.jshintrc',
                 '*.js', 'src/*.js', 'test/*.js'],
@@ -108,6 +132,16 @@ module.exports = function(grunt) {
   grunt.registerTask('docs', ['clean:docs', 'ngdocs:reference']);
   // Default task(s).
   grunt.registerTask('build', ['clean:dist', 'concat:dist', 'uglify']);
+
+  grunt.registerTask('serve', 'Start a server.', function(run) {
+    run = run || 'docs';
+
+    grunt.task.run([
+      'connect:' + run,
+      'watch:' + run
+    ]);
+  });
+
   // Default task
   grunt.registerTask('default', ['build', 'docs']);
 
