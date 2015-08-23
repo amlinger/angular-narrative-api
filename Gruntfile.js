@@ -58,6 +58,7 @@ module.exports = function(grunt) {
 
     ngdocs: {
       options: {
+        title: 'Narrative API for AngularJS',
         startPage: '/reference/api.narrative',
         sourceLink: 'https://github.com/amlinger/angular-narrative-api/blob/' +
                     'master/{{file}}#L{{codeline}}',
