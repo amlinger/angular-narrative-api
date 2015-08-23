@@ -91,7 +91,9 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      docs: ['docs'],
+      docs: {
+        src: ['docs/*', '!docs/src'],
+      },
       dist: ['dist']
     },
 
