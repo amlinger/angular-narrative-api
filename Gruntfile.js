@@ -62,6 +62,10 @@ module.exports = function(grunt) {
         startPage: '/reference/api.narrative',
         sourceLink: 'https://github.com/amlinger/angular-narrative-api/blob/' +
                     'master/{{file}}#L{{codeline}}',
+        styles: [
+          'docs/src/css/main.css'
+        ],
+
         analytics: {
           account: 'UA-66626170-1'
         }
@@ -99,7 +103,7 @@ module.exports = function(grunt) {
 
     watch: {
       docs: {
-        files: ['*.js', 'src/*.js'],
+        files: ['*.js', 'src/*.js', 'docs/src/**'],
         tasks: ['clean:docs', 'ngdocs:reference']
       },
       jshint: {
