@@ -99,7 +99,7 @@ module.exports = function(grunt) {
 
     watch: {
       docs: {
-        files: ['*.js', 'src/*.js', 'docs/src/*'],
+        files: ['*.js', 'src/*.js', 'docs/src/**'],
         tasks: ['clean:docs', 'ngdocs:reference']
       },
       jshint: {
