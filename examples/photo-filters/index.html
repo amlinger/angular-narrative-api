@@ -26,8 +26,7 @@
               clientSecret: "t8lv9Xe8lFu0lyLmJWWYNLlrjlMM48sgb8euSLDfG1h6weifO2pZapt8Ds6dR4d5wOWbaFFnE2829Qb4cPSoxssVArbmOhBykhZk0vaE8fHMEp4TMUVE4BzaWW6tpj26"
             };
             NarrativeAuthProvider.defaults.oauthRoutes.token =
-              "http://localhost:8080/https://narrativeapp.com/oauth2/token/";
-            NarrativeRequestProvider.defaults.api.proxy = 'http://localhost:8080/';
+              "https://narrativeapp.com/oauth2/token/";
           })
         .controller('MainController', function (NarrativeAuth ,  NarrativeApi) {
             var main = this;
@@ -73,7 +72,7 @@
 
         <div class="photo col-xs-2"
              ng-repeat-start="photo in main.photos.results">
-          <img ng-src="{{photo.renders['g1.thumb_square'].url}}" />
+          <img ng-src="{{photo.renders['g1_thumb_square'].url}}" />
         </div>
         <div class="divider col-xs-12"
              ng-repeat-end
