@@ -388,6 +388,9 @@
           url: fullPath(config.api, url)
         };
 
+        if(config.data)
+          requestConfig.data = config.data;
+
         // Unauthorized requests may be allowed to some endpoints, so only add
         // headers if a valid session exists.
         if (config.auth.token()) {
@@ -585,8 +588,12 @@
      *                             are made public for the API user.
      */
     construct: function(uuid, options) {
-       this.uuid = uuid;
-       return this._super.construct.call(this, options);
+      this.uuid = uuid;
+      return extend(this._super.construct.call(this, options), {
+        qGet: bind(this, this.q),
+        update: bind(this, this.update),
+        qUpdate: bind(this, this.qUpdate)
+      });
     },
 
     /**
@@ -634,6 +641,18 @@
      */
     // transform
 
+    _q: function(method, path, options, auth) {
+      if (!this._qPromise) {
+        this._qPromise = this._request(method, path, options, auth);
+      } else {
+        var item = this;
+        this._qPromise.then(function () {
+          return item._request(method, path, options, auth);
+        });
+      }
+      return this._qPromise;
+    },
+
     /**
      * @ngdoc method
      * @name q
@@ -664,6 +683,75 @@
           });
       }
       return this._qPromise;
+    },
+
+    /**
+     * @ngdoc method
+     * @name qUpdate
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Returns a promise which is resolved when data is back from the server,
+     * and the object is updated.
+     *
+     * @param {string=} method The method to be used when querying the API.
+     *                         Defaults to `'PATCH'`.
+     * @param {object} object The object to update with.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
+    qUpdate: function(method, object) {
+      if (!object) {
+        object = method;
+        method = 'PATCH';
+      }
+
+      if (method !== 'PATCH' && method !== 'PUT')
+        throw 'Updating objects only supports PATCH and PUT.';
+
+      var item = this;
+      return this._q(method, this.path(), this._options, {
+        auth: this._auth,
+        data: object
+      }).then(function(data) {
+        if (data.status === 200) {
+          return extend(item._object(), data);
+        }
+        this._qPromise = this
+          ._request('GET', this.path(), this._options, this._auth)
+          .then(function (data) {
+            try {
+              return extend(item._object(), data);
+            } catch (error) {
+              return item.$q.reject(error);
+            }
+          });
+        return this._qPromise;
+      });
+    },
+
+    /**
+     * @ngdoc method
+     * @name qUpdate
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Returns a this object while updating it on the side.
+     *
+     * @param {string=} method The method to be used when querying the API.
+     *                         Defaults to `'PATCH'`.
+     * @param {object} object The object to update with.
+     *
+     * @return {NrtvResource} This object
+     */
+    update: function(method, object) {
+      this.qUpdate(method, object);
+      return this;
     },
 
     /**
@@ -872,10 +960,10 @@
         resource._auth
       ).then(function (page) {
         resource._next = page.next;
-        resource._count = page.count;
+        resource._count = page.count || page.results.length;
 
         page.results = page.results.map(function (item) {
-          var obj = new NrtvItemResource(resource.path() + ':uuid/',
+          var obj = new NrtvItemResource(item.type + 's/:uuid/',
                                          resource._auth, {}, resource._request,
                                          resource._$q);
 
@@ -1883,6 +1971,10 @@
           });
         }
 
+        function timelineTransform(item) {
+          return item.type === 'moment' ? momentTransform(item) : item;
+        }
+
         /**
          * @ngdoc method
          * @name NarrativeAuth.moments
@@ -1900,6 +1992,24 @@
         api.moments = constructArray(
           arrayFactory, 'moments/', config.auth, [], [momentTransform]);
 
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.timeline
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvArrayResource} The corresponding array object for
+         *                             the moments.
+         */
+        api.timeline = constructArray(
+          arrayFactory, 'timeline/', config.auth, [], [timelineTransform]);
+
         /**
          * @ngdoc method
          * @name NarrativeAuth.moment
@@ -1913,10 +2023,28 @@
          * A getter for the config object used to create this instance.
          *
          * @return {NrtvItemResource} The corresponding item object for
-         *                             the moment.
+         *                             the Moment.
          */
         api.moment = constructItem(
           itemFactory, 'moments/:uuid/', config.auth, [momentTransform]);
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.video
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {string=} uuid The corresponding uuid for the resource.
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvItemResource} The corresponding item object for
+         *                             the Video Moment.
+         */
+        api.video = constructItem(
+          itemFactory, 'video/:uuid/', config.auth, []);
 
         /**
          * @ngdoc method
@@ -1969,6 +2097,23 @@
          */
         api.user = constructItem(
           itemFactory, 'users/:uuid/', config.auth, []);
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.favorites
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvArrayResource} The corresponding array object for
+         *                             the favorites.
+         */
+        api.favorites = constructArray(
+          arrayFactory, 'favorites/', config.auth, [], []);
 
         /**
          * @ngdoc method
