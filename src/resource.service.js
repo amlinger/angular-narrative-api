@@ -113,8 +113,12 @@
      *                             are made public for the API user.
      */
     construct: function(uuid, options) {
-       this.uuid = uuid;
-       return this._super.construct.call(this, options);
+      this.uuid = uuid;
+      return extend(this._super.construct.call(this, options), {
+        qGet: bind(this, this.q),
+        update: bind(this, this.update),
+        qUpdate: bind(this, this.qUpdate)
+      });
     },
 
     /**
@@ -162,6 +166,18 @@
      */
     // transform
 
+    _q: function(method, path, options, auth) {
+      if (!this._qPromise) {
+        this._qPromise = this._request(method, path, options, auth);
+      } else {
+        var item = this;
+        this._qPromise.then(function () {
+          return item._request(method, path, options, auth);
+        });
+      }
+      return this._qPromise;
+    },
+
     /**
      * @ngdoc method
      * @name q
@@ -192,6 +208,75 @@
           });
       }
       return this._qPromise;
+    },
+
+    /**
+     * @ngdoc method
+     * @name qUpdate
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Returns a promise which is resolved when data is back from the server,
+     * and the object is updated.
+     *
+     * @param {string=} method The method to be used when querying the API.
+     *                         Defaults to `'PATCH'`.
+     * @param {object} object The object to update with.
+     *
+     * @return {promise} A promise object that is resolved when the data is
+     *                     fetched from Narratives API. It is rejected if
+     *                     something goes wrong, or if `construct()` has not
+     *                     been called yet.`
+     */
+    qUpdate: function(method, object) {
+      if (!object) {
+        object = method;
+        method = 'PATCH';
+      }
+
+      if (method !== 'PATCH' && method !== 'PUT')
+        throw 'Updating objects only supports PATCH and PUT.';
+
+      var item = this;
+      return this._q(method, this.path(), this._options, {
+        auth: this._auth,
+        data: object
+      }).then(function(data) {
+        if (data.status === 200) {
+          return extend(item._object(), data);
+        }
+        this._qPromise = this
+          ._request('GET', this.path(), this._options, this._auth)
+          .then(function (data) {
+            try {
+              return extend(item._object(), data);
+            } catch (error) {
+              return item.$q.reject(error);
+            }
+          });
+        return this._qPromise;
+      });
+    },
+
+    /**
+     * @ngdoc method
+     * @name qUpdate
+     * @module api.narrative
+     * @methodOf api.narrative.NarrativeItemFactory
+     *
+     * @description
+     * Returns a this object while updating it on the side.
+     *
+     * @param {string=} method The method to be used when querying the API.
+     *                         Defaults to `'PATCH'`.
+     * @param {object} object The object to update with.
+     *
+     * @return {NrtvResource} This object
+     */
+    update: function(method, object) {
+      this.qUpdate(method, object);
+      return this;
     },
 
     /**

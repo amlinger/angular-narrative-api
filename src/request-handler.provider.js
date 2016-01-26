@@ -175,6 +175,9 @@
           url: fullPath(config.api, url)
         };
 
+        if(config.data)
+          requestConfig.data = config.data;
+
         // Unauthorized requests may be allowed to some endpoints, so only add
         // headers if a valid session exists.
         if (config.auth.token()) {
