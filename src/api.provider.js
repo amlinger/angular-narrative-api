@@ -105,6 +105,10 @@
           });
         }
 
+        function timelineTransform(item) {
+          return item.type === 'moment' ? momentTransform(item) : item;
+        }
+
         /**
          * @ngdoc method
          * @name NarrativeAuth.moments
@@ -122,6 +126,24 @@
         api.moments = constructArray(
           arrayFactory, 'moments/', config.auth, [], [momentTransform]);
 
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.timeline
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvArrayResource} The corresponding array object for
+         *                             the moments.
+         */
+        api.moments = constructArray(
+          arrayFactory, 'timeline/', config.auth, [], [timelineTransform]);
+
         /**
          * @ngdoc method
          * @name NarrativeAuth.moment
@@ -135,10 +157,28 @@
          * A getter for the config object used to create this instance.
          *
          * @return {NrtvItemResource} The corresponding item object for
-         *                             the moment.
+         *                             the Moment.
          */
         api.moment = constructItem(
           itemFactory, 'moments/:uuid/', config.auth, [momentTransform]);
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.video
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {string=} uuid The corresponding uuid for the resource.
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvItemResource} The corresponding item object for
+         *                             the Video Moment.
+         */
+        api.video = constructItem(
+          itemFactory, 'video/:uuid/', config.auth, []);
 
         /**
          * @ngdoc method
@@ -191,6 +231,23 @@
          */
         api.user = constructItem(
           itemFactory, 'users/:uuid/', config.auth, []);
+
+        /**
+         * @ngdoc method
+         * @name NarrativeAuth.favorites
+         * @module api.narrative
+         * @methodOf api.narrative.NarrativeApi
+         *
+         * @param {object=} options Options for filtrating the results.
+         *
+         * @description
+         * A getter for the config object used to create this instance.
+         *
+         * @return {NrtvArrayResource} The corresponding array object for
+         *                             the favorites.
+         */
+        api.favorites = constructArray(
+          arrayFactory, 'favorites/', config.auth, [], []);
 
         /**
          * @ngdoc method
