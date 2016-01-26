@@ -239,15 +239,15 @@
         throw 'Updating objects only supports PATCH and PUT.';
 
       var item = this;
-      return this._q(method, this.path(), this._options, {
-        auth: this._auth,
+      return this._q(method, item.path(), item._options, {
+        auth: item._auth,
         data: object
       }).then(function(data) {
         if (data.status === 200) {
           return extend(item._object(), data);
         }
-        this._qPromise = this
-          ._request('GET', this.path(), this._options, this._auth)
+        item._qPromise = item
+          ._request('GET', item.path(), item._options, item._auth)
           .then(function (data) {
             try {
               return extend(item._object(), data);
@@ -255,7 +255,7 @@
               return item.$q.reject(error);
             }
           });
-        return this._qPromise;
+        return item._qPromise;
       });
     },
 
