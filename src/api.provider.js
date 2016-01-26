@@ -141,7 +141,7 @@
          * @return {NrtvArrayResource} The corresponding array object for
          *                             the moments.
          */
-        api.moments = constructArray(
+        api.timeline = constructArray(
           arrayFactory, 'timeline/', config.auth, [], [timelineTransform]);
 
         /**
