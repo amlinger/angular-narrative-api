@@ -488,7 +488,7 @@
         resource._count = page.count || page.results.length;
 
         page.results = page.results.map(function (item) {
-          var obj = new NrtvItemResource(resource.path() + ':uuid/',
+          var obj = new NrtvItemResource(item.type + 's/:uuid/',
                                          resource._auth, {}, resource._request,
                                          resource._$q);
 

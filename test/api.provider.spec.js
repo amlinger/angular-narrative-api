@@ -14,7 +14,8 @@
       next: null,
       previous: null,
       results: [{
-        uuid: 'unique'
+        uuid: 'unique',
+        type: 'moment'
       }]
     };
 
