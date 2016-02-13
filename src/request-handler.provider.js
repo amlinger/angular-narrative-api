@@ -185,10 +185,18 @@
         }
 
         if (!isUndefined(parameters)) {
-          requestConfig = extend(requestConfig, {
-            params: parameters,
-            paramSerializer: config.paramSerializer
-          });
+          if (method === 'GET') {
+            requestConfig = extend(requestConfig, {
+              params: parameters,
+              paramSerializer: config.paramSerializer
+            });
+          } else {
+            // In this case, where it is not a GET-request, we assume that
+            // any parameters present actually is data. If the user wants to
+            // post parametes and a parameter-serializer, this needs to be done
+            // using the config-attribute.
+            requestConfig.data = parameters;
+          }
         }
 
         return $http(requestConfig).then(function (result) {
