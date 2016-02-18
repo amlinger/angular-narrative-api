@@ -25,7 +25,7 @@ data from the API.</p>
 resource.</p>
 </div></td></tr></tbody></table></div>
 <div class="member method"><h2 id="methods">Methods</h2>
-<ul class="methods"><li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L139" class="view-source icon-eye-open"> </a><h3 id="methods__constructfromobject">_constructFromObject(uuid, object, options)</h3>
+<ul class="methods"><li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L143" class="view-source icon-eye-open"> </a><h3 id="methods__constructfromobject">_constructFromObject(uuid, object, options)</h3>
 <div class="_constructfromobject"><div class="-constructfromobject-page"><p>Same as the <code>construct()</code> method but with an object parameter that
 contains the object information. This is mostly used internally.</p>
 </div><h5 id="methods__constructfromobject_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>uuid</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="-constructfromobject-page"><p>The unique identifier for pointing out the
@@ -55,13 +55,13 @@ API when retrieving this data.</p>
 are made public for the API user.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L209" class="view-source icon-eye-open"> </a><h3 id="methods_path">path()</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L294" class="view-source icon-eye-open"> </a><h3 id="methods_path">path()</h3>
 <div class="path"><div class="path-page"><p>Builds the relative path to this object from the API root, by replacing
 the string <code>&#39;:uuid&#39;</code> with the actual uuid.</p>
 </div><h5 id="methods_path_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="path-page"><p>The path relative from the API root to this resource.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L181" class="view-source icon-eye-open"> </a><h3 id="methods_q">q()</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L197" class="view-source icon-eye-open"> </a><h3 id="methods_q">q()</h3>
 <div class="q"><div class="q-page"><p>Returns a promise which is resolved when data is back from the server.
 This promise is cached, and calling <code>q()</code> again will return the same
 promise.</p>
@@ -71,7 +71,27 @@ something goes wrong, or if <code>construct()</code> has not
 been called yet.`</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L163" class="view-source icon-eye-open"> </a><h3 id="methods_transform">transform(transform)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L232" class="view-source icon-eye-open"> </a><h3 id="methods_qupdate">qUpdate(method, object)</h3>
+<div class="qupdate"><div class="qupdate-page"><p>Returns a promise which is resolved when data is back from the server,
+and the object is updated.</p>
+</div><h5 id="methods_qupdate_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>method <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="qupdate-page"><p>The method to be used when querying the API.
+Defaults to <code>&#39;PATCH&#39;</code>.</p>
+</div></td></tr><tr><td>object</td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="qupdate-page"><p>The object to update with.</p>
+</div></td></tr></tbody></table><h5 id="methods_qupdate_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">promise</a></td><td><div class="qupdate-page"><p>A promise object that is resolved when the data is
+fetched from Narratives API. It is rejected if
+something goes wrong, or if <code>construct()</code> has not
+been called yet.`</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L277" class="view-source icon-eye-open"> </a><h3 id="methods_qupdate">qUpdate(method, object)</h3>
+<div class="qupdate"><div class="qupdate-page"><p>Returns a this object while updating it on the side.</p>
+</div><h5 id="methods_qupdate_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>method <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="qupdate-page"><p>The method to be used when querying the API.
+Defaults to <code>&#39;PATCH&#39;</code>.</p>
+</div></td></tr><tr><td>object</td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="qupdate-page"><p>The object to update with.</p>
+</div></td></tr></tbody></table><h5 id="methods_qupdate_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-nrtvresource">NrtvResource</a></td><td><div class="qupdate-page"><p>This object</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/resource.service.js#L167" class="view-source icon-eye-open"> </a><h3 id="methods_transform">transform(transform)</h3>
 <div class="transform"><div class="transform-page"><p>Could be used as a getter if the transform argument is omitted, for
 the transformed created() object.  If used as a setter by supplying the
 transform argument, it adds the transform last in the chain of

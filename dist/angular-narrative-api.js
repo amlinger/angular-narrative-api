@@ -227,7 +227,8 @@
   }
 
   function isAuth(potentialAuth) {
-    return !!potentialAuth.token();
+    return potentialAuth.hasOwnProperty('token') &&
+      potentialAuth.hasOwnProperty('getOauthToken');
   }
 
   /**
@@ -1331,6 +1332,7 @@
           oauthAuthorizationCode: bind(this, this.oauthAuthorizationCode),
           oauthImplicit: bind(this, this.oauthImplicit),
           oauthClientCredentials: bind(this, this.oauthClientCredentials),
+          oauthResourceOwner: bind(this, this.oauthResourceOwner),
           oauthRefreshToken: bind(this, this.oauthRefreshToken),
           waitForAuth: bind(this, this.waitForAuth),
           requireAuth: bind(this, this.requireAuth),
@@ -1446,6 +1448,50 @@
           }
           return this.$q.reject('MALFORMED_TOKEN');
         }, defer.reject);
+      },
+
+      /**
+       * @ngdoc method
+       * @name NarrativeAuth.oauthResourceOwner
+       * @module api.narrative
+       * @methodOf api.narrative.NarrativeAuth
+       *
+       * @param {string=} email The email of the user to authenticate.
+       * @param {string=} email The password of the user to authenticate.
+       * @param {object=} parameters Additional parameters for the callback
+       *                             after authorization is recieved. mostly
+       *                             used to confim with other auth endpoints.
+       *
+       * @description
+       * Posts a token request with a users email and password, returning
+       * a Promise that resolves when a successful request is done.
+       */
+      oauthResourceOwner: function(email, password, parameters) {
+        var _auth = this;
+
+        return this.$http({
+          url: this._config.oauthRoutes.token,
+          method: 'POST',
+          params: {
+            grant_type: 'password',
+            client_id: this._config.oauthApplication.clientID,
+            username: email,
+            password: password
+          }
+        }).then(function (tokenData) {
+          _auth.token(tokenData.data);
+
+          if (_auth.token()) {
+
+            // Callback all onAuth listeners.
+            forEach(_auth._onAuthCallbacks, function (cb) {
+              cb.callback.call(cb.context, _auth._object, parameters);
+            });
+
+            return _auth;
+          }
+          return this.$q.reject('MALFORMED_TOKEN');
+        });
       },
 
       /**

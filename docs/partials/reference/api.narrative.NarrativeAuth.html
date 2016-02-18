@@ -42,13 +42,13 @@ to fetch or create.</p>
 </div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="api-narrative-narrativeauth-page"><p>The Auth object representing the created instance.</p>
 </div></td></tr></table></div>
 <div class="member method"><h2 id="methods">Methods</h2>
-<ul class="methods"><li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L304" class="view-source icon-eye-open"> </a><h3 id="methods_config">config()</h3>
+<ul class="methods"><li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L305" class="view-source icon-eye-open"> </a><h3 id="methods_config">config()</h3>
 <div class="config"><div class="narrativeauth-config-page"><p>A getter for the config object used to create this instance.</p>
 </div><h5 id="methods_config_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="narrativeauth-config-page"><p>The config object used to create this
 Authorization instance.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L334" class="view-source icon-eye-open"> </a><h3 id="methods_getoauthtoken">getOauthToken(code, parameters)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L335" class="view-source icon-eye-open"> </a><h3 id="methods_getoauthtoken">getOauthToken(code, parameters)</h3>
 <div class="getoauthtoken"><div class="narrativeauth-getoauthtoken-page"><p>Makes a POST request to the Oauth server requesting a token. This
 is implemented supporting the Authorization Code Grant Flow, requiring
 both a client ID and a Client secret to be set.</p>
@@ -66,32 +66,42 @@ fails in some way, the promise will be rejected
 with an appropriate reason.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L383" class="view-source icon-eye-open"> </a><h3 id="methods_oauthauthorizationcode">oauthAuthorizationCode(parameters)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L428" class="view-source icon-eye-open"> </a><h3 id="methods_oauthauthorizationcode">oauthAuthorizationCode(parameters)</h3>
 <div class="oauthauthorizationcode"><div class="narrativeauth-oauthauthorizationcode-page"><p>Redirects the window location to the set Oauth server landing page,
 and initializes a Authorization Code Grant flow.</p>
 </div><h5 id="methods_oauthauthorizationcode_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>parameters <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="narrativeauth-oauthauthorizationcode-page"><p>Additional parameters for the callback
 after authorization to recieve.</p>
 </div></td></tr></tbody></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L415" class="view-source icon-eye-open"> </a><h3 id="methods_oauthclientcredentials">oauthClientCredentials(parameters)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L460" class="view-source icon-eye-open"> </a><h3 id="methods_oauthclientcredentials">oauthClientCredentials(parameters)</h3>
 <div class="oauthclientcredentials"><div class="narrativeauth-oauthclientcredentials-page"><p><em>NOT IMPLEMENTED YET.</em></p>
 </div><h5 id="methods_oauthclientcredentials_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>parameters <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="narrativeauth-oauthclientcredentials-page"><p>Additional parameters for the callback
 after authorization to recieve.</p>
 </div></td></tr></tbody></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L399" class="view-source icon-eye-open"> </a><h3 id="methods_oauthimplicit">oauthImplicit(parameters)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L444" class="view-source icon-eye-open"> </a><h3 id="methods_oauthimplicit">oauthImplicit(parameters)</h3>
 <div class="oauthimplicit"><div class="narrativeauth-oauthimplicit-page"><p><em>NOT IMPLEMENTED YET.</em></p>
 </div><h5 id="methods_oauthimplicit_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>parameters <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="narrativeauth-oauthimplicit-page"><p>Additional parameters for the callback
 after authorization to recieve.</p>
 </div></td></tr></tbody></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L431" class="view-source icon-eye-open"> </a><h3 id="methods_oauthrefreshtoken">oauthRefreshToken(parameters)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L476" class="view-source icon-eye-open"> </a><h3 id="methods_oauthrefreshtoken">oauthRefreshToken(parameters)</h3>
 <div class="oauthrefreshtoken"><div class="narrativeauth-oauthrefreshtoken-page"><p><em>NOT IMPLEMENTED YET.</em></p>
 </div><h5 id="methods_oauthrefreshtoken_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>parameters <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="narrativeauth-oauthrefreshtoken-page"><p>Additional parameters for the callback
 after authorization to recieve.</p>
 </div></td></tr></tbody></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L518" class="view-source icon-eye-open"> </a><h3 id="methods_onauth">onAuth(callback, context)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L387" class="view-source icon-eye-open"> </a><h3 id="methods_oauthresourceowner">oauthResourceOwner(email, email, parameters)</h3>
+<div class="oauthresourceowner"><div class="narrativeauth-oauthresourceowner-page"><p>Posts a token request with a users email and password, returning
+a Promise that resolves when a successful request is done.</p>
+</div><h5 id="methods_oauthresourceowner_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>email <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="narrativeauth-oauthresourceowner-page"><p>The email of the user to authenticate.</p>
+</div></td></tr><tr><td>email <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="narrativeauth-oauthresourceowner-page"><p>The password of the user to authenticate.</p>
+</div></td></tr><tr><td>parameters <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">object</a></td><td><div class="narrativeauth-oauthresourceowner-page"><p>Additional parameters for the callback
+after authorization is recieved. mostly
+used to confim with other auth endpoints.</p>
+</div></td></tr></tbody></table></div>
+</li>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L563" class="view-source icon-eye-open"> </a><h3 id="methods_onauth">onAuth(callback, context)</h3>
 <div class="onauth"><div class="narrativeauth-onauth-page"><p>Sets a callback for when the user is authenticated by the server.
 **Note that this only applies for when the user is authenticated by
 the server, not for when the token is set by the <code>token()</code> method.</p>
@@ -104,7 +114,7 @@ parameters passed from the oauth initiator.</p>
 </div></td></tr></tbody></table><h5 id="methods_onauth_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-narrativeauth">NarrativeAuth</a></td><td><div class="narrativeauth-onauth-page"><p><code>this</code>is returned for chaining purposes.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L488" class="view-source icon-eye-open"> </a><h3 id="methods_requireauth">requireAuth()</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L533" class="view-source icon-eye-open"> </a><h3 id="methods_requireauth">requireAuth()</h3>
 <div class="requireauth"><div class="narrativeauth-requireauth-page"><p>This creates a promise which is returned and resolved if the Auth
 instance has a token, and rejected if not. If a token fetch is in
 progress, this will wait for that fetch to resolve before moving on
@@ -116,7 +126,7 @@ a successful login has been made, and rejects with
 the reason <code>&#39;AUTH_REQUIRED&#39;</code> if not.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L570" class="view-source icon-eye-open"> </a><h3 id="methods_token">token(tokenObject)</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L615" class="view-source icon-eye-open"> </a><h3 id="methods_token">token(tokenObject)</h3>
 <div class="token"><div class="narrativeauth-token-page"><p><code>token()</code> provides a getter when no arguments are supplied or as a
 setter if a token is provided. It will still return the token if used
 as a setter.</p>
@@ -131,7 +141,7 @@ will return any existing token.</p>
 instance, or <code>null</code> if not authenticeted yet.</p>
 </div></td></tr></table></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L599" class="view-source icon-eye-open"> </a><h3 id="methods_unauth">unauth()</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L644" class="view-source icon-eye-open"> </a><h3 id="methods_unauth">unauth()</h3>
 <div class="unauth"><div class="narrativeauth-unauth-page"><p>Will remove the token from this instance, and from the cache as well,
 along with all data stored in the same namespace in the cache.</p>
 <p>On a removel of the token, an event will be emitted on the
@@ -139,7 +149,7 @@ $rootScope, which will be called <code>&#39;[auth_name].unauth&#39;</code>. This
 contain the Auth instance as an argument.</p>
 </div></div>
 </li>
-<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L452" class="view-source icon-eye-open"> </a><h3 id="methods_waitforauth">waitForAuth()</h3>
+<li><a href="https://github.com/amlinger/angular-narrative-api/blob/master/src/auth.provider.js#L497" class="view-source icon-eye-open"> </a><h3 id="methods_waitforauth">waitForAuth()</h3>
 <div class="waitforauth"><div class="narrativeauth-waitforauth-page"><p>This creates a promise which is returned and never rejected, only
 resolved after a successful login.</p>
 <p>If a reject is desired from the promise when it is not authenticated,
