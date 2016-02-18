@@ -11,7 +11,7 @@
                  Declarative templates with data-binding, MVC, dependency injection and great
                  testability story all implemented with pure client-side JavaScript!">
   <meta name="fragment" content="!">
-  <title ng-bind-template="angular-narrative-api: {{partialTitle}}">Docs</title>
+  <title ng-bind-template="Narrative API for AngularJS: {{partialTitle}}">Docs</title>
   <script type="text/javascript">
     // dynamically add base tag as well as css and javascript files.
     // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources
@@ -37,6 +37,8 @@
       addTag('link', {rel: 'stylesheet', href: 'css/docs.css', type: 'text/css'});
       addTag('link', {rel: 'stylesheet', href: 'css/animations.css', type: 'text/css'});
 
+      
+         addTag('link', {rel: 'stylesheet', href: 'css/main.css', type: 'text/css'}, sync);
       
 
       addTag('script', {src: 'js/google-code-prettify.js'}, sync);
@@ -94,7 +96,7 @@
         <div class="container">
           
           
-            <a  class="brand">angular-narrative-api</a>
+            <a  class="brand">Narrative API for AngularJS</a>
           
           <ul class="nav">
             <li ng-repeat="(url, name) in sections" ng-class="{active: isActivePath(url)}">

@@ -1,0 +1,21 @@
+
+
+.navbar-inner {
+  background-color: #e45f5d;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+}
+
+.navbar-inner .brand {
+  color: #efefef;
+  text-shadow: 0 -1px 0 #C64C4A;
+}
+
+.navbar-inner .nav .active a {
+  background: #fff;
+}
+
+a, a:link, a:visited, a:focus {
+  color: #C64C4A;
+}
