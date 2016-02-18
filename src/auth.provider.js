@@ -376,13 +376,16 @@
        *
        * @param {string=} email The email of the user to authenticate.
        * @param {string=} email The password of the user to authenticate.
+       * @param {object=} parameters Additional parameters for the callback
+       *                             after authorization is recieved. mostly
+       *                             used to confim with other auth endpoints.
        *
        * @description
        * Posts a token request with a users email and password, returning
        * a Promise that resolves when a successful request is done.
        */
-      oauthResourceOwner: function(email, password) {
-        var _auth = this
+      oauthResourceOwner: function(email, password, parameters) {
+        var _auth = this;
 
         return this.$http({
           url: this._config.oauthRoutes.token,
