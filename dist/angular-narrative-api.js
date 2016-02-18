@@ -227,8 +227,7 @@
   }
 
   function isAuth(potentialAuth) {
-    return potentialAuth.hasOwnProperty('token') &&
-      potentialAuth.hasOwnProperty('getOauthToken');
+    return !!potentialAuth.token();
   }
 
   /**
